@@ -1,4 +1,4 @@
-// Datos del usuario: subrayados, notas, memoria, capítulos leídos, cintas y ajustes.
+// Datos del usuario: subrayados, notas, memoria, capítulos leídos, cintas, portadas propias y ajustes.
 // Viven en memoria (reactivos) y se escriben en usuario.db. Cada fila guarda «actualizado»
 // y «borrado» para poder sincronizar entre dispositivos más adelante.
 import { bdUsuario } from './bd.js';
@@ -7,6 +7,7 @@ import { referenciasEnTexto, clave } from './libros.js';
 export const AJUSTES_INICIALES = {
   idioma: 'es',           // idioma de la interfaz: es | en
   mostrarInicio: true,    // portada y menú al abrir
+  grabados: true,         // grabado a toda página al abrir cada libro
   version: 'NTV',
   paralela: '',
   tema: 'cuero',          // cuero | papel | sistema
@@ -29,6 +30,7 @@ export const usuario = $state({
   memoria: [],
   leidos: {},       // "43.3" -> fecha
   cintas: [],
+  portadas: {},     // libro -> imagen propia (data URL); solo en este equipo
   ajustes: { ...AJUSTES_INICIALES },
 });
 
@@ -41,6 +43,7 @@ const TABLAS = [
   `CREATE TABLE IF NOT EXISTS leidos (cap TEXT PRIMARY KEY, fecha INTEGER, actualizado INTEGER, borrado INTEGER DEFAULT 0)`,
   `CREATE TABLE IF NOT EXISTS cintas (id TEXT PRIMARY KEY, libro INTEGER, cap INTEGER, color TEXT,
      creada INTEGER, actualizado INTEGER, borrado INTEGER DEFAULT 0)`,
+  `CREATE TABLE IF NOT EXISTS portadas (libro INTEGER PRIMARY KEY, imagen TEXT, actualizado INTEGER, borrado INTEGER DEFAULT 0)`,
   `CREATE TABLE IF NOT EXISTS ajustes (clave TEXT PRIMARY KEY, valor TEXT, actualizado INTEGER)`,
 ];
 
@@ -67,6 +70,7 @@ export async function iniciarUsuario() {
   usuario.memoria = await vivos('memoria');
   for (const f of await vivos('leidos')) usuario.leidos[f.cap] = Number(f.fecha);
   usuario.cintas = await vivos('cintas');
+  for (const f of await vivos('portadas')) usuario.portadas[f.libro] = f.imagen;
   for (const f of await db.select('SELECT clave, valor FROM ajustes')) {
     try { usuario.ajustes[f.clave] = JSON.parse(f.valor); } catch { /* valor corrupto: se ignora */ }
   }
@@ -158,6 +162,16 @@ export function alternarCinta(libro, cap) {
   ejecutar('INSERT OR REPLACE INTO cintas (id, libro, cap, color, creada, actualizado, borrado) VALUES (?, ?, ?, ?, ?, ?, 0)',
     [c.id, c.libro, c.cap, c.color, c.creada, c.actualizado]);
   return true;
+}
+
+// ---------- portadas propias ----------
+// La imagen que el usuario elige para abrir un libro (por ejemplo, de su tablero de Pinterest).
+// Se guarda solo en usuario.db: no viaja con el respaldo ni con el repositorio.
+export function ponerPortada(libro, imagen) {
+  if (imagen) usuario.portadas[libro] = imagen;
+  else delete usuario.portadas[libro];
+  ejecutar('INSERT OR REPLACE INTO portadas (libro, imagen, actualizado, borrado) VALUES (?, ?, ?, ?)',
+    [libro, imagen || null, ahora(), imagen ? 0 : 1]);
 }
 
 // ---------- memorización (repetición espaciada sencilla) ----------

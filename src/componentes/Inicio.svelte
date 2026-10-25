@@ -9,6 +9,7 @@
   import { pasaje, info } from '../lib/biblia.js';
   import { LIBROS, TOTAL_CAPITULOS, nombreLibro, nombreRef, parsearReferencia, normalizar } from '../lib/libros.js';
   import { versiculoDelDia } from '../lib/versiculosDelDia.js';
+  import { grabado } from '../lib/grabados.js';
   import { t, idioma, fecha } from '../lib/i18n.svelte.js';
 
   const vd = versiculoDelDia();
@@ -137,7 +138,6 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <section class="portada-w" role="button" tabindex="0" aria-label={t('ini.toca')} onclick={entrarAlMenu}>
       <div class="marca-agua" aria-hidden="true"><Emblema tam={1000} /></div>
-      <div class="cintas-portada" aria-hidden="true"><span class="cinta c1"></span><span class="cinta c2"></span><span class="cinta c3"></span></div>
       <header class="portada-cabeza">
         <span class="portada-marca"><Emblema tam={34} /><b>CHI-RO</b><i>Heirs</i></span>
         <span class="etiqueta-ui">{t('ini.diaVerso')} · {hoy}</span>
@@ -192,7 +192,7 @@
           <span class="etiqueta-ui">{t('ini.continuar')}</span>
           <span class="t-grande">{nombreRef(pos.libro, pos.cap)}</span>
           <span class="t-pie">{info(usuario.ajustes.version)?.nombre}</span>
-          <span class="cinta-tarjeta" aria-hidden="true"></span>
+          <img class="tarjeta-grabado" src={usuario.portadas[pos.libro] || grabado(pos.libro)?.src} alt="" aria-hidden="true" />
         </button>
         <div class="tarjeta-inicio">
           <span class="etiqueta-ui">{t('ini.cintas')}</span>

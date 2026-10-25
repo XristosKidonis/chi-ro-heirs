@@ -1,6 +1,7 @@
 <script>
   import { tick, untrack } from 'svelte';
   import Emblema from './Emblema.svelte';
+  import Frontis from './Frontis.svelte';
   import Icono from './Icono.svelte';
   import { ui, irA, abrirPestana, avisar } from '../lib/ui.svelte.js';
   import { usuario, ajustar, marcarLeido, alternarCinta, indiceRetroenlaces } from '../lib/usuario.svelte.js';
@@ -19,6 +20,7 @@
   const anterior = $derived(capituloSiguiente(pos.libro, pos.cap, -1));
   const siguiente = $derived(capituloSiguiente(pos.libro, pos.cap, 1));
   const avance = $derived((pos.cap / libro.capitulos) * 100);
+  const conGrabado = $derived(pos.cap === 1 && usuario.ajustes.grabados !== false);
 
   let lector;
   let finEl;
@@ -130,14 +132,22 @@
 <div class="lector-marco">
   <div class="canto" aria-hidden="true"><i style="height: {avance}%"></i></div>
   <main class="lector" bind:this={lector}>
+    {#if conGrabado}
+      {#key pos.libro}<Frontis libro={pos.libro} />{/key}
+    {/if}
     <article class="pagina" class:paralelo={!!par}>
-      <button class="cintas" class:puesta={cintaPuesta} onclick={() => avisar(alternarCinta(pos.libro, pos.cap) ? t('lector.cintaPuesta') : t('lector.cintaQuitada'))}
-        title={cintaPuesta ? t('lector.cintaQuitar') : t('lector.cintaPoner')} aria-label={t('nav.cintas')} aria-pressed={cintaPuesta}>
-        <span class="cinta c1"></span><span class="cinta c2"></span><span class="cinta c3"></span>
+      <button class="marcador" class:puesto={cintaPuesta} onclick={() => avisar(alternarCinta(pos.libro, pos.cap) ? t('lector.cintaPuesta') : t('lector.cintaQuitada'))}
+        title={cintaPuesta ? t('lector.cintaQuitar') : t('lector.cintaPoner')} aria-pressed={cintaPuesta}>
+        <i aria-hidden="true"></i>{cintaPuesta ? t('lector.marcado') : t('lector.marcar')}
       </button>
 
       <header class="cap-cabeza">
-        {#if pos.cap === 1}
+        {#if conGrabado}
+          <div class="tras-frontis">
+            <span class="sub">{ver?.nombre}</span>
+            {#if libro.capitulos > 1}<span class="cap1">{t('lector.capitulo', { n: 1 })}</span>{/if}
+          </div>
+        {:else if pos.cap === 1}
           <div class="portada">
             <span class="etiqueta-ui">{libro.testamento === 'AT' ? t('nav.at') : t('nav.nt')} · {t('lector.libroDe', { n: libro.n })}</span>
             <Emblema tam={46} />

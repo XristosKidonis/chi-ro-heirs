@@ -18,6 +18,10 @@
   <input id="aj-inicio" type="checkbox" checked={a.mostrarInicio} onchange={(e) => ajustar('mostrarInicio', e.currentTarget.checked)} />
 </div>
 <div class="ajuste">
+  <label for="aj-grabados">{t('aj.grabados')} <small>{t('aj.grabadosAyuda')}</small></label>
+  <input id="aj-grabados" type="checkbox" checked={a.grabados !== false} onchange={(e) => ajustar('grabados', e.currentTarget.checked)} />
+</div>
+<div class="ajuste">
   <label for="aj-tema">{t('aj.tema')}</label>
   <select id="aj-tema" value={a.tema} onchange={(e) => ajustar('tema', e.currentTarget.value)}>
     <option value="cuero">{t('aj.cuero')}</option>

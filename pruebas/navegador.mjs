@@ -52,8 +52,8 @@ await paso('portada y menú de inicio', async () => {
   await pag.waitForSelector('.texto .v', { timeout: 20000 });
 });
 await paso('arranca en Génesis 1 con NTV y portadilla', async () => {
-  const h1 = await pag.textContent('.portada h1');
-  if (!/Génesis/.test(h1)) throw new Error(h1);
+  const h1 = await pag.textContent('.frontis-titulo');
+  if (!/GÉNESIS/.test(h1)) throw new Error(h1);
   const sub = await pag.textContent('.texto .subtitulo');
   if (!/Título/.test(sub)) throw new Error('sin subtítulo NTV');
 });
@@ -157,8 +157,8 @@ await paso('memorizar y practicar', async () => {
 
 await paso('cinta y sello AMEN', async () => {
   await pag.keyboard.press('Escape');
-  await pag.click('.cintas');
-  await pag.waitForSelector('.cintas.puesta');
+  await pag.click('.marcador');
+  await pag.waitForSelector('.marcador.puesto');
   await pag.click('.sello');
   await pag.waitForSelector('.amen.hecho');
 });
