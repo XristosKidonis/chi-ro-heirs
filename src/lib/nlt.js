@@ -49,8 +49,8 @@ export async function capituloNLT(version, libro, cap, clave) {
   let r;
   try {
     r = await pedir(url);
-  } catch {
-    throw new Error(`Sin conexión con la API de Tyndale. La ${version} necesita internet; mientras tanto puedes leer una versión incluida.`);
+  } catch (e) {
+    throw new Error(`Sin conexión con la API de Tyndale. La ${version} necesita internet; mientras tanto puedes leer una versión incluida. (Detalle: ${e?.message || e})`);
   }
   if (!r.ok) {
     throw new Error(r.status === 401 || r.status === 403

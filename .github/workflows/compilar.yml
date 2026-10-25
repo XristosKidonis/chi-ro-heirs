@@ -50,6 +50,8 @@ jobs:
 
       - name: Construir la base bíblica
         run: python herramientas/construir_datos.py
+        env:
+          PYTHONUTF8: '1'
 
       - name: Dependencias
         run: npm ci
