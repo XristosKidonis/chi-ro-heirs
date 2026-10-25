@@ -1,0 +1,68 @@
+name: Traer grabados
+
+# Descarga los grabados bíblicos de Gustave Doré (dominio público) desde
+# Project Gutenberg y Wikimedia Commons y los deja en la rama «grabados-fuente»
+# para elegir y preparar las portadillas. Se ejecuta a mano.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  traer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gutenberg (Doré Bible Gallery, completo)
+        run: |
+          mkdir -p fuente/gutenberg
+          curl -fsSL -A "chi-ro-heirs" -o g.zip https://www.gutenberg.org/cache/epub/8710/pg8710-h.zip
+          unzip -q g.zip -d fuente/gutenberg
+          rm g.zip
+
+      - name: Commons (listados de categorías)
+        run: |
+          mkdir -p fuente/commons
+          for cat in "Doré's_English_Bible" "The_Holy_Bible_(Doré)" "Gustave_Doré's_Bible_illustrations" "Illustrations_of_the_Bible_by_Gustave_Doré" "La_Grande_Bible_de_Tours"; do
+            curl -fsSL -A "chi-ro-heirs/1.0 (https://github.com/XristosKidonis/chi-ro-heirs)" \
+              "https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=categorymembers&gcmtitle=Category:${cat}&gcmtype=file&gcmlimit=500&prop=imageinfo&iiprop=url|size&iiurlwidth=1600" \
+              -o "fuente/commons/${cat}.json" || true
+            sleep 1
+          done
+
+      - name: Commons (alta resolución de los elegidos)
+        if: hashFiles('herramientas/grabados.txt') != ''
+        run: |
+          mkdir -p fuente/alta
+          python3 - <<'EOF'
+          import json, urllib.parse, urllib.request, time, pathlib
+          UA = {'User-Agent': 'chi-ro-heirs/1.0 (https://github.com/XristosKidonis/chi-ro-heirs)'}
+          for linea in pathlib.Path('herramientas/grabados.txt').read_text(encoding='utf-8').splitlines():
+              linea = linea.split('#')[0].strip()
+              if not linea or '=' not in linea:
+                  continue
+              clave, archivo = [x.strip() for x in linea.split('=', 1)]
+              q = urllib.parse.urlencode({'action': 'query', 'format': 'json', 'titles': 'File:' + archivo,
+                                          'prop': 'imageinfo', 'iiprop': 'url|size', 'iiurlwidth': 2000})
+              with urllib.request.urlopen(urllib.request.Request('https://commons.wikimedia.org/w/api.php?' + q, headers=UA)) as r:
+                  pag = next(iter(json.load(r)['query']['pages'].values()))
+              if 'imageinfo' not in pag:
+                  print('NO ENCONTRADO', clave, archivo); continue
+              url = pag['imageinfo'][0].get('thumburl') or pag['imageinfo'][0]['url']
+              with urllib.request.urlopen(urllib.request.Request(url, headers=UA)) as r:
+                  pathlib.Path(f'fuente/alta/{clave}.jpg').write_bytes(r.read())
+              print('ok', clave, archivo)
+              time.sleep(0.5)
+          EOF
+
+      - name: Publicar en la rama grabados-fuente
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout --orphan grabados-fuente
+          git rm -rfq --cached .
+          git add fuente
+          git commit -qm "Grabados de Doré (fuente)"
+          git push -f origin grabados-fuente
