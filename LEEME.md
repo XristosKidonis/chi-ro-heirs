@@ -22,7 +22,8 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 |---|---|
 | Inicio | Portada con el versículo del día como cartel; al tocarla, un menú con buscador de libros y pasajes, «continuar leyendo», tus cintas y una estantería con los 66 libros como lomos que se llenan de rojo al leerlos |
 | Versiones | **NTV** y **NLT** en línea (API oficial de Tyndale). **RV1909, RV1865, BSB, KJV** dentro de la app, sin conexión |
-| Lectura | Portadilla de cada libro, temas Cuero y Papel, modo lector sin números, texto corrido, Literata o Atkinson Hyperlegible, vista paralela |
+| Portadillas | Cada libro abre con un grabado de Gustave Doré a toda página, en blanco y negro con grano y el nombre del libro encima. Puedes poner tu propia imagen (por ejemplo, de tu tablero de Pinterest): se guarda solo en tu equipo y nunca sale de él |
+| Lectura | Temas Cuero y Papel, modo lector sin números, texto corrido, Literata o Atkinson Hyperlegible, vista paralela |
 | Subrayado | 5 colores de marcador, anclados a la referencia: lo que subrayas en la NTV aparece también en la RV1909 |
 | Notas | Tipos (observación, pregunta, aplicación, oración), `#etiquetas`, referencias que se vuelven enlaces y retroenlaces («mencionado en otras notas») |
 | Estudio de palabra | Toca una palabra: concordancia, mapa por libros, diccionario RAE, interlineal, Blue Letter Bible; Strong para versiones en inglés |
@@ -30,7 +31,7 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 | Idiomas | Interfaz en español o inglés (Ajustes → Idioma) |
 | Referencias cruzadas | Unas 159 000 de OpenBible.info, ordenadas por votos |
 | Búsqueda | Instantánea y sin acentos, en toda la Biblia, en un testamento o en un libro |
-| Hábito | Sello AMEN al terminar un capítulo, cuadrícula de cobertura de los 1189 capítulos (sin rachas), cintas marcapáginas |
+| Hábito | Sello AMEN al terminar un capítulo, cuadrícula de cobertura de los 1189 capítulos (sin rachas), cintas («Marcar» en cada capítulo) |
 | Memoria | Versículos que se desvanecen palabra a palabra, con repaso espaciado |
 | Póster | Imagen 1080×1350 estilo cartel en tres acabados: Cuero, Papel y Lacre |
 | Voz | Lectura en voz alta con las voces del sistema |
@@ -81,7 +82,9 @@ src/
     usuario.svelte.js     notas, subrayados, memoria, cintas, ajustes (usuario.db)
     ui.svelte.js          estado de la interfaz
 src-tauri/                app de escritorio (Rust): copia biblias.db y registra los plugins
-herramientas/construir_datos.py   genera la base bíblica
+herramientas/construir_datos.py    genera la base bíblica
+herramientas/preparar_grabados.py  prepara las portadillas (grabados de Doré)
+herramientas/instalador.mjs        dibuja las imágenes de los instaladores
 ```
 
 **Dónde viven tus datos:** en `usuario.db`, dentro de la carpeta de configuración de la app:
@@ -101,5 +104,6 @@ Cada fila guarda la fecha de cambio y una marca de borrado, ya preparada para la
 - **Referencias cruzadas:** [OpenBible.info](https://www.openbible.info/labs/cross-references/), CC BY.
 - **Léxico Strong:** [Open Scriptures](https://github.com/openscriptures/strongs), CC BY-SA.
 - **Interlineal hebreo y griego, léxicos:** [STEP Bible](https://www.stepbible.org) (Tyndale House, Cambridge), datos TAHOT, TAGNT, TBESH y TBESG, CC BY 4.0.
-- **Fuentes tipográficas:** Literata, Bodoni Moda, Pinyon Script, Anton, Archivo, Atkinson Hyperlegible Next y Noto Serif Hebrew, todas con licencia SIL Open Font License.
+- **Grabados:** Gustave Doré, *La Grande Bible de Tours* (1866), dominio público, vía [Project Gutenberg](https://www.gutenberg.org/ebooks/8710) («The Doré Bible Gallery»). Se obtienen con el flujo «Traer grabados» y `herramientas/preparar_grabados.py`.
+- **Fuentes tipográficas:** Literata, Bodoni Moda, Pinyon Script, Anton, Inter Tight, Archivo, Atkinson Hyperlegible Next y Noto Serif Hebrew, todas con licencia SIL Open Font License.
 - **Estética:** inspirada en las Biblias de diseño editorial; nombre y emblema propios (el crismón ΧΡ es un símbolo cristiano del siglo IV, de libre uso).

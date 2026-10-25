@@ -1,4 +1,4 @@
 Todas las fuentes de esta carpeta usan la licencia SIL Open Font License 1.1 (OFL-1.1),
 obtenidas de los paquetes @fontsource en npm:
-Literata, Bodoni Moda, Pinyon Script, Anton, Archivo, Atkinson Hyperlegible Next.
+Literata, Bodoni Moda, Pinyon Script, Anton, Inter Tight, Archivo, Atkinson Hyperlegible Next.
 https://openfontlicense.org
