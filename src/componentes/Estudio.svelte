@@ -1,6 +1,7 @@
 <script>
   import Icono from './Icono.svelte';
   import Palabra from './estudio/Palabra.svelte';
+  import Original from './estudio/Original.svelte';
   import Referencias from './estudio/Referencias.svelte';
   import Comparar from './estudio/Comparar.svelte';
   import Notas from './estudio/Notas.svelte';
@@ -8,24 +9,23 @@
   import Memoria from './estudio/Memoria.svelte';
   import Progreso from './estudio/Progreso.svelte';
   import { ui } from '../lib/ui.svelte.js';
+  import { t } from '../lib/i18n.svelte.js';
 
-  const PESTANAS = [
-    ['palabra', 'Palabra'], ['refs', 'Refs'], ['comparar', 'Comparar'], ['notas', 'Notas'],
-    ['buscar', 'Buscar'], ['memoria', 'Memoria'], ['progreso', 'Progreso'],
-  ];
-  let cuerpo;
+  const PESTANAS = ['palabra', 'original', 'refs', 'comparar', 'notas', 'buscar', 'memoria', 'progreso'];
+  let cuerpo = $state();
   $effect(() => { ui.pestana; if (cuerpo) cuerpo.scrollTop = 0; });
 </script>
 
-<aside class="estudio" class:abierta={ui.estudioAbierto} aria-label="Panel de estudio">
+<aside class="estudio" class:abierta={ui.estudioAbierto} aria-label={t('barra.estudio')}>
   <div class="pestanas pestanas-estudio" role="tablist">
-    {#each PESTANAS as [id, nombre]}
-      <button role="tab" aria-selected={ui.pestana === id} onclick={() => (ui.pestana = id)}>{nombre}</button>
+    {#each PESTANAS as id}
+      <button role="tab" aria-selected={ui.pestana === id} onclick={() => (ui.pestana = id)}>{t(`tab.${id}`)}</button>
     {/each}
-    <button class="ico cerrar-estudio" onclick={() => (ui.estudioAbierto = false)} aria-label="Cerrar panel"><Icono n="cerrar" /></button>
+    <button class="ico cerrar-estudio" onclick={() => (ui.estudioAbierto = false)} aria-label={t('tab.cerrar')}><Icono n="cerrar" /></button>
   </div>
   <div class="estudio-cuerpo" bind:this={cuerpo}>
     {#if ui.pestana === 'palabra'}<Palabra />
+    {:else if ui.pestana === 'original'}<Original />
     {:else if ui.pestana === 'refs'}<Referencias />
     {:else if ui.pestana === 'comparar'}<Comparar />
     {:else if ui.pestana === 'notas'}<Notas />

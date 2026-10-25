@@ -5,8 +5,7 @@
   import Respaldo from './dialogos/Respaldo.svelte';
   import Poster from './dialogos/Poster.svelte';
   import { ui } from '../lib/ui.svelte.js';
-
-  const TITULOS = { versiones: 'Versiones', ajustes: 'Ajustes', respaldo: 'Respaldo', poster: 'Póster' };
+  import { t } from '../lib/i18n.svelte.js';
   let dlg;
 
   $effect(() => {
@@ -19,8 +18,8 @@
 <dialog class="dlg" bind:this={dlg} onclose={() => (ui.dialogo = null)} aria-labelledby="dlg-titulo">
   {#if ui.dialogo}
     <div class="dlg-cabeza">
-      <h2 id="dlg-titulo">{TITULOS[ui.dialogo]}</h2>
-      <button class="ico" onclick={() => (ui.dialogo = null)} aria-label="Cerrar"><Icono n="cerrar" /></button>
+      <h2 id="dlg-titulo">{t(`dlg.${ui.dialogo}`)}</h2>
+      <button class="ico" onclick={() => (ui.dialogo = null)} aria-label={t('dlg.cerrar')}><Icono n="cerrar" /></button>
     </div>
     <div class="dlg-cuerpo">
       {#if ui.dialogo === 'versiones'}<Versiones />

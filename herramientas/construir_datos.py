@@ -12,6 +12,7 @@ import os
 import re
 import sqlite3
 import sys
+import urllib.parse
 import urllib.request
 from collections import defaultdict
 
@@ -33,6 +34,21 @@ STRONG_URLS = {
     'hebreo.js': 'https://raw.githubusercontent.com/openscriptures/strongs/master/hebrew/strongs-hebrew-dictionary.js',
 }
 
+STEP = 'https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/'
+STEP_INTERLINEAL = [
+    # nombre local, ruta en STEPBible-Data (en orden canónico)
+    ('tahot-1.txt', 'Translators Amalgamated OT+NT/TAHOT Gen-Deu - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt'),
+    ('tahot-2.txt', 'Translators Amalgamated OT+NT/TAHOT Jos-Est - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt'),
+    ('tahot-3.txt', 'Translators Amalgamated OT+NT/TAHOT Job-Sng - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt'),
+    ('tahot-4.txt', 'Translators Amalgamated OT+NT/TAHOT Isa-Mal - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt'),
+    ('tagnt-1.txt', 'Translators Amalgamated OT+NT/TAGNT Mat-Jhn - Translators Amalgamated Greek NT - STEPBible.org CC-BY.txt'),
+    ('tagnt-2.txt', 'Translators Amalgamated OT+NT/TAGNT Act-Rev - Translators Amalgamated Greek NT - STEPBible.org CC-BY.txt'),
+]
+STEP_LEXICOS = [
+    ('tbesh.txt', 'Lexicons/TBESH - Translators Brief lexicon of Extended Strongs for Hebrew - STEPBible.org CC BY.txt'),
+    ('tbesg.txt', 'Lexicons/TBESG - Translators Brief lexicon of Extended Strongs for Greek - STEPBible.org CC BY.txt'),
+]
+
 OSIS = ('Gen Exod Lev Num Deut Josh Judg Ruth 1Sam 2Sam 1Kgs 2Kgs 1Chr 2Chr Ezra Neh Esth Job Ps Prov '
         'Eccl Song Isa Jer Lam Ezek Dan Hos Joel Amos Obad Jonah Mic Nah Hab Zeph Hag Zech Mal Matt Mark '
         'Luke John Acts Rom 1Cor 2Cor Gal Eph Phil Col 1Thess 2Thess 1Tim 2Tim Titus Phlm Heb Jas 1Pet '
@@ -53,6 +69,11 @@ CREATE VIRTUAL TABLE versiculos_fts USING fts5(
 );
 CREATE TABLE refs (origen TEXT PRIMARY KEY, destinos TEXT NOT NULL) WITHOUT ROWID;
 CREATE TABLE strong (id TEXT PRIMARY KEY, lema TEXT, translit TEXT, definicion TEXT, kjv TEXT, derivacion TEXT) WITHOUT ROWID;
+CREATE TABLE interlineal (
+  libro INTEGER NOT NULL, cap INTEGER NOT NULL, vers INTEGER NOT NULL, pos INTEGER NOT NULL,
+  original TEXT, translit TEXT, glosa TEXT, glosa_es TEXT, strong TEXT, morf TEXT, variante INTEGER DEFAULT 0
+);
+CREATE TABLE lexico (id TEXT PRIMARY KEY, lema TEXT, translit TEXT, morf TEXT, glosa TEXT, definicion TEXT) WITHOUT ROWID;
 """
 
 
@@ -123,11 +144,80 @@ def cargar_strong(cur, rutas):
     return len(filas)
 
 
+RE_REF_STEP = re.compile(r'^([1-3]?[A-Za-z]+)\.(\d+)\.(\d+)(?:\([^)]*\))?#(\d+)=?([A-Za-z]*)')
+RE_LLAVES = re.compile(r'\{([HG]\d+[A-Za-z]?)\}')
+
+
+def cargar_interlineal(cur, rutas):
+    """TAHOT (hebreo) y TAGNT (griego): una fila por palabra, con numeración inglesa."""
+    libros = []  # códigos STEP en orden de aparición -> 1..66
+    filas = []
+    for ruta in rutas:
+        griego = 'tagnt' in os.path.basename(ruta)
+        with open(ruta, encoding='utf-8') as f:
+            for linea in f:
+                m = RE_REF_STEP.match(linea)
+                if not m:
+                    continue
+                p = linea.rstrip('\n').split('\t')
+                codigo = m.group(1)
+                if codigo not in libros:
+                    libros.append(codigo)
+                libro = libros.index(codigo) + 1
+                cap, vers, pos, tipo = int(m.group(2)), int(m.group(3)), int(m.group(4)), m.group(5)
+                if griego:
+                    palabra, _, translit = p[1].partition(' (')
+                    strong, _, morf = p[3].partition('=')
+                    glosa_es = p[8].strip() if len(p) > 8 else ''
+                    filas.append((libro, cap, vers, pos, palabra.strip(), translit.rstrip(')').strip(), p[2].strip(),
+                                  glosa_es, strong.strip(), morf.strip(), 0 if 'N' in tipo or 'K' in tipo else 1))
+                else:
+                    principal = RE_LLAVES.search(p[4])
+                    strong = principal.group(1) if principal else p[4].split('/')[0].strip('{}\\')
+                    original = p[1].replace('/', '').replace('\\', '')
+                    filas.append((libro, cap, vers, pos, original, p[2].replace('/', ''), re.sub(r'\s+', ' ', p[3].replace('/', ' ')).strip(),
+                                  '', strong, p[5].strip(), 0))
+    if len(libros) != 66:
+        sys.exit(f'Interlineal: se esperaban 66 libros y hay {len(libros)}')
+    cur.executemany('INSERT INTO interlineal VALUES (?,?,?,?,?,?,?,?,?,?,?)', filas)
+    cur.execute('CREATE INDEX interlineal_ref ON interlineal (libro, cap, vers)')
+    cur.execute('CREATE INDEX interlineal_strong ON interlineal (strong)')
+    return len(filas)
+
+
+def limpiar_definicion(html):
+    html = re.sub(r"<ref='[^']*'>(.*?)</ref>", r'\1', html)
+    html = re.sub(r'<(?!/?(b|i|br)\b)[^>]*>', '', html, flags=re.I)
+    return re.sub(r'<br\s*/?>', '<br>', html, flags=re.I).strip()
+
+
+def cargar_lexicos(cur, rutas):
+    filas = {}
+    for ruta in rutas:
+        with open(ruta, encoding='utf-8') as f:
+            for linea in f:
+                p = linea.rstrip('\n').split('\t')
+                if len(p) < 8 or not re.match(r'^[HG]\d', p[0]):
+                    continue
+                d = p[1].split('=')[0].strip() or p[0].strip()
+                if d in filas:
+                    continue
+                filas[d] = (d, p[3].strip(), p[4].strip(), p[5].strip(), p[6].strip(), limpiar_definicion(p[7]))
+    cur.executemany('INSERT INTO lexico VALUES (?,?,?,?,?,?)', list(filas.values()))
+    return len(filas)
+
+
+def descargar_step(nombre, ruta):
+    return descargar(STEP + urllib.parse.quote(ruta), nombre)
+
+
 def main():
     print('Fuentes:')
     rutas = {v[0]: descargar(f'{SCROLLMAPPER}/{v[4]}', os.path.basename(v[4])) for v in VERSIONES}
     ruta_refs = descargar(REFS_URL, 'cross_references.txt')
     rutas_strong = [descargar(u, n) for n, u in STRONG_URLS.items()]
+    rutas_inter = [descargar_step(n, r) for n, r in STEP_INTERLINEAL]
+    rutas_lex = [descargar_step(n, r) for n, r in STEP_LEXICOS]
 
     if os.path.exists(SALIDA):
         os.remove(SALIDA)
@@ -141,10 +231,12 @@ def main():
     cur.execute("INSERT INTO versiculos_fts(versiculos_fts) VALUES ('rebuild')")
     print(f'  referencias cruzadas: {cargar_refs(cur, ruta_refs)} versículos con referencias')
     print(f'  Strong: {cargar_strong(cur, rutas_strong)} entradas')
+    print(f'  Interlineal (STEPBible): {cargar_interlineal(cur, rutas_inter)} palabras')
+    print(f'  Léxicos BDB/Abbott-Smith (STEPBible): {cargar_lexicos(cur, rutas_lex)} entradas')
     cur.executemany('INSERT INTO meta VALUES (?,?)', [
         ('formato', '1'),
         ('atribuciones', 'Referencias cruzadas: OpenBible.info (CC BY). Léxico Strong: Open Scriptures (CC BY-SA). '
-                         'Textos: scrollmapper/bible_databases.'),
+                         'Textos: scrollmapper/bible_databases. Interlineal y léxicos: STEP Bible (stepbible.org), CC BY 4.0.'),
     ])
     cur.execute("INSERT INTO versiculos_fts(versiculos_fts) VALUES ('optimize')")
     con.commit()

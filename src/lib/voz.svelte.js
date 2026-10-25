@@ -2,6 +2,7 @@
 import { ui, avisar } from './ui.svelte.js';
 import { usuario } from './usuario.svelte.js';
 import { info } from './biblia.js';
+import { t } from './i18n.svelte.js';
 
 export const voz = $state({ activa: false });
 
@@ -13,7 +14,7 @@ export function detener() {
 
 export function leer() {
   if (!('speechSynthesis' in window)) {
-    avisar('Este equipo no tiene voces de lectura disponibles.', true);
+    avisar(t('voz.sin'), true);
     return;
   }
   detener();

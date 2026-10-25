@@ -2,7 +2,8 @@
   import Icono from './Icono.svelte';
   import { ui, irA } from '../lib/ui.svelte.js';
   import { usuario, alternarCinta } from '../lib/usuario.svelte.js';
-  import { LIBROS, nombreRef } from '../lib/libros.js';
+  import { LIBROS, nombreRef, nombreLibro } from '../lib/libros.js';
+  import { t, fecha } from '../lib/i18n.svelte.js';
 
   let pestana = $state('libros');
   let abierto = $state(usuario.ajustes.pos.libro);
@@ -15,30 +16,29 @@
     requestAnimationFrame(() => cuerpo?.querySelector('.libro-btn.actual')?.scrollIntoView({ block: 'start' }));
   });
 
-  const fecha = (t) => new Date(t).toLocaleDateString('es', { day: 'numeric', month: 'short' });
 </script>
 
-<nav class="nav" class:abierta={ui.navAbierta} aria-label="Libros">
+<nav class="nav" class:abierta={ui.navAbierta} aria-label={t('nav.libros')}>
   <div class="pestanas" role="tablist">
-    {#each [['libros', 'Libros'], ['cintas', 'Cintas'], ['historial', 'Historial']] as [id, nombre]}
+    {#each [['libros', t('nav.libros')], ['cintas', t('nav.cintas')], ['historial', t('nav.historial')]] as [id, nombre]}
       <button role="tab" aria-selected={pestana === id} onclick={() => (pestana = id)}>{nombre}</button>
     {/each}
   </div>
   <div class="nav-cuerpo" bind:this={cuerpo}>
     {#if pestana === 'libros'}
-      {#each ['AT', 'NT'] as t}
-        <div class="testamento">{t === 'AT' ? 'Antiguo Testamento' : 'Nuevo Testamento'}</div>
-        {#each LIBROS.filter((l) => l.testamento === t) as l (l.n)}
+      {#each ['AT', 'NT'] as tes}
+        <div class="testamento">{tes === 'AT' ? t('nav.at') : t('nav.nt')}</div>
+        {#each LIBROS.filter((l) => l.testamento === tes) as l (l.n)}
           {@const leidos = Array.from({ length: l.capitulos }, (_, i) => usuario.leidos[`${l.n}.${i + 1}`]).filter(Boolean).length}
           <button class="libro-btn" class:actual={pos.libro === l.n} onclick={() => (abierto = abierto === l.n ? 0 : l.n)}
             aria-expanded={abierto === l.n}>
-            <span>{l.nombre}</span><small>{leidos ? `${leidos}/` : ''}{l.capitulos}</small>
+            <span>{nombreLibro(l)}</span><small>{leidos ? `${leidos}/` : ''}{l.capitulos}</small>
           </button>
           {#if abierto === l.n}
             <div class="caps">
               {#each Array.from({ length: l.capitulos }, (_, i) => i + 1) as c}
                 <button class:actual={pos.libro === l.n && pos.cap === c} class:leido={usuario.leidos[`${l.n}.${c}`]}
-                  onclick={() => irA(l.n, c)} aria-label="{l.nombre} {c}">{c}</button>
+                  onclick={() => irA(l.n, c)} aria-label="{nombreLibro(l)} {c}">{c}</button>
               {/each}
             </div>
           {/if}
@@ -49,13 +49,13 @@
         <ul class="lista-simple">
           {#each usuario.cintas as c (c.id)}
             <li>
-              <button class="ir-a" onclick={() => irA(c.libro, c.cap)}>{nombreRef(c.libro, c.cap)}<small>Cinta puesta el {fecha(c.creada)}</small></button>
-              <button class="ico" onclick={() => alternarCinta(c.libro, c.cap)} aria-label="Quitar cinta" title="Quitar cinta"><Icono n="cerrar" /></button>
+              <button class="ir-a" onclick={() => irA(c.libro, c.cap)}>{nombreRef(c.libro, c.cap)}<small>{t('nav.cintaPuesta', { fecha: fecha(c.creada) })}</small></button>
+              <button class="ico" onclick={() => alternarCinta(c.libro, c.cap)} aria-label={t('nav.quitarCinta')} title={t('nav.quitarCinta')}><Icono n="cerrar" /></button>
             </li>
           {/each}
         </ul>
       {:else}
-        <p class="vacio-nav">Toca las cintas en la esquina de la página para marcar un capítulo, como en tu Biblia de papel.</p>
+        <p class="vacio-nav">{t('nav.sinCintas')}</p>
       {/if}
     {:else}
       {#if usuario.ajustes.historial.length}
@@ -65,13 +65,13 @@
           {/each}
         </ul>
       {:else}
-        <p class="vacio-nav">Aquí aparecerán los últimos capítulos que abras.</p>
+        <p class="vacio-nav">{t('nav.sinHistorial')}</p>
       {/if}
     {/if}
   </div>
   <div class="nav-pie">
-    <button class="boton-linea" onclick={() => (ui.dialogo = 'versiones')}>Versiones</button>
-    <button class="boton-linea" onclick={() => (ui.dialogo = 'ajustes')}>Ajustes</button>
-    <button class="boton-linea" onclick={() => (ui.dialogo = 'respaldo')}>Respaldo</button>
+    <button class="boton-linea" onclick={() => (ui.dialogo = 'versiones')}>{t('nav.versiones')}</button>
+    <button class="boton-linea" onclick={() => (ui.dialogo = 'ajustes')}>{t('nav.ajustes')}</button>
+    <button class="boton-linea" onclick={() => (ui.dialogo = 'respaldo')}>{t('nav.respaldo')}</button>
   </div>
 </nav>

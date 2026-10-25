@@ -2,7 +2,8 @@
   import { ui, irA } from '../../lib/ui.svelte.js';
   import { usuario } from '../../lib/usuario.svelte.js';
   import { buscar, resaltar, versionEstudio, info } from '../../lib/biblia.js';
-  import { LIBROS, nombreRef } from '../../lib/libros.js';
+  import { LIBROS, nombreRef, nombreLibro } from '../../lib/libros.js';
+  import { t } from '../../lib/i18n.svelte.js';
 
   let q = $state('');
   let modo = $state('palabras');
@@ -38,32 +39,32 @@
 </script>
 
 <form class="form" onsubmit={ejecutar} role="search">
-  <h3>Buscar en {info(version)?.nombre}</h3>
-  <input class="campo" type="search" bind:this={entrada} bind:value={q} placeholder="gracia, «el Señor es mi pastor», luz del mundo…" aria-label="Texto a buscar" />
+  <h3>{t('bus.en', { v: info(version)?.nombre })}</h3>
+  <input class="campo" type="search" bind:this={entrada} bind:value={q} placeholder={t('bus.placeholder')} aria-label={t('bus.texto')} />
   <div class="filtros">
-    <select class="campo" bind:value={modo} onchange={() => ejecutar()} aria-label="Modo">
-      <option value="palabras">Todas las palabras</option>
-      <option value="frase">Frase exacta</option>
-      <option value="prefijo">Palabras que empiezan así</option>
+    <select class="campo" bind:value={modo} onchange={() => ejecutar()} aria-label={t('bus.modo')}>
+      <option value="palabras">{t('bus.palabras')}</option>
+      <option value="frase">{t('bus.frase')}</option>
+      <option value="prefijo">{t('bus.prefijo')}</option>
     </select>
-    <select class="campo" bind:value={ambito} onchange={() => ejecutar()} aria-label="Dónde buscar">
-      <option value="todo">Toda la Biblia</option>
-      <option value="AT">Antiguo Testamento</option>
-      <option value="NT">Nuevo Testamento</option>
-      <option value="libro">Solo {LIBROS[usuario.ajustes.pos.libro - 1].nombre}</option>
+    <select class="campo" bind:value={ambito} onchange={() => ejecutar()} aria-label={t('bus.donde')}>
+      <option value="todo">{t('bus.toda')}</option>
+      <option value="AT">{t('bus.at')}</option>
+      <option value="NT">{t('bus.nt')}</option>
+      <option value="libro">{t('bus.solo', { libro: nombreLibro(LIBROS[usuario.ajustes.pos.libro - 1]) })}</option>
     </select>
   </div>
-  <button class="boton" type="submit">Buscar</button>
+  <button class="boton" type="submit">{t('bus.boton')}</button>
   {#if actual?.enLinea}
-    <p class="nota-pie">La {actual.id} se lee en línea y no se puede indexar en tu equipo, así que la búsqueda usa la {version}. Al abrir un resultado lo lees en la {actual.id}.</p>
+    <p class="nota-pie">{t('bus.enLinea', { a: actual.id, v: version })}</p>
   {/if}
 </form>
 
 {#if res}
   <div class="seccion" style="margin-top: 22px">
-    <h3>{res.total} {res.total === 1 ? 'versículo' : 'versículos'} · {ms} ms</h3>
+    <h3>{t(res.total === 1 ? 'bus.resultado1' : 'bus.resultados', { n: res.total, ms })}</h3>
     {#if !res.total}
-      <p class="ayuda">No hay coincidencias. Prueba con menos palabras o con «Palabras que empiezan así».</p>
+      <p class="ayuda">{t('bus.nada')}</p>
     {/if}
     <ul class="resultados">
       {#each res.filas.slice(0, mostrar) as f}
@@ -74,8 +75,8 @@
       {/each}
     </ul>
     {#if res.filas.length > mostrar}
-      <button class="boton secundario" onclick={() => (mostrar += 50)}>Ver más</button>
+      <button class="boton secundario" onclick={() => (mostrar += 50)}>{t('bus.verMas')}</button>
     {/if}
-    {#if res.total > res.filas.length}<p class="nota-pie">Se muestran los primeros {res.filas.length}. Afina la búsqueda para ver el resto.</p>{/if}
+    {#if res.total > res.filas.length}<p class="nota-pie">{t('bus.primeros', { n: res.filas.length })}</p>{/if}
   </div>
 {/if}

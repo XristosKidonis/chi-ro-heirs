@@ -19,6 +19,7 @@
     palabra: 'M5 19L10.5 5h3L19 19M7.5 13.5h9',
     paralelo: 'M4 5h16M4 19h16M12 5v14',
     lector: 'M6 4h12v16H6zM9 8h6M9 12h6M9 16h4',
+    original: 'M5 6l7 12M12 6l-3 5M17 6c2 0 3 1.5 3 3s-1 3-3 3h-2V6M15 12v6',
   };
 </script>
 

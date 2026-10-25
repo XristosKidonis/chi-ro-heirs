@@ -25,6 +25,8 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 | Subrayado | 5 colores de marcador, anclados a la referencia: lo que subrayas en la NTV aparece también en la RV1909 |
 | Notas | Tipos (observación, pregunta, aplicación, oración), `#etiquetas`, referencias que se vuelven enlaces y retroenlaces («mencionado en otras notas») |
 | Estudio de palabra | Toca una palabra: concordancia, mapa por libros, diccionario RAE, interlineal, Blue Letter Bible; Strong para versiones en inglés |
+| **Interlineal** | Hebreo (AT) y griego (NT) palabra por palabra: transliteración, traducción literal (en español para el griego), número Strong, gramática explicada, definición de los léxicos BDB y Abbott-Smith, y todos los versículos donde aparece cada palabra original |
+| Idiomas | Interfaz en español o inglés (Ajustes → Idioma) |
 | Referencias cruzadas | Unas 159 000 de OpenBible.info, ordenadas por votos |
 | Búsqueda | Instantánea y sin acentos, en toda la Biblia, en un testamento o en un libro |
 | Hábito | Sello AMEN al terminar un capítulo, cuadrícula de cobertura de los 1189 capítulos (sin rachas), cintas marcapáginas |
@@ -91,5 +93,6 @@ Cada fila guarda la fecha de cambio y una marca de borrado, ya preparada para la
 - **BSB:** Berean Standard Bible, dedicada al dominio público (CC0).
 - **Referencias cruzadas:** [OpenBible.info](https://www.openbible.info/labs/cross-references/), CC BY.
 - **Léxico Strong:** [Open Scriptures](https://github.com/openscriptures/strongs), CC BY-SA.
-- **Fuentes tipográficas:** Literata, Bodoni Moda, Pinyon Script, Anton, Archivo y Atkinson Hyperlegible Next, todas con licencia SIL Open Font License.
+- **Interlineal hebreo y griego, léxicos:** [STEP Bible](https://www.stepbible.org) (Tyndale House, Cambridge), datos TAHOT, TAGNT, TBESH y TBESG, CC BY 4.0.
+- **Fuentes tipográficas:** Literata, Bodoni Moda, Pinyon Script, Anton, Archivo, Atkinson Hyperlegible Next y Noto Serif Hebrew, todas con licencia SIL Open Font License.
 - **Estética:** inspirada en las Biblias de diseño editorial; nombre y emblema propios (el crismón ΧΡ es un símbolo cristiano del siglo IV, de libre uso).

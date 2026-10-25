@@ -2,6 +2,7 @@
 // Términos: uso personal no comercial. El texto se guarda solo en memoria durante la sesión.
 import { LIBROS } from './libros.js';
 import { pedir } from './bd.js';
+import { t } from './i18n.svelte.js';
 
 const BASE = 'https://api.nlt.to/api/passages';
 const cache = new Map(); // solo en memoria: la licencia no cubre guardar el texto en disco
@@ -50,15 +51,13 @@ export async function capituloNLT(version, libro, cap, clave) {
   try {
     r = await pedir(url);
   } catch (e) {
-    throw new Error(`Sin conexión con la API de Tyndale. La ${version} necesita internet; mientras tanto puedes leer una versión incluida. (Detalle: ${e?.message || e})`);
+    throw new Error(t('nlt.sinConexion', { v: version, e: e?.message || e }));
   }
   if (!r.ok) {
-    throw new Error(r.status === 401 || r.status === 403
-      ? 'La clave de la API de Tyndale no es válida. Revísala en Ajustes.'
-      : `La API de Tyndale respondió ${r.status}. Si usas la clave de prueba, puede que alcanzaste el límite diario (500 consultas); registra tu clave gratuita en api.nlt.to.`);
+    throw new Error(r.status === 401 || r.status === 403 ? t('nlt.clave') : t('nlt.estado', { s: r.status }));
   }
   const datos = parsearNLT(await r.text());
-  if (!datos.versos.length) throw new Error(`La API de Tyndale no devolvió texto para ${ref}.`);
+  if (!datos.versos.length) throw new Error(t('nlt.vacio', { ref }));
   cache.set(id, datos);
   return datos;
 }

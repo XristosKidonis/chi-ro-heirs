@@ -1,7 +1,7 @@
 // Estado de la interfaz (no se guarda): selección, panel abierto, capítulo cargado, avisos.
 import { usuario, irA as guardarPosicion } from './usuario.svelte.js';
 import { capitulo as cargarCapitulo, info } from './biblia.js';
-import { clave, nombreRef, LIBROS } from './libros.js';
+import { clave, nombreRef, nombreLibro, LIBROS } from './libros.js';
 
 export const ui = $state({
   navAbierta: false,
@@ -53,7 +53,7 @@ export function etiquetaSeleccion() {
   if (!s.length) return '';
   const contiguo = s.every((v, i) => i === 0 || v === s[i - 1] + 1);
   if (contiguo) return nombreRef(libro, cap, s[0], s.at(-1));
-  return `${LIBROS[libro - 1].nombre} ${cap}:${s.join(', ')}`;
+  return `${nombreLibro(LIBROS[libro - 1])} ${cap}:${s.join(', ')}`;
 }
 
 let pedido = 0;

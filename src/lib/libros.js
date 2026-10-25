@@ -87,6 +87,12 @@ export const LIBROS = DATOS.map((d, i) => ({
   alias: [normalizar(d[1]).replace(/\s+/g, ''), normalizar(d[3]).replace(/\s+/g, ''), ...d[2].split(' ')],
 }));
 
+// Idioma de los nombres de libro en pantalla (las búsquedas aceptan ambos siempre)
+let idiomaLibros = 'es';
+export const fijarIdiomaLibros = (i) => { idiomaLibros = i === 'en' ? 'en' : 'es'; };
+export const nombreLibro = (l) => (idiomaLibros === 'en' ? l.ingles : l.nombre);
+export const abrevLibro = (l) => (idiomaLibros === 'en' ? l.blb.replace(/[a-z]/, (c) => c.toUpperCase()) : l.abrev);
+
 export const TOTAL_CAPITULOS = CAPITULOS.reduce((a, b) => a + b, 0);
 
 export function buscarLibro(texto) {
@@ -139,7 +145,7 @@ export function desclave(k) {
 export function nombreRef(b, c, v, hasta) {
   const l = LIBROS[b - 1];
   if (!l) return '';
-  let s = `${l.nombre} ${c}`;
+  let s = `${nombreLibro(l)} ${c}`;
   if (v) s += `:${v}`;
   if (hasta && hasta !== v) s += `-${hasta}`;
   return s;
@@ -147,7 +153,7 @@ export function nombreRef(b, c, v, hasta) {
 
 export function abrevRef(b, c, v) {
   const l = LIBROS[b - 1];
-  return `${l.abrev} ${c}${v ? ':' + v : ''}`;
+  return `${abrevLibro(l)} ${c}${v ? ':' + v : ''}`;
 }
 
 // "43.3.16-43.3.18" -> {libro, cap, v, hasta}

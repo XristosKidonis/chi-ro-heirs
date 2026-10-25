@@ -5,6 +5,7 @@ import { bdUsuario } from './bd.js';
 import { referenciasEnTexto, clave } from './libros.js';
 
 export const AJUSTES_INICIALES = {
+  idioma: 'es',           // idioma de la interfaz: es | en
   version: 'NTV',
   paralela: '',
   tema: 'cuero',          // cuero | papel | sistema
@@ -50,7 +51,7 @@ async function ejecutar(sql, params) {
   try {
     await db.execute(sql, params);
   } catch (e) {
-    usuario.error = `No se pudo guardar: ${e.message || e}`;
+    usuario.error = `${e.message || e}`;
     console.error(e);
   }
 }

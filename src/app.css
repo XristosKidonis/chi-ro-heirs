@@ -15,6 +15,8 @@
 @font-face { font-family: 'Anton'; font-weight: 400; font-display: swap; src: url(/fuentes/anton-latin-400-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Archivo'; font-weight: 400; font-display: swap; src: url(/fuentes/archivo-latin-400-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Archivo'; font-weight: 600; font-display: swap; src: url(/fuentes/archivo-latin-600-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Noto Serif Hebrew'; font-weight: 400; font-display: swap; src: url(/fuentes/noto-serif-hebrew-hebrew-400-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Noto Serif Hebrew'; font-weight: 600; font-display: swap; src: url(/fuentes/noto-serif-hebrew-hebrew-600-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Atkinson Hyperlegible Next'; font-weight: 400; font-display: swap; src: url(/fuentes/atkinson-hyperlegible-next-latin-400-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Atkinson Hyperlegible Next'; font-weight: 700; font-display: swap; src: url(/fuentes/atkinson-hyperlegible-next-latin-700-normal.woff2) format('woff2'); }
 
@@ -48,6 +50,8 @@
   --f-atkinson: 'Atkinson Hyperlegible Next', Verdana, sans-serif;
   --f-texto: var(--f-literata);
   --f-ui: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-hebreo: 'Noto Serif Hebrew', 'SBL Hebrew', 'Times New Roman', serif;
+  --f-griego: 'Literata', 'Gentium Plus', 'Times New Roman', serif;
 
   --tam-texto: 21px;
   --interlineado: 1.6;
@@ -337,6 +341,26 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
 .cob-celdas button:hover { background: var(--acento); }
 .barra-prog { height: 4px; background: var(--linea); margin-top: 8px; }
 .barra-prog i { display: block; height: 100%; background: var(--acento); }
+
+/* interlineal */
+.ori-cabeza { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.interlineal { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.palabra-orig {
+  display: grid; justify-items: center; gap: 2px; padding: 10px 10px 8px; min-width: 64px;
+  border: 1px solid var(--linea); border-radius: 2px; background: var(--fondo); text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.palabra-orig:hover { border-color: var(--tinta-2); }
+.palabra-orig.elegida { border-color: var(--acento); background: var(--acento-suave); }
+.palabra-orig.variante { border-style: dashed; opacity: 0.75; }
+.palabra-orig .orig { font: 400 24px/1.25 var(--f-griego); color: var(--tinta); }
+.interlineal.hebreo .orig { font: 400 28px/1.35 var(--f-hebreo); }
+.palabra-orig .translit { font: italic 400 12.5px var(--f-texto); color: var(--tinta-2); }
+.palabra-orig .glosa { font: 600 11px/1.3 var(--f-ui); color: var(--tinta); max-width: 120px; }
+.palabra-orig .strong-num { font: 600 9px var(--f-ui); letter-spacing: 0.08em; color: var(--acento); }
+.strong-lema:lang(he) { font-family: var(--f-hebreo); }
+.definicion { max-height: 320px; overflow-y: auto; }
+.definicion b { color: var(--tinta); }
 
 /* ---------- barra de acciones ---------- */
 .acciones {

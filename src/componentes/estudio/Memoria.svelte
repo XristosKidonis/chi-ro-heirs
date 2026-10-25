@@ -3,6 +3,7 @@
   import { usuario, repasar, quitarMemoria } from '../../lib/usuario.svelte.js';
   import { pasaje } from '../../lib/biblia.js';
   import { parsearRango, nombreRef } from '../../lib/libros.js';
+  import { t, fecha } from '../../lib/i18n.svelte.js';
 
   let actual = $state(null);
   let texto = $state('');
@@ -10,7 +11,7 @@
   let ahora = $state(Date.now());
 
   const pendientes = $derived(usuario.memoria.filter((m) => m.proxima <= ahora).sort((a, b) => a.proxima - b.proxima));
-  const NIVELES = ['Completo', 'Faltan palabras', 'Solo iniciales', 'De memoria'];
+  const NIVELES = [0, 1, 2, 3];
 
   $effect(() => {
     if (!actual && pendientes.length) actual = pendientes[0].ref;
@@ -22,8 +23,8 @@
     nivel = 0;
     texto = '';
     pasaje(usuario.ajustes.version, r.libro, r.cap, r.v, r.hasta, usuario.ajustes.claveNLT)
-      .then((t) => (texto = t))
-      .catch(() => pasaje('RV1909', r.libro, r.cap, r.v, r.hasta).then((t) => (texto = t)));
+      .then((tx) => (texto = tx))
+      .catch(() => pasaje('RV1909', r.libro, r.cap, r.v, r.hasta).then((tx) => (texto = tx)));
   });
 
   // Oculta palabras según el nivel, conservando la puntuación
@@ -38,48 +39,48 @@
 
   function responder(ok) {
     repasar(actual, ok);
-    avisar(ok ? 'Bien. Lo verás de nuevo en unos días.' : 'Lo repasarás de nuevo pronto.');
+    avisar(ok ? t('mem.bien') : t('mem.pronto'));
     ahora = Date.now();
     actual = pendientes.find((m) => m.ref !== actual)?.ref || null;
   }
 
   const ref = (k) => { const r = parsearRango(k); return nombreRef(r.libro, r.cap, r.v, r.hasta); };
-  const cuando = (t) => (t <= ahora ? 'hoy' : new Date(t).toLocaleDateString('es', { day: 'numeric', month: 'short' }));
+  const cuando = (ms) => (ms <= ahora ? t('mem.hoyCorto') : fecha(ms));
 </script>
 
 {#if !usuario.memoria.length}
-  <p class="cartel">Esconde la Palabra <em>en tu corazón.</em></p>
-  <p class="ayuda">Selecciona un versículo y toca «Memorizar». Aquí lo practicarás quitando palabras poco a poco, y la app te lo volverá a mostrar justo antes de que se te olvide (Salmo 119:11).</p>
+  <p class="cartel">{t('mem.cartel')} <em>{t('mem.cartelEm')}</em></p>
+  <p class="ayuda">{t('mem.ayuda')}</p>
 {:else}
   <div class="seccion">
-    <h3>Para repasar hoy · {pendientes.length}</h3>
+    <h3>{t('mem.hoy', { n: pendientes.length })}</h3>
     {#if actual}
       <div class="mem-tarjeta">
         <span class="ref-encabezado">{ref(actual)}</span>
         <p class="mem-texto">{#each palabras as w}{#if w.oculta}<span class="oculta">{w.p}</span>{:else}{w.p}{/if}{/each}</p>
-        <div class="niveles interruptor" role="group" aria-label="Nivel">
-          {#each NIVELES as n, i}<button aria-pressed={nivel === i} onclick={() => (nivel = i)}>{n}</button>{/each}
+        <div class="niveles interruptor" role="group" aria-label={t('mem.nivel')}>
+          {#each NIVELES as i}<button aria-pressed={nivel === i} onclick={() => (nivel = i)}>{t(`mem.n${i}`)}</button>{/each}
         </div>
         <div class="fila-botones">
-          <button class="boton" onclick={() => responder(true)}>Lo recordé</button>
-          <button class="boton secundario" onclick={() => responder(false)}>Repasar otra vez</button>
+          <button class="boton" onclick={() => responder(true)}>{t('mem.recorde')}</button>
+          <button class="boton secundario" onclick={() => responder(false)}>{t('mem.otraVez')}</button>
         </div>
       </div>
     {:else}
-      <p class="ayuda">Nada pendiente por hoy. Vuelve mañana.</p>
+      <p class="ayuda">{t('mem.nada')}</p>
     {/if}
   </div>
   <div class="seccion">
-    <h3>Tus versículos · {usuario.memoria.length}</h3>
+    <h3>{t('mem.tuyos', { n: usuario.memoria.length })}</h3>
     <ul class="resultados">
       {#each usuario.memoria as m (m.ref)}
         <li style="display:flex; align-items:center; gap:8px">
           <button style="flex:1" onclick={() => (actual = m.ref)}>
-            <span class="r-ref">Próximo repaso: {cuando(m.proxima)} · {m.aciertos} aciertos seguidos</span>
+            <span class="r-ref">{t('mem.proximo', { cuando: cuando(m.proxima), n: m.aciertos })}</span>
             <span class="r-txt">{ref(m.ref)}</span>
           </button>
-          <button class="enlace-texto" onclick={() => { const r = parsearRango(m.ref); irA(r.libro, r.cap, r.v); }}>Abrir</button>
-          <button class="enlace-texto" onclick={() => { quitarMemoria(m.ref); if (actual === m.ref) actual = null; }}>Quitar</button>
+          <button class="enlace-texto" onclick={() => { const r = parsearRango(m.ref); irA(r.libro, r.cap, r.v); }}>{t('mem.abrir')}</button>
+          <button class="enlace-texto" onclick={() => { quitarMemoria(m.ref); if (actual === m.ref) actual = null; }}>{t('mem.quitar')}</button>
         </li>
       {/each}
     </ul>

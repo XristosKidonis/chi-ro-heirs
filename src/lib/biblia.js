@@ -133,4 +133,61 @@ export async function strongPorGlosa(palabra, testamento) {
   return filas.filter((f) => re.test(` ${String(f.kjv).toLowerCase()} `)).slice(0, 8);
 }
 
+// ---------- interlineal hebreo y griego (STEPBible, CC BY) ----------
+export async function interlineal(libro, cap, v) {
+  const db = await bdBiblias();
+  return db.select(
+    'SELECT pos, original, translit, glosa, glosa_es, strong, morf, variante FROM interlineal WHERE libro = ? AND cap = ? AND vers = ? ORDER BY pos',
+    [libro, cap, v],
+  );
+}
+
+// Entrada del léxico: primero el número extendido exacto (H7225G), luego el número base (H7225)
+export async function lexico(id) {
+  if (!id) return null;
+  const db = await bdBiblias();
+  const [exacto] = await db.select('SELECT * FROM lexico WHERE id = ?', [id]);
+  if (exacto) return exacto;
+  const base = id.replace(/[A-Za-z]$/, '');
+  const [aprox] = await db.select('SELECT * FROM lexico WHERE id = ? OR id LIKE ? ORDER BY id LIMIT 1', [base, `${base}_`]);
+  return aprox || null;
+}
+
+// Todos los versículos donde aparece una palabra original (mismo número Strong)
+export async function concordanciaStrong(id, limite = 400) {
+  const db = await bdBiblias();
+  const porLibro = await db.select(
+    'SELECT libro, COUNT(DISTINCT cap * 1000 + vers) AS n, COUNT(*) AS veces FROM interlineal WHERE strong = ? GROUP BY libro',
+    [id],
+  );
+  const filas = await db.select(
+    'SELECT DISTINCT libro, cap, vers AS v FROM interlineal WHERE strong = ? ORDER BY libro, cap, vers LIMIT ?',
+    [id, limite],
+  );
+  const pl = porLibro.map((x) => ({ libro: Number(x.libro), n: Number(x.n), veces: Number(x.veces) }));
+  return {
+    versiculos: pl.reduce((a, x) => a + x.n, 0),
+    veces: pl.reduce((a, x) => a + x.veces, 0),
+    porLibro: pl,
+    filas,
+  };
+}
+
+// Textos de muchos versículos de una vez (para listas de resultados)
+export async function textos(version, refs) {
+  if (!refs.length) return {};
+  const db = await bdBiblias();
+  const out = {};
+  for (let i = 0; i < refs.length; i += 200) {
+    const lote = refs.slice(i, i + 200);
+    const cond = lote.map(() => '(libro = ? AND cap = ? AND vers = ?)').join(' OR ');
+    const filas = await db.select(
+      `SELECT libro, cap, vers, texto FROM versiculos WHERE version = ? AND (${cond})`,
+      [version, ...lote.flatMap((r) => [r.libro, r.cap, r.v])],
+    );
+    for (const f of filas) out[`${f.libro}.${f.cap}.${f.vers}`] = f.texto;
+  }
+  return out;
+}
+
 export const claveDesdeRef = (k) => desclave(k);

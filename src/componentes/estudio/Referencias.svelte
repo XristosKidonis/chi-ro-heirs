@@ -3,6 +3,7 @@
   import { usuario } from '../../lib/usuario.svelte.js';
   import { referencias, pasaje, info, versionEstudio } from '../../lib/biblia.js';
   import { nombreRef } from '../../lib/libros.js';
+  import { t } from '../../lib/i18n.svelte.js';
 
   let lista = $state(null);
   const v = $derived(ui.seleccion.length ? Math.min(...ui.seleccion) : null);
@@ -22,14 +23,14 @@
 </script>
 
 {#if !v}
-  <p class="cartel">Elige un <em>versículo.</em></p>
-  <p class="ayuda">Toca un versículo para ver los pasajes relacionados que más votó la comunidad de OpenBible.info, con su texto.</p>
+  <p class="cartel">{t('refs.elige')} <em>{t('refs.eligeEm')}</em></p>
+  <p class="ayuda">{t('refs.ayuda')}</p>
 {:else}
-  <h3>Referencias cruzadas de {nombreRef(pos.libro, pos.cap, v)}</h3>
+  <h3>{t('refs.titulo', { ref: nombreRef(pos.libro, pos.cap, v) })}</h3>
   {#if !lista}
-    <p class="nota-pie">Buscando…</p>
+    <p class="nota-pie">{t('refs.buscando')}</p>
   {:else if !lista.length}
-    <p class="ayuda">Este versículo no tiene referencias cruzadas con suficientes votos.</p>
+    <p class="ayuda">{t('refs.ninguna')}</p>
   {:else}
     <ul class="resultados">
       {#each lista as r}
@@ -39,6 +40,6 @@
         </button></li>
       {/each}
     </ul>
-    <p class="nota-pie">Texto en {info(vTexto)?.nombre}. Ordenadas por votos de la comunidad. Fuente: OpenBible.info (CC BY).</p>
+    <p class="nota-pie">{t('refs.pie', { v: info(vTexto)?.nombre })}</p>
   {/if}
 {/if}

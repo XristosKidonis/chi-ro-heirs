@@ -3,6 +3,7 @@
   import { usuario } from '../../lib/usuario.svelte.js';
   import { normalizar } from '../../lib/libros.js';
   import { guardarArchivo } from '../../lib/archivos.js';
+  import { t } from '../../lib/i18n.svelte.js';
 
   const ESTILOS = {
     cuero: { fondo: '#0d0c0b', tinta: '#efece6', acento: '#e0483e', grano: 0.10 },
@@ -125,25 +126,25 @@
     const bytes = new Uint8Array(await blob.arrayBuffer());
     const nombre = `${referencia.replace(/[^\p{L}\d]+/gu, '-')}.png`;
     try {
-      if (await guardarArchivo(nombre, bytes, { name: 'Imagen', extensions: ['png'] })) avisar('Póster guardado.');
+      if (await guardarArchivo(nombre, bytes, { name: 'Imagen', extensions: ['png'] })) avisar(t('pos.guardado'));
     } catch (e) {
-      avisar(`No se pudo guardar: ${e.message || e}`, true);
+      avisar(t('app.noGuardar', { e: e.message || e }), true);
     }
   }
 </script>
 
 {#if !texto}
-  <p class="ayuda">Selecciona uno o varios versículos y vuelve a abrir el póster.</p>
+  <p class="ayuda">{t('pos.elige')}</p>
 {:else}
   <canvas bind:this={lienzo} width={ANCHO} height={ALTO} hidden></canvas>
-  <div class="poster-vista">{#if url}<img src={url} alt="Póster de {referencia}" />{/if}</div>
+  <div class="poster-vista">{#if url}<img src={url} alt={t('pos.alt', { ref: referencia })} />{/if}</div>
   <div class="fila-botones">
-    <div class="interruptor" role="group" aria-label="Estilo">
-      <button aria-pressed={estilo === 'cuero'} onclick={() => (estilo = 'cuero')}>Cuero</button>
-      <button aria-pressed={estilo === 'papel'} onclick={() => (estilo = 'papel')}>Papel</button>
-      <button aria-pressed={estilo === 'lacre'} onclick={() => (estilo = 'lacre')}>Lacre</button>
+    <div class="interruptor" role="group" aria-label={t('pos.estilo')}>
+      <button aria-pressed={estilo === 'cuero'} onclick={() => (estilo = 'cuero')}>{t('pos.cuero')}</button>
+      <button aria-pressed={estilo === 'papel'} onclick={() => (estilo = 'papel')}>{t('pos.papel')}</button>
+      <button aria-pressed={estilo === 'lacre'} onclick={() => (estilo = 'lacre')}>{t('pos.lacre')}</button>
     </div>
-    <button class="boton" onclick={guardar}>Guardar imagen</button>
+    <button class="boton" onclick={guardar}>{t('pos.guardar')}</button>
   </div>
-  <p class="nota-pie">{ui.palabra ? `La palabra «${ui.palabra.texto}» va resaltada. ` : ''}Toca otra palabra del versículo para cambiar cuál se resalta.</p>
+  <p class="nota-pie">{ui.palabra ? t('pos.resaltada', { p: ui.palabra.texto }) : ''}{t('pos.tocaOtra')}</p>
 {/if}

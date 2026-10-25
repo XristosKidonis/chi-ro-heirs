@@ -10,7 +10,8 @@
   import { ui, irA, recargarCapitulo } from './lib/ui.svelte.js';
   import { usuario, iniciarUsuario } from './lib/usuario.svelte.js';
   import { cargarVersiones, info } from './lib/biblia.js';
-  import { capituloSiguiente } from './lib/libros.js';
+  import { capituloSiguiente, fijarIdiomaLibros } from './lib/libros.js';
+  import { t } from './lib/i18n.svelte.js';
   import { abrirEnNavegador } from './lib/archivos.js';
   import { esTauri } from './lib/bd.js';
 
@@ -36,6 +37,13 @@
     usuario.ajustes.version; usuario.ajustes.paralela; usuario.ajustes.claveNLT;
     recargarCapitulo();
   });
+
+  // Idioma: los nombres de libro se fijan antes de volver a pintar la interfaz
+  const idiomaUI = $derived.by(() => {
+    fijarIdiomaLibros(usuario.ajustes.idioma);
+    return usuario.ajustes.idioma;
+  });
+  $effect(() => { document.documentElement.lang = idiomaUI === 'en' ? 'en' : 'es'; });
 
   // Tema y tipografía
   $effect(() => {
@@ -82,13 +90,14 @@
   <div class="arranque">
     <Emblema tam={96} animado anillo />
     {#if fallo}
-      <p class="cartel">No se pudo <em>abrir.</em></p>
+      <p class="cartel">{t('app.noAbrir')} <em>{t('app.noAbrirEm')}</em></p>
       <p class="ayuda">{fallo}</p>
     {:else}
       <span class="etiqueta-ui">Chi-Ro Heirs</span>
     {/if}
   </div>
 {:else}
+  {#key idiomaUI}
   <Barra bind:this={barra} {versiones} />
   <div class="marco" class:sin-estudio={!ui.estudioAbierto}>
     <Navegacion />
@@ -102,5 +111,6 @@
   <Acciones />
   <Dialogo />
   {#if ui.aviso}<div class="aviso" class:error={ui.aviso.error} role="status">{ui.aviso.texto}</div>{/if}
-  {#if usuario.error}<div class="aviso error" role="alert">{usuario.error}</div>{/if}
+  {#if usuario.error}<div class="aviso error" role="alert">{t('app.noGuardar', { e: usuario.error })}</div>{/if}
+  {/key}
 {/if}

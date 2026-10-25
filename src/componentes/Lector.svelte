@@ -5,7 +5,8 @@
   import { ui, irA, abrirPestana, avisar } from '../lib/ui.svelte.js';
   import { usuario, ajustar, marcarLeido, alternarCinta, indiceRetroenlaces } from '../lib/usuario.svelte.js';
   import { info, versionEstudio } from '../lib/biblia.js';
-  import { LIBROS, clave, nombreRef, capituloSiguiente } from '../lib/libros.js';
+  import { LIBROS, clave, nombreRef, nombreLibro, capituloSiguiente } from '../lib/libros.js';
+  import { t, fecha as fechaLocal } from '../lib/i18n.svelte.js';
 
   const pos = $derived(usuario.ajustes.pos);
   const libro = $derived(LIBROS[pos.libro - 1]);
@@ -57,7 +58,7 @@
       const p = untrack(() => usuario.ajustes.pos);
       if (e.isIntersecting && !usuario.leidos[`${p.libro}.${p.cap}`] && ui.cap.versos.length && Date.now() - abierto > 20000) {
         marcarLeido(p.libro, p.cap);
-        avisar(`${nombreRef(p.libro, p.cap)}: leído. Amén.`);
+        avisar(t('lector.leidoAuto', { ref: nombreRef(p.libro, p.cap) }));
       }
     }, { threshold: 0.6 });
     obs.observe(finEl);
@@ -114,10 +115,10 @@
 
   function sello() {
     marcarLeido(pos.libro, pos.cap, !leido);
-    if (!leido) avisar('Amén. Capítulo marcado como leído.');
+    if (!leido) avisar(t('lector.amenAviso'));
   }
 
-  const fecha = (t) => new Date(t).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
+  const fecha = (ms) => fechaLocal(ms, { day: 'numeric', month: 'long', year: 'numeric' });
   const claseTexto = $derived([
     'texto',
     usuario.ajustes.parrafo && !par ? 'modo-parrafo' : 'modo-verso',
@@ -130,39 +131,39 @@
   <div class="canto" aria-hidden="true"><i style="height: {avance}%"></i></div>
   <main class="lector" bind:this={lector}>
     <article class="pagina" class:paralelo={!!par}>
-      <button class="cintas" class:puesta={cintaPuesta} onclick={() => avisar(alternarCinta(pos.libro, pos.cap) ? 'Cinta puesta en este capítulo.' : 'Cinta quitada.')}
-        title={cintaPuesta ? 'Quitar la cinta' : 'Poner una cinta en este capítulo'} aria-label="Cinta marcapáginas" aria-pressed={cintaPuesta}>
+      <button class="cintas" class:puesta={cintaPuesta} onclick={() => avisar(alternarCinta(pos.libro, pos.cap) ? t('lector.cintaPuesta') : t('lector.cintaQuitada'))}
+        title={cintaPuesta ? t('lector.cintaQuitar') : t('lector.cintaPoner')} aria-label={t('nav.cintas')} aria-pressed={cintaPuesta}>
         <span class="cinta c1"></span><span class="cinta c2"></span><span class="cinta c3"></span>
       </button>
 
       <header class="cap-cabeza">
         {#if pos.cap === 1}
           <div class="portada">
-            <span class="etiqueta-ui">{libro.testamento === 'AT' ? 'Antiguo Testamento' : 'Nuevo Testamento'} · Libro {libro.n} de 66</span>
+            <span class="etiqueta-ui">{libro.testamento === 'AT' ? t('nav.at') : t('nav.nt')} · {t('lector.libroDe', { n: libro.n })}</span>
             <Emblema tam={46} />
-            <h1>{libro.nombre}</h1>
+            <h1>{nombreLibro(libro)}</h1>
             <span class="sub">{ver?.nombre}</span>
-            {#if libro.capitulos > 1}<span class="cap1">Capítulo 1</span>{/if}
+            {#if libro.capitulos > 1}<span class="cap1">{t('lector.capitulo', { n: 1 })}</span>{/if}
           </div>
         {:else}
           <div class="cabeza-corriente">
             <div class="cabeza-izq">
               <span class="etiqueta-ui">{ver?.nombre}</span>
-              <h1 class="libro">{libro.nombre}</h1>
+              <h1 class="libro">{nombreLibro(libro)}</h1>
             </div>
-            <span class="numero" aria-label="Capítulo {pos.cap}">{pos.cap}</span>
+            <span class="numero" aria-label={t('lector.capitulo', { n: pos.cap })}>{pos.cap}</span>
           </div>
         {/if}
       </header>
 
       {#if ui.cap.cargando && !ui.cap.versos.length}
-        <div class="estado-carga"><span class="etiqueta-ui">Abriendo {nombreRef(pos.libro, pos.cap)}…</span></div>
+        <div class="estado-carga"><span class="etiqueta-ui">{t('lector.abriendo', { ref: nombreRef(pos.libro, pos.cap) })}</span></div>
       {:else if ui.cap.error}
         <div class="estado-carga">
-          <p class="cartel">Sin texto <em>por ahora.</em></p>
+          <p class="cartel">{t('lector.sinTexto')} <em>{t('lector.porAhora')}</em></p>
           <p class="ayuda">{ui.cap.error}</p>
           {#if ver?.enLinea}
-            <button class="boton" onclick={() => ajustar('version', versionEstudio(ver.id))}>Leer en {versionEstudio(ver.id)}</button>
+            <button class="boton" onclick={() => ajustar('version', versionEstudio(ver.id))}>{t('lector.leerEn', { v: versionEstudio(ver.id) })}</button>
           {/if}
         </div>
       {:else}
@@ -177,7 +178,7 @@
             {@const k = clave(pos.libro, pos.cap, x.v)}
             {#if ui.cap.titulos[x.v]}<span class="subtitulo">{ui.cap.titulos[x.v]}</span>{/if}
             {#snippet verso()}
-              <span class="v" class:sel={ui.seleccion.includes(x.v)} class:leyendo={ui.leyendo === x.v} data-v={x.v}><span class="num">{x.v}</span><span class="t" data-ver={ver?.id} data-m={usuario.subrayados[k]}>{x.texto}</span>{#if notasPorClave[k]}<span class="marca-nota" title="Notas en este versículo">{notasPorClave[k]}</span>{/if}{#if retro[k]}<span class="marca-retro" title="Mencionado en otras notas">↩{retro[k].length}</span>{/if}</span>
+              <span class="v" class:sel={ui.seleccion.includes(x.v)} class:leyendo={ui.leyendo === x.v} data-v={x.v}><span class="num">{x.v}</span><span class="t" data-ver={ver?.id} data-m={usuario.subrayados[k]}>{x.texto}</span>{#if notasPorClave[k]}<span class="marca-nota" title={t('lector.notasAqui')}>{notasPorClave[k]}</span>{/if}{#if retro[k]}<span class="marca-retro" title={t('lector.mencionado')}>↩{retro[k].length}</span>{/if}</span>
             {/snippet}
             {#if par}
               <div class="fila">
@@ -189,17 +190,17 @@
             {/if}
           {/each}
         </div>
-        {#if ui.cap.errorParalelo}<p class="nota-pie">Paralela no disponible: {ui.cap.errorParalelo}</p>{/if}
+        {#if ui.cap.errorParalelo}<p class="nota-pie">{t('lector.paralelaNo', { e: ui.cap.errorParalelo })}</p>{/if}
         <p class="licencia">{ver?.licencia}{par ? ` · ${par.licencia}` : ''}</p>
       {/if}
 
       <footer class="amen" class:hecho={!!leido} class:pendiente={!leido} bind:this={finEl}>
         <div class="amen-palabra" aria-hidden="true">AMEN</div>
-        <button class="sello" onclick={sello} aria-pressed={!!leido} title={leido ? 'Quitar la marca de leído' : 'Marcar como leído'}>
-          <Emblema tam={42} titulo={leido ? 'Leído' : 'Marcar como leído'} />
+        <button class="sello" onclick={sello} aria-pressed={!!leido} title={leido ? t('lector.quitarLeido') : t('lector.marcarLeido')}>
+          <Emblema tam={42} titulo={leido ? t('lector.leidoEl', { fecha: fecha(leido) }) : t('lector.marcarLeido')} />
         </button>
-        <span class="etiqueta-ui">{leido ? `Leído el ${fecha(leido)}` : 'Toca el sello al terminar'}</span>
-        <nav class="cap-nav" aria-label="Capítulos">
+        <span class="etiqueta-ui">{leido ? t('lector.leidoEl', { fecha: fecha(leido) }) : t('lector.tocaSello')}</span>
+        <nav class="cap-nav" aria-label={t('lector.capitulos')}>
           {#if anterior}
             <button class="nav-cap" onclick={() => irA(anterior.libro, anterior.cap)}><Icono n="ant" /><span>{nombreRef(anterior.libro, anterior.cap)}</span></button>
           {:else}<span></span>{/if}

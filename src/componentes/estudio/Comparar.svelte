@@ -2,6 +2,7 @@
   import { ui, etiquetaSeleccion } from '../../lib/ui.svelte.js';
   import { usuario } from '../../lib/usuario.svelte.js';
   import { lista as versiones, pasaje } from '../../lib/biblia.js';
+  import { t } from '../../lib/i18n.svelte.js';
 
   let filas = $state([]);
   const pos = $derived(usuario.ajustes.pos);
@@ -18,22 +19,22 @@
     filas = nuevas;
     nuevas.forEach((f, i) => {
       pasaje(f.v.id, libro, cap, a, b, clave)
-        .then((t) => { if (n === pedido) filas[i].texto = t || '—'; })
+        .then((tx) => { if (n === pedido) filas[i].texto = tx || '—'; })
         .catch((e) => { if (n === pedido) filas[i].error = e.message; });
     });
   });
 </script>
 
 {#if !rango}
-  <p class="cartel">Compara <em>traducciones.</em></p>
-  <p class="ayuda">Selecciona uno o varios versículos para leerlos en todas tus versiones, una debajo de otra.</p>
+  <p class="cartel">{t('comp.cartel')} <em>{t('comp.cartelEm')}</em></p>
+  <p class="ayuda">{t('comp.ayuda')}</p>
 {:else}
-  <h3>{etiquetaSeleccion()} en {filas.length} versiones</h3>
+  <h3>{t('comp.titulo', { ref: etiquetaSeleccion(), n: filas.length })}</h3>
   {#each filas as f (f.v.id)}
     <div class="comparar-item">
       <span class="r-ref">{f.v.id} · {f.v.nombre}</span>
       {#if f.error}<p class="nota-pie">{f.error}</p>
-      {:else}<p class="ref-texto">{f.texto ?? 'Cargando…'}</p>{/if}
+      {:else}<p class="ref-texto">{f.texto ?? t('comp.cargando')}</p>{/if}
     </div>
   {/each}
 {/if}
