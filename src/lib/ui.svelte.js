@@ -4,6 +4,8 @@ import { capitulo as cargarCapitulo, info } from './biblia.js';
 import { clave, nombreRef, nombreLibro, LIBROS } from './libros.js';
 
 export const ui = $state({
+  vista: 'inicio',      // 'inicio' (portada y menú) | 'lector'
+  pasoInicio: 'portada', // 'portada' | 'menu'
   navAbierta: false,
   estudioAbierto: typeof window !== 'undefined' ? window.innerWidth > 900 : true,
   pestana: 'palabra',
@@ -28,6 +30,7 @@ export function avisar(texto, error = false) {
 export const pos = () => usuario.ajustes.pos;
 
 export function irA(libro, cap, v = null) {
+  ui.vista = 'lector';
   ui.seleccion = [];
   ui.ancla = null;
   ui.navAbierta = false;

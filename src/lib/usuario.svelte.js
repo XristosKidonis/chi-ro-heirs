@@ -6,6 +6,7 @@ import { referenciasEnTexto, clave } from './libros.js';
 
 export const AJUSTES_INICIALES = {
   idioma: 'es',           // idioma de la interfaz: es | en
+  mostrarInicio: true,    // portada y menú al abrir
   version: 'NTV',
   paralela: '',
   tema: 'cuero',          // cuero | papel | sistema

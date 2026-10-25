@@ -1,8 +1,9 @@
 [package]
 name = "chi-ro-heirs"
-version = "0.2.0"
+version = "0.3.0"
 description = "Chi-Ro Heirs: lector bíblico personal"
 edition = "2021"
+license = "MIT"
 
 [lib]
 name = "chi_ro_heirs_lib"

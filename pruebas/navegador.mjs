@@ -1,6 +1,6 @@
 // Prueba funcional de Chi-Ro Heirs en modo navegador.
 import { createRequire } from 'node:module';
-// Requiere Playwright instalado globalmente (npm i -g playwright) y «npm run dev» en marcha.
+// Requiere Playwright (npm i -g playwright) y «npm run dev» en marcha. PLAYWRIGHT_DIR apunta a node_modules global.
 const { chromium } = createRequire(process.env.PLAYWRIGHT_DIR || import.meta.url)('playwright');
 
 const OUT = process.argv[2];
@@ -36,8 +36,21 @@ const paso = async (nombre, fn) => {
   try { await fn(); console.log('OK  ', nombre); } catch (e) { console.log('FALLA', nombre, '-', e.message.split('\n')[0]); errores.push(nombre); }
 };
 
+async function entrar(p) {
+  await p.waitForSelector('.portada-w', { timeout: 20000 });
+  await p.click('.portada-w');
+  await p.click('.menu-cabeza .boton');
+  await p.waitForSelector('.texto .v', { timeout: 20000 });
+}
 await pag.goto(DIRECCION);
-await pag.waitForSelector('.texto .v', { timeout: 20000 });
+await paso('portada y menú de inicio', async () => {
+  await pag.waitForSelector('.portada-verso');
+  await pag.click('.portada-w');
+  await pag.waitForSelector('.lomo');
+  if ((await pag.locator('.lomo').count()) !== 66) throw new Error('faltan lomos');
+  await pag.click('.menu-cabeza .boton');
+  await pag.waitForSelector('.texto .v', { timeout: 20000 });
+});
 await paso('arranca en Génesis 1 con NTV y portadilla', async () => {
   const h1 = await pag.textContent('.portada h1');
   if (!/Génesis/.test(h1)) throw new Error(h1);
@@ -167,7 +180,7 @@ await pag.click('.dlg .dlg-cabeza .ico');
 
 await paso('los datos sobreviven a recargar', async () => {
   await pag.reload();
-  await pag.waitForSelector('.texto .v');
+  await entrar(pag);
   const m = await pag.getAttribute('.texto [data-v="16"] .t', 'data-m');
   const notas = await pag.locator('.texto [data-v="16"] .marca-nota').count();
   if (m !== 'rojo' || !notas) throw new Error(`m=${m} notas=${notas}`);
@@ -236,7 +249,7 @@ await pm.route('https://api.nlt.to/**', (route) => {
   route.fulfill({ status: 200, contentType: 'text/html', body: falsaNLT(u.searchParams.get('ref'), u.searchParams.get('version')) });
 });
 await pm.goto(DIRECCION);
-await pm.waitForSelector('.texto .v');
+await entrar(pm);
 await pm.screenshot({ path: `${OUT}/09-movil.png` });
 const anchoDoc = await pm.evaluate(() => document.documentElement.scrollWidth);
 console.log('ancho documento móvil:', anchoDoc);

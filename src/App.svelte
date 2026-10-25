@@ -7,6 +7,7 @@
   import Acciones from './componentes/Acciones.svelte';
   import Dialogo from './componentes/Dialogo.svelte';
   import Emblema from './componentes/Emblema.svelte';
+  import Inicio from './componentes/Inicio.svelte';
   import { ui, irA, recargarCapitulo } from './lib/ui.svelte.js';
   import { usuario, iniciarUsuario } from './lib/usuario.svelte.js';
   import { cargarVersiones, info } from './lib/biblia.js';
@@ -24,6 +25,7 @@
     try {
       await Promise.all([cargarVersiones().then((v) => (versiones = v)), iniciarUsuario()]);
       if (!info(usuario.ajustes.version)) usuario.ajustes.version = 'NTV';
+      ui.vista = usuario.ajustes.mostrarInicio ? 'inicio' : 'lector';
       listo = true;
     } catch (e) {
       fallo = e.message || String(e);
@@ -57,6 +59,7 @@
   });
 
   function tecla(e) {
+    if (ui.vista === 'inicio') return; // la pantalla de inicio maneja su propio teclado
     const escribiendo = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable;
     if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); barra.enfocar(); return; }
     if (e.key === 'Escape') {
@@ -88,16 +91,18 @@
 
 {#if !listo}
   <div class="arranque">
-    <Emblema tam={96} animado anillo />
+    <Emblema tam={110} animado anillo />
     {#if fallo}
       <p class="cartel">{t('app.noAbrir')} <em>{t('app.noAbrirEm')}</em></p>
       <p class="ayuda">{fallo}</p>
     {:else}
-      <span class="etiqueta-ui">Chi-Ro Heirs</span>
+      <span class="arranque-marca"><b>CHI-RO</b><i>Heirs</i></span>
+      <span class="arranque-lema">Herederos de Dios y coherederos con Cristo · Ro 8:17</span>
     {/if}
   </div>
 {:else}
   {#key idiomaUI}
+  {#if ui.vista === 'inicio'}<Inicio />{/if}
   <Barra bind:this={barra} {versiones} />
   <div class="marco" class:sin-estudio={!ui.estudioAbierto}>
     <Navegacion />

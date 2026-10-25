@@ -14,6 +14,10 @@
   </select>
 </div>
 <div class="ajuste">
+  <label for="aj-inicio">{t('aj.inicio')} <small>{t('aj.inicioAyuda')}</small></label>
+  <input id="aj-inicio" type="checkbox" checked={a.mostrarInicio} onchange={(e) => ajustar('mostrarInicio', e.currentTarget.checked)} />
+</div>
+<div class="ajuste">
   <label for="aj-tema">{t('aj.tema')}</label>
   <select id="aj-tema" value={a.tema} onchange={(e) => ajustar('tema', e.currentTarget.value)}>
     <option value="cuero">{t('aj.cuero')}</option>

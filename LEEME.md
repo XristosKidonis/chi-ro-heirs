@@ -20,6 +20,7 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 
 | Función | Detalle |
 |---|---|
+| Inicio | Portada con el versículo del día como cartel; al tocarla, un menú con buscador de libros y pasajes, «continuar leyendo», tus cintas y una estantería con los 66 libros como lomos que se llenan de rojo al leerlos |
 | Versiones | **NTV** y **NLT** en línea (API oficial de Tyndale). **RV1909, RV1865, BSB, KJV** dentro de la app, sin conexión |
 | Lectura | Portadilla de cada libro, temas Cuero y Papel, modo lector sin números, texto corrido, Literata o Atkinson Hyperlegible, vista paralela |
 | Subrayado | 5 colores de marcador, anclados a la referencia: lo que subrayas en la NTV aparece también en la RV1909 |
@@ -49,6 +50,10 @@ La app funciona desde el principio con la clave de prueba de Tyndale (hasta 500 
 2. Pega tu clave en **Versiones → Clave de la API de Tyndale**.
 
 Por la licencia, el texto de la NTV y la NLT no se guarda en disco: se pide al leer y vive en memoria mientras la app está abierta.
+
+## Marca
+
+Logos y recursos en [`marca/`](marca/). Guía de marca completa: https://claude.ai/artifact/V2rWgxXXhJef5VdWbXjq3w
 
 ## Desarrollo
 
@@ -86,6 +91,8 @@ herramientas/construir_datos.py   genera la base bíblica
 Cada fila guarda la fecha de cambio y una marca de borrado, ya preparada para la sincronización con iCloud (siguiente fase).
 
 ## Licencias y atribuciones
+
+- **Código:** licencia [MIT](LICENSE). Puedes usarlo, modificarlo y compartirlo libremente.
 
 - **NTV:** Texto bíblico tomado de la Santa Biblia, Nueva Traducción Viviente, © Tyndale House Foundation, 2010. Usado con permiso de Tyndale House Publishers, Inc., vía api.nlt.to, para uso personal no comercial.
 - **NLT:** Holy Bible, New Living Translation, © 1996, 2004, 2015 by Tyndale House Foundation. Vía api.nlt.to.

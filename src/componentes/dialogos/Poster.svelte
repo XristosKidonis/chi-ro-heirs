@@ -6,7 +6,7 @@
   import { t } from '../../lib/i18n.svelte.js';
 
   const ESTILOS = {
-    cuero: { fondo: '#0d0c0b', tinta: '#efece6', acento: '#e0483e', grano: 0.10 },
+    cuero: { fondo: '#0d0c0b', tinta: '#efece6', acento: '#e55a50', grano: 0.10 },
     papel: { fondo: '#f7f6f2', tinta: '#0e0e0e', acento: '#b3201e', grano: 0.07 },
     lacre: { fondo: '#a51d1a', tinta: '#f7f3ec', acento: '#0e0e0e', grano: 0.12 },
   };

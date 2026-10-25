@@ -52,7 +52,7 @@
   <button class="ico solo-tableta" onclick={() => (ui.navAbierta = !ui.navAbierta)} aria-label={t('barra.libros')} title={t('barra.libros')}>
     <Icono n="menu" />
   </button>
-  <button class="marca" onclick={() => irA(usuario.ajustes.pos.libro, usuario.ajustes.pos.cap)} aria-label="Chi-Ro Heirs">
+  <button class="marca" onclick={() => { ui.pasoInicio = 'menu'; ui.vista = 'inicio'; }} aria-label="Chi-Ro Heirs · {t('ini.abrir')}" title="Inicio">
     <Emblema tam={30} />
     <span class="marca-t"><b>CHI-RO</b><i>Heirs</i></span>
   </button>
