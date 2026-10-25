@@ -1,0 +1,44 @@
+// Lectura en voz alta con las voces del sistema (Web Speech API).
+import { ui, avisar } from './ui.svelte.js';
+import { usuario } from './usuario.svelte.js';
+import { info } from './biblia.js';
+
+export const voz = $state({ activa: false });
+
+export function detener() {
+  voz.activa = false;
+  ui.leyendo = null;
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+}
+
+export function leer() {
+  if (!('speechSynthesis' in window)) {
+    avisar('Este equipo no tiene voces de lectura disponibles.', true);
+    return;
+  }
+  detener();
+  const ingles = info(usuario.ajustes.version)?.idioma === 'en';
+  const lang = ingles ? 'en' : 'es';
+  const voces = speechSynthesis.getVoices();
+  const vozElegida = voces.find((x) => x.lang?.toLowerCase().startsWith(lang) && /natural|premium|enhanced/i.test(x.name))
+    || voces.find((x) => x.lang?.toLowerCase().startsWith(lang));
+  const inicio = ui.seleccion.length ? Math.min(...ui.seleccion) : 1;
+  const lista = ui.cap.versos.filter((x) => x.v >= inicio);
+  let i = 0;
+  voz.activa = true;
+  const siguiente = () => {
+    if (!voz.activa) return;
+    if (i >= lista.length) { detener(); return; }
+    const x = lista[i++];
+    ui.leyendo = x.v;
+    document.querySelector(`.texto [data-v="${x.v}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    const u = new SpeechSynthesisUtterance(x.texto);
+    u.lang = ingles ? 'en-US' : 'es-ES';
+    if (vozElegida) u.voice = vozElegida;
+    u.rate = usuario.ajustes.velocidadVoz || 1;
+    u.onend = siguiente;
+    u.onerror = () => { if (voz.activa) siguiente(); };
+    speechSynthesis.speak(u);
+  };
+  siguiente();
+}
