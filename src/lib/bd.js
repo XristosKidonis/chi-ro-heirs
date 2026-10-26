@@ -30,7 +30,7 @@ async function biblias() {
     return Database.load('sqlite:biblias.db');
   }
   const sqlite3 = await sqliteWeb();
-  const r = await fetch('/biblias.db');
+  const r = await fetch(`${import.meta.env.BASE_URL}biblias.db`);
   if (!r.ok) throw new Error('No se encontró la base de datos bíblica. Ejecuta «npm run datos».');
   const bytes = new Uint8Array(await r.arrayBuffer());
   const p = sqlite3.wasm.allocFromTypedArray(bytes);

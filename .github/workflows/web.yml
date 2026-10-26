@@ -1,0 +1,61 @@
+name: Versión web de prueba
+
+# Publica la app en GitHub Pages cada vez que cambia main, para probarla en el navegador
+# sin instalar nada: https://xristoskidonis.github.io/chi-ro-heirs/
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Caché de las fuentes bíblicas
+        uses: actions/cache@v4
+        with:
+          path: datos/fuentes
+          key: fuentes-${{ hashFiles('herramientas/construir_datos.py') }}
+
+      - name: Construir la base bíblica
+        run: python herramientas/construir_datos.py
+        env:
+          PYTHONUTF8: '1'
+
+      - name: Dependencias
+        run: npm ci
+
+      - name: Compilar la versión web
+        run: npx vite build
+        env:
+          WEB: '1'
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: despliegue
+        uses: actions/deploy-pages@v4

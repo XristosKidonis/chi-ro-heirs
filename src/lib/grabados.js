@@ -90,7 +90,7 @@ export function grabado(libro) {
   const [es, en, ref] = L[n];
   return {
     n,
-    src: `/grabados/dore-${String(n).padStart(3, '0')}.webp`,
+    src: `${import.meta.env.BASE_URL}grabados/dore-${String(n).padStart(3, '0')}.webp`,
     titulo: idioma() === 'en' ? en : es,
     ref,
   };

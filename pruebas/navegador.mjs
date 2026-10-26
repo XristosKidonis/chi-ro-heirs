@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 const { chromium } = createRequire(process.env.PLAYWRIGHT_DIR || import.meta.url)('playwright');
 
 const OUT = process.argv[2];
-const DIRECCION = 'http://127.0.0.1:1420/';
+const DIRECCION = process.env.DIRECCION || 'http://127.0.0.1:1420/';
 
 // Respuesta simulada de api.nlt.to con el formato documentado (verse_export, .vn, .subhead, .tn)
 function falsaNLT(ref, version) {

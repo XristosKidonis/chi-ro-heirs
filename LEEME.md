@@ -4,6 +4,11 @@ Lector bíblico personal, ligero y local. Tiene la NTV y la NLT desde la API ofi
 
 > *«Y si hijos, también herederos; herederos de Dios y coherederos con Cristo».* Romanos 8:17
 
+## Probar en el navegador
+
+Versión web de prueba, sin instalar nada: **https://xristoskidonis.github.io/chi-ro-heirs/**
+Se actualiza sola cada vez que cambia `main` (tarda 2 o 3 minutos). La primera visita descarga unos 88 MB de Biblias; después quedan guardadas en el navegador. Tus notas y subrayados de la web viven solo en ese navegador, separados de los de la app de escritorio.
+
 ## Instalar (Mac y Windows)
 
 1. Entra al repositorio en GitHub → **Releases** → la versión más reciente.
