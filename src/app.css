@@ -420,21 +420,25 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
 }
 .menu-cabeza { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .menu-saludo { display: grid; gap: 10px; max-width: 760px; }
-.menu-saludo h1 { margin: 6px 0 0; font: 400 clamp(48px, 7vw, 92px)/0.95 var(--f-titulo); letter-spacing: -0.01em; }
-.menu-saludo .sub { margin: 0 0 14px; font: 400 clamp(26px, 3vw, 36px)/1.1 var(--f-caligrafia); color: var(--tinta-2); }
+/* Tipografía del menú (opción C): Inter Tight para todo, fina y grande en los títulos;
+   la caligrafía solo como acento (una palabra, nombres de libro). Literata queda para leer la Biblia. */
+.menu-inicio { --f-ui: var(--f-grotesca); --f-titulo: var(--f-grotesca); --f-texto: var(--f-grotesca); }
+.menu-saludo h1 { margin: 6px 0 0; font: 300 clamp(56px, 8vw, 110px)/0.9 var(--f-grotesca); letter-spacing: -0.06em; }
+.menu-saludo .sub { margin: 0 0 14px; font: 400 clamp(28px, 3vw, 38px)/1.1 var(--f-caligrafia); color: var(--tinta-2); }
+.menu-saludo .sub em { font-style: normal; color: var(--acento); }
 .buscador-inicio { position: relative; }
 .buscador-inicio .campo { height: 58px; padding: 0 20px; font: 400 19px var(--f-texto); background: var(--superficie); }
 .sugerencias { position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + 6px); list-style: none; margin: 0; padding: 6px; background: var(--superficie); border: 1px solid var(--linea); border-radius: 2px; box-shadow: var(--sombra); }
 .sugerencias button { display: flex; width: 100%; justify-content: space-between; align-items: baseline; padding: 10px 14px; text-align: left; font: 400 17px var(--f-texto); color: var(--tinta-2); border-radius: 2px; }
 .sugerencias button.activa { background: var(--superficie-2); color: var(--tinta); }
-.sugerencias .sug-libro { font: 400 20px var(--f-titulo); }
+.sugerencias .sug-libro { font: 400 26px/1 var(--f-caligrafia); }
 .sugerencias small { font: 600 10px var(--f-ui); color: var(--tenue); letter-spacing: 0.1em; }
 .tarjetas-inicio { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 12px; }
 .tarjeta-inicio { position: relative; display: grid; align-content: start; gap: 8px; padding: 20px 22px; min-height: 150px; text-align: left; border: 1px solid var(--linea); border-radius: 2px; background: var(--superficie); overflow: hidden; }
 .tarjeta-inicio.principal { background: var(--tinta); color: var(--fondo); border-color: var(--tinta); }
 .tarjeta-inicio.principal .etiqueta-ui, .tarjeta-inicio.principal .t-pie { color: var(--fondo); opacity: 0.7; }
 .tarjeta-inicio.principal:hover { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
-.t-grande { font: 400 clamp(30px, 3.2vw, 42px)/1 var(--f-titulo); }
+.t-grande { font: 300 clamp(32px, 3.4vw, 46px)/1 var(--f-titulo); letter-spacing: -0.04em; }
 .t-pie { font: 400 13px var(--f-ui); color: var(--tinta-2); }
 .tarjeta-inicio.principal { padding-right: 42%; }
 .tarjeta-grabado { position: absolute; top: 0; right: 0; bottom: 0; width: 38%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.25); opacity: 0.92; transition: opacity 0.3s; }
@@ -455,7 +459,7 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
 .pin:hover .etiqueta-ui, .pin:focus-visible .etiqueta-ui { opacity: 1; }
 .estanteria { display: grid; gap: 12px; }
 .estante-cabeza { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
-.estante-cabeza h2 { margin: 0; font: 400 40px/1 var(--f-titulo); letter-spacing: -0.015em; }
+.estante-cabeza h2 { margin: 0; font: 300 44px/1 var(--f-titulo); letter-spacing: -0.04em; }
 .estante { position: relative; display: flex; align-items: flex-end; gap: 2px; overflow-x: auto; padding: 18px 6px 0; scrollbar-width: thin;
   border-bottom: 7px solid transparent; border-image: linear-gradient(180deg, rgba(0,0,0,.55), var(--linea) 30%, var(--superficie-2) 60%, rgba(0,0,0,.4)) 1; }
 .lomo {

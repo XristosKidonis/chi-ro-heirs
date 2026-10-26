@@ -215,7 +215,7 @@
       <div class="menu-saludo">
         <span class="etiqueta-ui">{hoy}</span>
         <h1>{saludo}</h1>
-        <p class="sub">{t('ini.pregunta')}</p>
+        <p class="sub">{t('ini.preguntaA')} <em>{t('ini.preguntaEm')}</em> {t('ini.preguntaB')}</p>
         <div class="buscador-inicio">
           <input bind:this={buscador} bind:value={q} onkeydown={teclaBuscador} type="search" class="campo"
             placeholder={t('ini.buscar')} aria-label={t('ini.buscar')} autocomplete="off" spellcheck="false" />
