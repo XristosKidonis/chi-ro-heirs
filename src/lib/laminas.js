@@ -164,6 +164,37 @@ function aerosol(fuente, radio, densidad = 1, curva = 1.3) {
   return out;
 }
 
+// Grano de risografía: el borde se corre un poco (desenfoque y umbral con ruido) y por dentro
+// la tinta deja huecos en puntos de unos 2 px, como el tambor de una Riso.
+function granoRiso(fuente, punto = 2, huecos = 0.12, corrimiento = true) {
+  const w = fuente.width;
+  const h = fuente.height;
+  const blando = corrimiento ? difuminar(fuente, Math.max(2, punto * 1.6)) : fuente;
+  const g = blando.getContext('2d');
+  const img = g.getImageData(0, 0, w, h);
+  const base = fuente.getContext('2d').getImageData(0, 0, w, h).data;
+  const d = img.data;
+  const p = Math.max(1, Math.round(punto));
+  const cols = Math.ceil(w / p);
+  const azar = new Float32Array(cols * Math.ceil(h / p));
+  for (let i = 0; i < azar.length; i++) azar[i] = Math.random();
+  for (let y = 0; y < h; y++) {
+    const fila = Math.floor(y / p) * cols;
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      const a = d[i + 3] / 255;
+      if (!a) continue;
+      const r = azar[fila + Math.floor(x / p)];
+      const dentro = a > 0.9;
+      const on = dentro ? r > huecos : a > 0.5 + (r - 0.5) * 0.55;
+      d[i] = base[i] || d[i]; d[i + 1] = base[i + 1] || d[i + 1]; d[i + 2] = base[i + 2] || d[i + 2];
+      d[i + 3] = on ? 255 : 0;
+    }
+  }
+  g.putImageData(img, 0, 0);
+  return blando;
+}
+
 // Imagen a blanco y negro con contraste, recortada para cubrir la caja.
 function laminaBN(ctx, img, x, y, w, h, { contraste = 1.35, brillo = 0.86, foco = 0.35 } = {}) {
   const r = Math.max(w / img.naturalWidth, h / img.naturalHeight);
@@ -543,74 +574,108 @@ const DIBUJAR = {
     grano(ctx, W, H, 0.06, 'multiply');
   },
 
-  // Riso: renglones condensados sobre franjas de color, con tinta que no llega a todo y un recuadro abajo
+  // Riso: como un carrusel impreso en risografía. Rótulo arriba, franjas de color del mismo ancho con la frase
+  // condensada (todos los renglones al mismo cuerpo), la referencia a los costados de los renglones cortos
+  // y abajo la referencia entre dos flechas en círculo. Tinta con grano y bordes que se corren.
   riso(ctx, o) {
     const { W, H, s, formato } = o;
     const color = RISO[o.tono] || RISO.amarillo;
-    ctx.fillStyle = '#f5f2e7';
+    const tinta = '#262624';
+    ctx.fillStyle = '#f7f5ec';
     ctx.fillRect(0, 0, W, H);
     const { k, fuente } = condensada(ctx);
-    const ancho = formato === 'escritorio' ? W * 0.62 : W * 0.8;
-    const altoMax = formato === 'escritorio' ? H * 0.46 : formato === 'post' ? H * 0.46 : H * 0.34;
-    const renglones = pila(ctx, fraseCorta(o.texto, o.clave, 6).toUpperCase(), { ancho, alto: altoMax, max: 300 * s, fuente, k, lh: 1.12 });
-    const alto = renglones.reduce((a, r) => a + r.tam * 1.12, 0);
-    const cx = W / 2;
-    let y = (formato === 'celular' ? H * 0.56 : H * 0.5) - alto / 2;
     const rot = condensada(ctx, 800);
-    // rótulo
-    ctx.fillStyle = '#1b1b1b';
-    ctx.font = rot.fuente(40 * s);
-    const rotulo = (o.rotulo || 'Para no olvidar:').toUpperCase();
-    pintarX(ctx, rotulo, cx - (ctx.measureText(rotulo).width * rot.k) / 2, y - 34 * s, rot.k);
-    // franjas, con un leve corrimiento de registro respecto de la tinta
-    const franjas = [];
-    const tinta = lienzo(W, H);
-    const t = tinta.getContext('2d');
-    t.fillStyle = '#1b1b1b';
-    const anchoFranja = Math.max(...renglones.map((r) => { t.font = fuente(r.tam); return t.measureText(r.texto).width * k + r.tam * 0.24; }));
-    for (const r of renglones) {
-      t.font = fuente(r.tam);
-      const w = t.measureText(r.texto).width * k;
-      franjas.push([cx - anchoFranja / 2 + 4 * s, y + r.tam * 0.06 - 3 * s, anchoFranja, r.tam * 0.98]);
-      pintarX(t, r.texto, cx - w / 2, y + r.tam * 0.88, k);
-      y += r.tam * 1.12;
+    const horizontal = formato === 'escritorio';
+    const anchoFranja = horizontal ? W * 0.56 : W * 0.86;
+    const cx = W / 2;
+    // renglones parejos: dos o tres, todos al mismo cuerpo, el más largo llena la franja
+    const frase = fraseCorta(o.texto, o.clave, 6).toUpperCase().replace(/[.,;:]+$/, '');
+    const ws = frase.split(/\s+/);
+    const n = ws.length <= 2 ? ws.length : ws.length <= 5 ? 2 : 3;
+    const meta = frase.length / n;
+    const lineas = [];
+    let act = [];
+    for (const w of ws) {
+      if (act.length && [...act, w].join(' ').length > meta * 1.2 && lineas.length < n - 1) { lineas.push(act.join(' ')); act = [w]; }
+      else act.push(w);
     }
-    ctx.fillStyle = color;
-    for (const [fx, fy, fw, fh] of franjas) ctx.fillRect(fx, fy, fw, fh);
-    // rayado diagonal fino sobre las franjas
-    ctx.save();
-    ctx.beginPath();
-    for (const [fx, fy, fw, fh] of franjas) ctx.rect(fx, fy, fw, fh);
-    ctx.clip();
-    ctx.strokeStyle = 'rgba(0,0,0,0.07)';
-    ctx.lineWidth = 1.4 * s;
-    for (let d = -H; d < W; d += 6 * s) { ctx.beginPath(); ctx.moveTo(d, H); ctx.lineTo(d + H, 0); ctx.stroke(); }
-    ctx.restore();
-    // la tinta del riso no cubre del todo
-    const img = t.getImageData(0, 0, W, H);
-    for (let i = 3; i < img.data.length; i += 4) if (img.data[i] && Math.random() < 0.16) img.data[i] = 0;
-    t.putImageData(img, 0, 0);
-    ctx.drawImage(tinta, 0, 0);
-    // recuadro con la referencia
-    ctx.font = rot.fuente(46 * s);
-    const necesita = (ctx.measureText(o.referencia.toUpperCase()).width + ctx.measureText(`${o.version} →`).width) * rot.k + 110 * s;
-    const bw = Math.min(W - 2 * Math.min(W, H) * 0.06, Math.max(anchoFranja, necesita));
-    const bh = 78 * s;
-    const bx = cx - bw / 2;
-    const by = y + 26 * s;
-    ctx.strokeStyle = '#1b1b1b';
-    ctx.lineWidth = 3 * s;
-    ctx.strokeRect(bx, by, bw, bh);
-    ctx.font = rot.fuente(46 * s);
-    const corte = bx + bw - ctx.measureText(`${o.version} →`).width * rot.k - 56 * s;
-    ctx.beginPath(); ctx.moveTo(corte, by); ctx.lineTo(corte, by + bh); ctx.stroke();
-    ctx.fillStyle = '#1b1b1b';
-    ctx.font = rot.fuente(46 * s);
-    pintarX(ctx, o.referencia.toUpperCase(), bx + 22 * s, by + bh * 0.68, rot.k);
-    const v = `${o.version} →`;
-    pintarX(ctx, v, corte + (bx + bw - corte - ctx.measureText(v).width * rot.k) / 2, by + bh * 0.68, rot.k);
-    firma(ctx, cx, formato === 'celular' ? H * 0.3 : Math.min(W, H) * 0.095, '#55524d', s, 'center');
-    grano(ctx, W, H, 0.14, 'multiply');
+    lineas.push(act.join(' '));
+    const pad = 0.07;
+    ctx.font = fuente(100);
+    const masLarga = Math.max(...lineas.map((l) => ctx.measureText(l).width * k));
+    let tam = (anchoFranja * (1 - pad * 2) * 100) / masLarga;
+    const altoMax = horizontal ? H * 0.6 : formato === 'post' ? H * 0.5 : H * 0.36;
+    tam = Math.min(tam, altoMax / (lineas.length * 1.06), 330 * s);
+    const altoFranja = tam * 0.84;
+    const sep = tam * 0.12;
+    const alto = lineas.length * altoFranja + (lineas.length - 1) * sep;
+    const y0 = (formato === 'celular' ? H * 0.56 : H * 0.5) - alto / 2;
+    const x0 = cx - anchoFranja / 2;
+
+    // capa amarilla, corrida unos píxeles respecto de la tinta, con su propio grano
+    const capaColor = lienzo(W, H);
+    const cc = capaColor.getContext('2d');
+    cc.fillStyle = color;
+    lineas.forEach((_, i) => cc.fillRect(x0 + 5 * s, y0 + i * (altoFranja + sep) - 4 * s, anchoFranja, altoFranja));
+    ctx.drawImage(granoRiso(capaColor, 1.6 * s, 0.05), 0, 0);
+
+    // capa negra (renglones grandes) y capa fina (rótulo, costados y pie), cada una con su grano
+    const capaTinta = lienzo(W, H);
+    const t = capaTinta.getContext('2d');
+    t.fillStyle = tinta;
+    t.textBaseline = 'alphabetic';
+    const capaFina = lienzo(W, H);
+    const f = capaFina.getContext('2d');
+    f.fillStyle = tinta;
+    f.strokeStyle = tinta;
+    const rotulo = (o.rotulo || 'Para no olvidar:').toUpperCase();
+    f.font = rot.fuente(Math.max(30 * s, tam * 0.16));
+    pintarX(f, rotulo, cx - (f.measureText(rotulo).width * rot.k) / 2, y0 - tam * 0.16, rot.k);
+    const [libro, cv] = (() => { const m = o.referencia.match(/^(.*?)\s+([\d:,\-–]+)$/); return m ? [m[1], m[2]] : [o.referencia, '']; })();
+    lineas.forEach((l, i) => {
+      t.font = fuente(tam);
+      const w = t.measureText(l).width * k;
+      const yb = y0 + i * (altoFranja + sep);
+      pintarX(t, l, cx - w / 2, yb + tam * 0.78, k);
+      // a los costados de un renglón corto, la referencia en dos pisos, como el «FOUR THINGS» de la referencia
+      const hueco = (anchoFranja - w) / 2;
+      const pisos = [libro.toUpperCase(), cv].filter(Boolean);
+      f.font = rot.fuente(100);
+      const anchoPiso = Math.max(...pisos.map((x) => f.measureText(x).width * rot.k)) / 100;
+      const tc = Math.min(tam * 0.17, (hueco * 0.7) / anchoPiso);
+      if (hueco > tam * 0.5 && tc > 14 * s) {
+        f.font = rot.fuente(tc);
+        for (const lado of [-1, 1]) {
+          const xc = cx + lado * (w / 2 + hueco / 2);
+          pisos.forEach((txt, j) => {
+            const tw = f.measureText(txt).width * rot.k;
+            pintarX(f, txt, xc - tw / 2, yb + altoFranja / 2 + (j - (pisos.length - 1) / 2) * tc * 1.02 + tc * 0.36, rot.k);
+          });
+        }
+      }
+    });
+    // pie: (→) REFERENCIA · VERSIÓN (→)
+    const pieY = y0 + alto + Math.max(70 * s, tam * 0.42);
+    const tp = Math.max(30 * s, tam * 0.15);
+    f.font = rot.fuente(tp);
+    const txt = `${o.referencia} · ${o.version}`.toUpperCase();
+    const tw = f.measureText(txt).width * rot.k;
+    pintarX(f, txt, cx - tw / 2, pieY + tp * 0.36, rot.k);
+    const r = tp * 0.62;
+    f.lineWidth = Math.max(2.4 * s, tp * 0.09);
+    f.lineCap = 'round';
+    f.lineJoin = 'round';
+    for (const xc of [cx - tw / 2 - r * 2, cx + tw / 2 + r * 2]) {
+      f.beginPath(); f.arc(xc, pieY, r, 0, Math.PI * 2); f.stroke();
+      f.beginPath(); f.moveTo(xc - r * 0.45, pieY); f.lineTo(xc + r * 0.45, pieY);
+      f.moveTo(xc + r * 0.1, pieY - r * 0.35); f.lineTo(xc + r * 0.45, pieY); f.lineTo(xc + r * 0.1, pieY + r * 0.35); f.stroke();
+    }
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.drawImage(granoRiso(capaTinta, 1.6 * s, 0.1), 0, 0);
+    ctx.drawImage(granoRiso(capaFina, 1, 0.05, false), 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    firma(ctx, cx, formato === 'celular' ? H * 0.3 : Math.min(W, H) * 0.06, '#7a776f', s, 'center');
+    grano(ctx, W, H, 0.06, 'multiply');
   },
 
   // Calor: una palabra (o frase muy corta) con halo térmico de grano, naranja y amarillo
