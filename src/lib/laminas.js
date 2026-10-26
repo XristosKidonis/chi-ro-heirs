@@ -255,7 +255,7 @@ function zona(W, H, formato) {
 
 // Archivo extra condensada; si el navegador no sabe elegir el ancho, se comprime a mano.
 let estrechaNativa = null;
-function condensada(ctx, peso = 900) {
+function condensada(ctx, peso = 900, ancho = 'extra-condensed') {
   if (estrechaNativa === null) {
     ctx.font = `900 100px ${F.cond}`;
     const a = ctx.measureText('MMMM').width;
@@ -263,8 +263,8 @@ function condensada(ctx, peso = 900) {
     estrechaNativa = ctx.measureText('MMMM').width < a * 0.9;
   }
   return {
-    k: estrechaNativa ? 1 : 0.66,
-    fuente: (t) => (estrechaNativa ? `${peso} extra-condensed ${t}px ${F.cond}` : `${peso} ${t}px ${F.cond}`),
+    k: estrechaNativa ? 1 : ancho === 'condensed' ? 0.8 : 0.66,
+    fuente: (t) => (estrechaNativa ? `${peso} ${ancho} ${t}px ${F.cond}` : `${peso} ${t}px ${F.cond}`),
   };
 }
 function pintarX(ctx, texto, x, y, k) {
@@ -310,7 +310,9 @@ function pila(ctx, texto, { ancho, alto, max, fuente, k = 1, lh = 0.92 }) {
   ctx.font = fuente(100);
   const base = lineas.map((l) => (ancho * 100) / (ctx.measureText(l).width * k));
   const mediana = [...base].sort((a, b) => a - b)[Math.floor(base.length / 2)];
-  let tams = lineas.map((l, i) => Math.min(max, base[i], l.replace(/\s/g, '').length <= 3 ? mediana * 0.5 : Infinity));
+  const largas = base.filter((_, i) => lineas[i].replace(/\s/g, '').length > 3);
+  const referencia = largas.length ? Math.min(...largas) : mediana;
+  let tams = lineas.map((l, i) => Math.min(max, base[i], l.replace(/\s/g, '').length <= 3 ? referencia * 0.62 : Infinity));
   const suma = tams.reduce((a, b) => a + b * lh, 0);
   if (suma > alto) tams = tams.map((t) => (t * alto) / suma);
   return lineas.map((l, i) => ({ texto: l, tam: tams[i] }));
@@ -472,65 +474,59 @@ const DIBUJAR = {
     grano(ctx, W, H, 0.1, 'multiply');
   },
 
-  // Pedrería: el texto hecho de piedritas brillantes sobre negro, cada renglón llenando el ancho
+  // Pedrería: como una remera de strass. Grotesca condensada muy negra, renglones que llenan el ancho
+  // casi tocándose, y cada trazo relleno de piedritas blancas en filas apretadas, con brillo y leve desorden.
   pedreria(ctx, o) {
     const { W, H, s, formato } = o;
-    ctx.fillStyle = '#060606';
+    ctx.fillStyle = '#050505';
     ctx.fillRect(0, 0, W, H);
-    const z = zona(W, H, formato);
-    const { k, fuente } = condensada(ctx);
-    const ancho = formato === 'escritorio' ? W * 0.62 : W * 0.86;
-    const altoMax = formato === 'escritorio' ? H * 0.6 : formato === 'post' ? H * 0.66 : z.h;
-    const renglones = pila(ctx, fraseCorta(o.texto, o.clave, 7).toUpperCase(), { ancho, alto: altoMax, max: 420 * s, fuente, k, lh: 0.96 });
-    const alto = renglones.reduce((a, r) => a + r.tam * 0.96, 0);
+    const { k, fuente } = condensada(ctx, 900, 'condensed');
+    const horizontal = formato === 'escritorio';
+    const ancho = horizontal ? W * 0.6 : W * 0.88;
+    const altoMax = horizontal ? H * 0.72 : formato === 'post' ? H * 0.8 : H * 0.5;
+    const renglones = pila(ctx, fraseCorta(o.texto, o.clave, 7).toUpperCase().replace(/[.,;:]+$/, ''), { ancho, alto: altoMax, max: 520 * s, fuente, k, lh: 0.9 });
+    const alto = renglones.reduce((a, r) => a + r.tam * 0.9, 0);
     const capa = lienzo(W, H);
     const c = capa.getContext('2d');
     c.fillStyle = '#fff';
-    c.textBaseline = 'alphabetic';
-    let y = (formato === 'celular' ? H * 0.56 : H * 0.48) - alto / 2;
+    let y = (formato === 'celular' ? H * 0.55 : H * 0.5) - alto / 2;
     for (const r of renglones) {
       c.font = fuente(r.tam);
       const w = c.measureText(r.texto).width * k;
-      pintarX(c, r.texto, (W - w) / 2, y + r.tam * 0.84, k);
-      y += r.tam * 0.96;
+      pintarX(c, r.texto, (W - w) / 2, y + r.tam * 0.8, k);
+      y += r.tam * 0.9;
     }
-    // una piedra por celda de la cuadrícula donde hay letra
-    const paso = Math.max(5 * s, Math.min(...renglones.map((r) => r.tam)) / 15);
+    // la piedra: un círculo blanco con borde gris y un brillo arriba a la izquierda
+    const paso = Math.max(4 * s, Math.min(...renglones.map((r) => r.tam)) / 21);
     const piedra = lienzo(paso * 2, paso * 2);
     const pc = piedra.getContext('2d');
-    const g = pc.createRadialGradient(paso * 0.75, paso * 0.7, paso * 0.05, paso, paso, paso * 0.46);
+    const g = pc.createRadialGradient(paso * 0.82, paso * 0.78, paso * 0.04, paso, paso, paso * 0.44);
     g.addColorStop(0, '#ffffff');
-    g.addColorStop(0.55, '#e9e9e9');
-    g.addColorStop(1, '#8d8d8d');
+    g.addColorStop(0.5, '#f6f6f6');
+    g.addColorStop(0.85, '#d8d8d8');
+    g.addColorStop(1, '#9a9a9a');
     pc.fillStyle = g;
     pc.beginPath();
-    pc.arc(paso, paso, paso * 0.44, 0, Math.PI * 2);
+    pc.arc(paso, paso, paso * 0.43, 0, Math.PI * 2);
     pc.fill();
     const datos = c.getImageData(0, 0, W, H).data;
+    const dentro = (px, py) => {
+      const x = Math.round(px);
+      const yy = Math.round(py);
+      return x >= 0 && yy >= 0 && x < W && yy < H && datos[(yy * W + x) * 4 + 3] > 110;
+    };
     for (let py = paso / 2; py < H; py += paso) {
       for (let px = paso / 2; px < W; px += paso) {
-        if (datos[(Math.round(py) * W + Math.round(px)) * 4 + 3] > 120) {
-          ctx.globalAlpha = 0.82 + Math.random() * 0.18;
-          ctx.drawImage(piedra, px - paso, py - paso);
-        }
+        if (!dentro(px, py)) continue;
+        const jx = (Math.random() - 0.5) * paso * 0.14;
+        const jy = (Math.random() - 0.5) * paso * 0.14;
+        ctx.globalAlpha = 0.9 + Math.random() * 0.1;
+        ctx.drawImage(piedra, px - paso + jx, py - paso + jy);
       }
     }
     ctx.globalAlpha = 1;
-    // destellos en cuatro puntas sobre algunas piedras
-    ctx.fillStyle = '#ffffff';
-    for (let i = 0; i < 18; i++) {
-      let px, py, intentos = 0;
-      do { px = Math.random() * W; py = Math.random() * H; intentos++; } while (datos[(Math.round(py) * W + Math.round(px)) * 4 + 3] < 120 && intentos < 400);
-      if (intentos >= 400) break;
-      const r = paso * (0.9 + Math.random() * 1.3);
-      ctx.beginPath();
-      ctx.moveTo(px, py - r); ctx.quadraticCurveTo(px, py, px + r, py); ctx.quadraticCurveTo(px, py, px, py + r);
-      ctx.quadraticCurveTo(px, py, px - r, py); ctx.quadraticCurveTo(px, py, px, py - r);
-      ctx.fill();
-    }
-    const pie = formato === 'escritorio' ? H * 0.92 : z.pie || H - z.m;
-    etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, pie, 'rgba(255,255,255,0.6)', s, 'center');
-    firma(ctx, W / 2, formato === 'celular' ? H * 0.3 : z.m + 10 * s, 'rgba(255,255,255,0.6)', s, 'center');
+    const m = Math.min(W, H) * 0.05;
+    etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, formato === 'celular' ? H * 0.86 : H - m, 'rgba(255,255,255,0.4)', s * 0.85, 'center');
   },
 
   // Primario: amarillo plano, grotesca negra justificada abajo y la palabra clave en rojo
@@ -678,10 +674,11 @@ const DIBUJAR = {
     grano(ctx, W, H, 0.06, 'multiply');
   },
 
-  // Calor: una palabra (o frase muy corta) con halo térmico de grano, naranja y amarillo
+  // Calor: una palabra en serif suave y negra con halo térmico: núcleo oscuro con brillo verde por dentro,
+  // una banda amarilla pegada a la letra y una naranja más ancha que se deshace en grano hacia afuera.
   calor(ctx, o) {
     const { W, H, s, formato } = o;
-    ctx.fillStyle = '#fbfaf6';
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, W, H);
     const corta = o.texto.split(/\s+/).length <= 3 ? o.texto : palabraClave(o.texto, o.clave);
     const palabra = corta.toLowerCase().replace(/[.,;:!?¡¿«»"]/g, '');
@@ -689,40 +686,48 @@ const DIBUJAR = {
     const c = capa.getContext('2d');
     let tam = 300 * s;
     c.font = `900 ${tam}px ${F.fraunces}`;
-    tam = Math.min(tam * ((formato === 'escritorio' ? W * 0.5 : W * 0.84) / (c.measureText(palabra).width || 1)), H * 0.24);
+    tam = Math.min(tam * ((formato === 'escritorio' ? W * 0.52 : W * 0.68) / (c.measureText(palabra).width || 1)), H * 0.2);
     c.font = `900 ${tam}px ${F.fraunces}`;
+    espaciado(c, -0.02 * tam);
     c.textAlign = 'center';
     c.textBaseline = 'middle';
     c.fillStyle = '#000';
-    const cy = formato === 'celular' ? H * 0.52 : H * 0.44;
+    const cy = formato === 'celular' ? H * 0.52 : H * 0.5;
     c.fillText(palabra, W / 2, cy);
-    const nucleo = c.getImageData(0, 0, W, H).data;
-    const medio = difuminar(capa, tam * 0.13).getContext('2d').getImageData(0, 0, W, H).data;
-    const halo = difuminar(capa, tam * 0.5).getContext('2d').getImageData(0, 0, W, H).data;
+    const a = (cv) => cv.getContext('2d').getImageData(0, 0, W, H).data;
+    const b1 = a(difuminar(capa, tam * 0.05));
+    const b2 = a(difuminar(capa, tam * 0.11));
+    const b3 = a(difuminar(capa, tam * 0.3));
     const img = ctx.getImageData(0, 0, W, H);
     const d = img.data;
-    const pon = (i, [r, g, b]) => { d[i] = r; d[i + 1] = g; d[i + 2] = b; };
+    const pon = (i, r, g, b) => { d[i] = r; d[i + 1] = g; d[i + 2] = b; };
+    const mezcla = (x, y, t) => Math.round(x + (y - x) * t);
     for (let i = 0; i < d.length; i += 4) {
-      const n = nucleo[i + 3] / 255;
-      const m = medio[i + 3] / 255;
-      const h = halo[i + 3] / 255;
-      if (h < 0.01) continue;
-      const r = Math.random();
-      if (n > 0.5) pon(i, r < (1 - m) * 2.2 ? [196, 224, 58] : r < 0.08 ? [60, 80, 20] : [14, 22, 8]);
-      else if (m > 0.1 && r < m * 2.2) pon(i, [242, 228, 52]);
-      else if (r < Math.pow(h, 0.7) * 1.7) pon(i, [255, 104, 52]);
+      const n1 = b1[i + 3] / 255;
+      const n2 = b2[i + 3] / 255;
+      const n3 = b3[i + 3] / 255;
+      if (n3 < 0.01) continue;
+      // calor: alto en la letra, bajando hacia afuera; el ruido hace los bordes de grano
+      const calor = Math.min(1, n1 * 0.62 + n2 * 0.38 + n3 * 0.42) + (Math.random() - 0.5) * 0.14;
+      if (n1 > 0.62) {
+        // núcleo: casi negro, con zonas verde amarillentas donde la letra se afina
+        const brillo = Math.min(1, Math.max(0, (1 - n1) * 2.4 + (1 - n2) * 1.1 - Math.random() * 0.75));
+        pon(i, mezcla(15, 205, brillo), mezcla(24, 222, brillo), mezcla(8, 64, brillo));
+      } else if (calor > 0.4) {
+        pon(i, 242, 238, 60);
+      } else if (calor > 0.31) {
+        const t = (calor - 0.31) / 0.09;
+        pon(i, mezcla(255, 242, t), mezcla(118, 238, t), mezcla(46, 60, t));
+      } else if (calor > 0.19) {
+        pon(i, 255, 110, 44);
+      } else if (Math.random() < Math.pow(calor / 0.19, 1.3)) {
+        pon(i, 255, 126, 66);
+      }
     }
     ctx.putImageData(img, 0, 0);
-    if (corta !== o.texto) {
-      const fuente = (t) => `400 ${t}px ${F.literata}`;
-      const ancho = formato === 'escritorio' ? W * 0.44 : W * 0.72;
-      const comp = ajustar(ctx, o.texto.split(/\s+/), { ancho, alto: H * 0.16, max: 34 * s, min: 16 * s, lh: 1.4, fuente });
-      escribir(ctx, comp, { x: (W - ancho) / 2, y: cy + tam * 0.75, ancho, lh: 1.4, alinear: 'centro', fuente, color: () => '#3a3833' });
-    }
-    const pie = formato === 'escritorio' ? H * 0.9 : (formato === 'post' ? H - Math.min(W, H) * 0.085 : H * 0.84);
-    etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, pie, '#6b6862', s, 'center');
-    firma(ctx, W / 2, formato === 'celular' ? H * 0.3 : Math.min(W, H) * 0.095, '#6b6862', s, 'center');
-    grano(ctx, W, H, 0.08, 'multiply');
+    const m = Math.min(W, H) * 0.06;
+    etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, formato === 'celular' ? H * 0.86 : H - m, '#8a867e', s * 0.9, 'center');
+    grano(ctx, W, H, 0.05, 'multiply');
   },
 };
 
