@@ -33,6 +33,10 @@
     { estilo: 'aura', formato: 'historia' },
     { estilo: 'aerosol', formato: 'post' },
     { estilo: 'cruz', formato: 'post' },
+    { estilo: 'pedreria', formato: 'post' },
+    { estilo: 'riso', formato: 'historia', tono: 'amarillo' },
+    { estilo: 'primario', formato: 'post' },
+    { estilo: 'calor', formato: 'post' },
   ];
   let muro = $state([]);
   const laminaDelDia = () => ({
@@ -50,7 +54,7 @@
       const lista = [];
       for (const m of MURO) {
         const c = document.createElement('canvas');
-        await dibujarLamina(c, { ...base, ...m, escala: 0.34 });
+        await dibujarLamina(c, { ...base, ...m, rotulo: t('lam.rotulo'), escala: 0.34 });
         if (!vivo) return;
         lista.push({ ...m, url: c.toDataURL('image/jpeg', 0.86) });
         muro = [...lista];

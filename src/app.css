@@ -15,6 +15,9 @@
 @font-face { font-family: 'Inter Tight'; font-weight: 300; font-display: swap; src: url(/fuentes/inter-tight-latin-300-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Inter Tight'; font-weight: 400; font-display: swap; src: url(/fuentes/inter-tight-latin-400-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Inter Tight'; font-weight: 900; font-display: swap; src: url(/fuentes/inter-tight-latin-900-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-weight: 800; font-display: swap; src: url(/fuentes/inter-tight-latin-800-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Archivo Condensada'; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url(/fuentes/archivo-latin-variable.woff2) format('woff2'); }
+@font-face { font-family: 'Fraunces'; font-weight: 900; font-display: swap; src: url(/fuentes/fraunces-latin-900-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Archivo'; font-weight: 400; font-display: swap; src: url(/fuentes/archivo-latin-400-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Archivo'; font-weight: 600; font-display: swap; src: url(/fuentes/archivo-latin-600-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Noto Serif Hebrew'; font-weight: 400; font-display: swap; src: url(/fuentes/noto-serif-hebrew-hebrew-400-normal.woff2) format('woff2'); }

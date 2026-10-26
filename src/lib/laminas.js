@@ -11,7 +11,10 @@ export const FORMATOS = {
   escritorio: { w: 2560, h: 1600 },  // fondo de pantalla de la computadora
 };
 
-export const ESTILOS = ['portadilla', 'cartel', 'ultramar', 'aura', 'aerosol', 'cruz'];
+export const ESTILOS = ['portadilla', 'cartel', 'ultramar', 'aura', 'aerosol', 'cruz', 'pedreria', 'primario', 'riso', 'calor'];
+// acabados con variantes de color
+export const VARIANTES = { cartel: ['cuero', 'papel', 'lacre'], riso: ['amarillo', 'verde'] };
+const RISO = { amarillo: '#f2df45', verde: '#b6ee5a' };
 export const TONOS = {
   cuero: { fondo: '#0d0c0b', tinta: '#efece6', acento: '#e55a50', grano: 0.1 },
   papel: { fondo: '#f7f6f2', tinta: '#0e0e0e', acento: '#b3201e', grano: 0.07 },
@@ -24,11 +27,14 @@ const F = {
   grot: '"Inter Tight", "Helvetica Neue", Arial, sans-serif',
   literata: 'Literata, Georgia, serif',
   ui: 'Archivo, Arial, sans-serif',
+  cond: '"Archivo Condensada", Archivo, "Arial Narrow", sans-serif',
+  fraunces: 'Fraunces, Georgia, serif',
 };
 
 export async function cargarFuentes() {
   const f = [`300 80px ${F.grot}`, `400 80px ${F.grot}`, `900 80px ${F.grot}`, `400 80px ${F.bodoni}`,
-    `400 80px ${F.pinyon}`, `400 40px ${F.literata}`, `600 20px ${F.ui}`];
+    `400 80px ${F.pinyon}`, `400 40px ${F.literata}`, `600 20px ${F.ui}`, `800 80px ${F.grot}`,
+    `900 extra-condensed 80px ${F.cond}`, `800 extra-condensed 80px ${F.cond}`, `900 80px ${F.fraunces}`];
   await Promise.all(f.map((x) => document.fonts.load(x).catch(() => {})));
 }
 
@@ -125,8 +131,8 @@ function grano(ctx, W, H, alfa, modo = 'overlay') {
   ctx.restore();
 }
 
-// Difumina una forma y la convierte en puntos, como pintura en aerosol o un halo de fotocopia.
-function aerosol(fuente, radio, densidad = 1, curva = 1.3) {
+// Desenfoque barato que funciona en todos los navegadores: reducir a mitades y volver a ampliar.
+function difuminar(fuente, radio) {
   const w = fuente.width;
   const h = fuente.height;
   let actual = fuente;
@@ -143,6 +149,15 @@ function aerosol(fuente, radio, densidad = 1, curva = 1.3) {
   const o = out.getContext('2d');
   o.imageSmoothingQuality = 'high';
   o.drawImage(actual, 0, 0, w, h);
+  return out;
+}
+
+// Difumina una forma y la convierte en puntos, como pintura en aerosol o un halo de fotocopia.
+function aerosol(fuente, radio, densidad = 1, curva = 1.3) {
+  const w = fuente.width;
+  const h = fuente.height;
+  const out = difuminar(fuente, radio);
+  const o = out.getContext('2d');
   const img = o.getImageData(0, 0, w, h);
   const d = img.data;
   for (let i = 3; i < d.length; i += 4) {
@@ -210,6 +225,69 @@ function zona(W, H, formato) {
   if (formato === 'celular') return { x: m, y: H * 0.34, w: W - 2 * m, h: H * 0.42, m, pie: H * 0.86 };
   if (formato === 'historia') return { x: m, y: H * 0.22, w: W - 2 * m, h: H * 0.5, m, pie: H * 0.82 };
   return { x: m, y: H * 0.18, w: W - 2 * m, h: H * 0.56, m, pie: H - m };
+}
+
+// Archivo extra condensada; si el navegador no sabe elegir el ancho, se comprime a mano.
+let estrechaNativa = null;
+function condensada(ctx, peso = 900) {
+  if (estrechaNativa === null) {
+    ctx.font = `900 100px ${F.cond}`;
+    const a = ctx.measureText('MMMM').width;
+    ctx.font = `900 extra-condensed 100px ${F.cond}`;
+    estrechaNativa = ctx.measureText('MMMM').width < a * 0.9;
+  }
+  return {
+    k: estrechaNativa ? 1 : 0.66,
+    fuente: (t) => (estrechaNativa ? `${peso} extra-condensed ${t}px ${F.cond}` : `${peso} ${t}px ${F.cond}`),
+  };
+}
+function pintarX(ctx, texto, x, y, k) {
+  if (k === 1) return ctx.fillText(texto, x, y);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(k, 1);
+  ctx.fillText(texto, 0, 0);
+  ctx.restore();
+}
+
+// Para los acabados de cartel grande: si la frase es larga, se queda con la cláusula de la palabra clave.
+export function fraseCorta(texto, clave, max = 8) {
+  const ws = texto.split(/\s+/).filter(Boolean);
+  if (ws.length <= max) return texto.trim();
+  const partes = texto.split(/[,;:.!?¿¡—]+/).map((x) => x.trim()).filter((x) => x.split(/\s+/).length >= 2);
+  const k = clave ? limpiar(clave) : '';
+  let p = partes.find((x) => k && x.split(/\s+/).some((w) => limpiar(w).startsWith(k))) || partes[0] || texto;
+  const pw = p.split(/\s+/);
+  if (pw.length > max) {
+    const i = Math.max(0, pw.findIndex((w) => k && limpiar(w).startsWith(k)));
+    const ini = Math.max(0, Math.min(i - Math.floor(max / 2), pw.length - max));
+    p = pw.slice(ini, ini + max).join(' ');
+  }
+  return p;
+}
+
+// Reparte la frase en renglones parecidos y da a cada uno el tamaño que llena el ancho
+// (las palabras cortas como «Y» o «EN» quedan más chicas, como en los carteles de pedrería).
+function pila(ctx, texto, { ancho, alto, max, fuente, k = 1, lh = 0.92 }) {
+  const ws = texto.split(/\s+/).filter(Boolean);
+  const total = ws.join(' ').length;
+  const n = Math.max(1, Math.min(6, Math.round(Math.sqrt(total / 3.2))));
+  const meta = total / n;
+  const lineas = [];
+  let actual = [];
+  for (const w of ws) {
+    const largo = [...actual, w].join(' ').length;
+    if (actual.length && largo > meta * 1.25) { lineas.push(actual.join(' ')); actual = [w]; }
+    else actual.push(w);
+  }
+  if (actual.length) lineas.push(actual.join(' '));
+  ctx.font = fuente(100);
+  const base = lineas.map((l) => (ancho * 100) / (ctx.measureText(l).width * k));
+  const mediana = [...base].sort((a, b) => a - b)[Math.floor(base.length / 2)];
+  let tams = lineas.map((l, i) => Math.min(max, base[i], l.replace(/\s/g, '').length <= 3 ? mediana * 0.5 : Infinity));
+  const suma = tams.reduce((a, b) => a + b * lh, 0);
+  if (suma > alto) tams = tams.map((t) => (t * alto) / suma);
+  return lineas.map((l, i) => ({ texto: l, tam: tams[i] }));
 }
 
 // ---------- acabados ----------
@@ -431,6 +509,206 @@ const DIBUJAR = {
     etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, pie, '#8f8a82', s, 'center');
     firma(ctx, W / 2, formato === 'celular' ? H * 0.3 : Math.min(W, H) * 0.095, '#8f8a82', s, 'center');
     grano(ctx, W, H, 0.12);
+  },
+
+  // Pedrería: el texto hecho de piedritas brillantes sobre negro, cada renglón llenando el ancho
+  pedreria(ctx, o) {
+    const { W, H, s, formato } = o;
+    ctx.fillStyle = '#060606';
+    ctx.fillRect(0, 0, W, H);
+    const z = zona(W, H, formato);
+    const { k, fuente } = condensada(ctx);
+    const ancho = formato === 'escritorio' ? W * 0.62 : W * 0.86;
+    const altoMax = formato === 'escritorio' ? H * 0.6 : formato === 'post' ? H * 0.66 : z.h;
+    const renglones = pila(ctx, fraseCorta(o.texto, o.clave, 7).toUpperCase(), { ancho, alto: altoMax, max: 420 * s, fuente, k, lh: 0.96 });
+    const alto = renglones.reduce((a, r) => a + r.tam * 0.96, 0);
+    const capa = lienzo(W, H);
+    const c = capa.getContext('2d');
+    c.fillStyle = '#fff';
+    c.textBaseline = 'alphabetic';
+    let y = (formato === 'celular' ? H * 0.56 : H * 0.48) - alto / 2;
+    for (const r of renglones) {
+      c.font = fuente(r.tam);
+      const w = c.measureText(r.texto).width * k;
+      pintarX(c, r.texto, (W - w) / 2, y + r.tam * 0.84, k);
+      y += r.tam * 0.96;
+    }
+    // una piedra por celda de la cuadrícula donde hay letra
+    const paso = Math.max(5 * s, Math.min(...renglones.map((r) => r.tam)) / 15);
+    const piedra = lienzo(paso * 2, paso * 2);
+    const pc = piedra.getContext('2d');
+    const g = pc.createRadialGradient(paso * 0.75, paso * 0.7, paso * 0.05, paso, paso, paso * 0.46);
+    g.addColorStop(0, '#ffffff');
+    g.addColorStop(0.55, '#e9e9e9');
+    g.addColorStop(1, '#8d8d8d');
+    pc.fillStyle = g;
+    pc.beginPath();
+    pc.arc(paso, paso, paso * 0.44, 0, Math.PI * 2);
+    pc.fill();
+    const datos = c.getImageData(0, 0, W, H).data;
+    for (let py = paso / 2; py < H; py += paso) {
+      for (let px = paso / 2; px < W; px += paso) {
+        if (datos[(Math.round(py) * W + Math.round(px)) * 4 + 3] > 120) {
+          ctx.globalAlpha = 0.82 + Math.random() * 0.18;
+          ctx.drawImage(piedra, px - paso, py - paso);
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+    const pie = formato === 'escritorio' ? H * 0.92 : z.pie || H - z.m;
+    etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, pie, 'rgba(255,255,255,0.6)', s, 'center');
+    firma(ctx, W / 2, formato === 'celular' ? H * 0.3 : z.m + 10 * s, 'rgba(255,255,255,0.6)', s, 'center');
+  },
+
+  // Primario: amarillo plano, grotesca negra justificada abajo y la palabra clave en rojo
+  primario(ctx, o) {
+    const { W, H, s, formato } = o;
+    ctx.fillStyle = '#ffe500';
+    ctx.fillRect(0, 0, W, H);
+    const m = Math.min(W, H) * 0.075;
+    const ancho = formato === 'escritorio' ? W * 0.56 : W - 2 * m;
+    const x0 = formato === 'escritorio' ? W - m - ancho : m;
+    const altoMax = formato === 'post' ? H * 0.46 : H * 0.36;
+    const fuente = (t) => `800 ${t}px ${F.grot}`;
+    const clave = palabraClave(o.texto, o.clave);
+    const comp = ajustar(ctx, o.texto.toUpperCase().split(/\s+/), { ancho, alto: altoMax, max: 120 * s, min: 24 * s, lh: 0.98, fuente, trk: -0.01 });
+    const lh = comp.tam * 0.98;
+    const fondo = formato === 'celular' ? H * 0.84 : formato === 'historia' ? H * 0.8 : H - m;
+    const y0 = fondo - comp.lineas.length * lh;
+    ctx.font = fuente(comp.tam);
+    espaciado(ctx, -0.01 * comp.tam);
+    comp.lineas.forEach((l, i) => {
+      const anchos = l.map((p) => ctx.measureText(p).width);
+      const total = anchos.reduce((a, b) => a + b, 0);
+      const ultima = i === comp.lineas.length - 1;
+      const justo = l.length > 1 && !ultima ? (ancho - total) / (l.length - 1) : comp.espacio;
+      // justifica solo si el hueco no se vuelve un agujero; si no, alinea a la izquierda
+      const hueco = justo > comp.espacio * 2.6 ? comp.espacio : justo;
+      let x = x0;
+      l.forEach((p, j) => {
+        ctx.fillStyle = esClave(p, clave) ? '#e3241b' : '#141414';
+        ctx.fillText(p, x, y0 + lh * i + comp.tam * 0.8);
+        x += anchos[j] + hueco;
+      });
+    });
+    espaciado(ctx, 0);
+    etiqueta(ctx, `${o.referencia} · ${o.version}`, x0, formato === 'celular' ? H * 0.3 : m + 10 * s, '#1d4fd8', s);
+    firma(ctx, formato === 'escritorio' ? W - m : W - m, formato === 'celular' ? H * 0.3 : m + 10 * s, '#141414', s, 'right');
+    grano(ctx, W, H, 0.06, 'multiply');
+  },
+
+  // Riso: renglones condensados sobre franjas de color, con tinta que no llega a todo y un recuadro abajo
+  riso(ctx, o) {
+    const { W, H, s, formato } = o;
+    const color = RISO[o.tono] || RISO.amarillo;
+    ctx.fillStyle = '#f5f2e7';
+    ctx.fillRect(0, 0, W, H);
+    const { k, fuente } = condensada(ctx);
+    const ancho = formato === 'escritorio' ? W * 0.62 : W * 0.8;
+    const altoMax = formato === 'escritorio' ? H * 0.46 : formato === 'post' ? H * 0.46 : H * 0.34;
+    const renglones = pila(ctx, fraseCorta(o.texto, o.clave, 6).toUpperCase(), { ancho, alto: altoMax, max: 300 * s, fuente, k, lh: 1.12 });
+    const alto = renglones.reduce((a, r) => a + r.tam * 1.12, 0);
+    const cx = W / 2;
+    let y = (formato === 'celular' ? H * 0.56 : H * 0.5) - alto / 2;
+    const rot = condensada(ctx, 800);
+    // rótulo
+    ctx.fillStyle = '#1b1b1b';
+    ctx.font = rot.fuente(40 * s);
+    const rotulo = (o.rotulo || 'Para no olvidar:').toUpperCase();
+    pintarX(ctx, rotulo, cx - (ctx.measureText(rotulo).width * rot.k) / 2, y - 34 * s, rot.k);
+    // franjas, con un leve corrimiento de registro respecto de la tinta
+    const franjas = [];
+    const tinta = lienzo(W, H);
+    const t = tinta.getContext('2d');
+    t.fillStyle = '#1b1b1b';
+    for (const r of renglones) {
+      t.font = fuente(r.tam);
+      const w = t.measureText(r.texto).width * k;
+      const pad = r.tam * 0.12;
+      franjas.push([cx - w / 2 - pad + 4 * s, y + r.tam * 0.06 - 3 * s, w + pad * 2, r.tam * 0.98]);
+      pintarX(t, r.texto, cx - w / 2, y + r.tam * 0.88, k);
+      y += r.tam * 1.12;
+    }
+    ctx.fillStyle = color;
+    for (const [fx, fy, fw, fh] of franjas) ctx.fillRect(fx, fy, fw, fh);
+    // rayado diagonal fino sobre las franjas
+    ctx.save();
+    ctx.beginPath();
+    for (const [fx, fy, fw, fh] of franjas) ctx.rect(fx, fy, fw, fh);
+    ctx.clip();
+    ctx.strokeStyle = 'rgba(0,0,0,0.07)';
+    ctx.lineWidth = 1.4 * s;
+    for (let d = -H; d < W; d += 6 * s) { ctx.beginPath(); ctx.moveTo(d, H); ctx.lineTo(d + H, 0); ctx.stroke(); }
+    ctx.restore();
+    // la tinta del riso no cubre del todo
+    const img = t.getImageData(0, 0, W, H);
+    for (let i = 3; i < img.data.length; i += 4) if (img.data[i] && Math.random() < 0.16) img.data[i] = 0;
+    t.putImageData(img, 0, 0);
+    ctx.drawImage(tinta, 0, 0);
+    // recuadro con la referencia
+    const bw = Math.min(ancho, W * 0.8);
+    const bh = 78 * s;
+    const bx = cx - bw / 2;
+    const by = y + 26 * s;
+    ctx.strokeStyle = '#1b1b1b';
+    ctx.lineWidth = 3 * s;
+    ctx.strokeRect(bx, by, bw, bh);
+    const corte = bx + bw * 0.68;
+    ctx.beginPath(); ctx.moveTo(corte, by); ctx.lineTo(corte, by + bh); ctx.stroke();
+    ctx.fillStyle = '#1b1b1b';
+    ctx.font = rot.fuente(46 * s);
+    pintarX(ctx, o.referencia.toUpperCase(), bx + 22 * s, by + bh * 0.68, rot.k);
+    const v = `${o.version} →`;
+    pintarX(ctx, v, corte + (bx + bw - corte - ctx.measureText(v).width * rot.k) / 2, by + bh * 0.68, rot.k);
+    firma(ctx, cx, formato === 'celular' ? H * 0.3 : Math.min(W, H) * 0.095, '#55524d', s, 'center');
+    grano(ctx, W, H, 0.14, 'multiply');
+  },
+
+  // Calor: una palabra (o frase muy corta) con halo térmico de grano, naranja y amarillo
+  calor(ctx, o) {
+    const { W, H, s, formato } = o;
+    ctx.fillStyle = '#fbfaf6';
+    ctx.fillRect(0, 0, W, H);
+    const corta = o.texto.split(/\s+/).length <= 3 ? o.texto : palabraClave(o.texto, o.clave);
+    const palabra = corta.toLowerCase().replace(/[.,;:!?¡¿«»"]/g, '');
+    const capa = lienzo(W, H);
+    const c = capa.getContext('2d');
+    let tam = 300 * s;
+    c.font = `900 ${tam}px ${F.fraunces}`;
+    tam = Math.min(tam * ((formato === 'escritorio' ? W * 0.5 : W * 0.76) / (c.measureText(palabra).width || 1)), H * 0.22);
+    c.font = `900 ${tam}px ${F.fraunces}`;
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillStyle = '#000';
+    const cy = formato === 'celular' ? H * 0.52 : H * 0.44;
+    c.fillText(palabra, W / 2, cy);
+    const nucleo = c.getImageData(0, 0, W, H).data;
+    const medio = difuminar(capa, tam * 0.13).getContext('2d').getImageData(0, 0, W, H).data;
+    const halo = difuminar(capa, tam * 0.5).getContext('2d').getImageData(0, 0, W, H).data;
+    const img = ctx.getImageData(0, 0, W, H);
+    const d = img.data;
+    const pon = (i, [r, g, b]) => { d[i] = r; d[i + 1] = g; d[i + 2] = b; };
+    for (let i = 0; i < d.length; i += 4) {
+      const n = nucleo[i + 3] / 255;
+      const m = medio[i + 3] / 255;
+      const h = halo[i + 3] / 255;
+      if (h < 0.01) continue;
+      const r = Math.random();
+      if (n > 0.5) pon(i, r < (1 - m) * 2.2 ? [196, 224, 58] : r < 0.08 ? [60, 80, 20] : [14, 22, 8]);
+      else if (m > 0.1 && r < m * 2.2) pon(i, [242, 228, 52]);
+      else if (r < Math.pow(h, 0.7) * 1.7) pon(i, [255, 104, 52]);
+    }
+    ctx.putImageData(img, 0, 0);
+    if (corta !== o.texto) {
+      const fuente = (t) => `400 ${t}px ${F.literata}`;
+      const ancho = formato === 'escritorio' ? W * 0.44 : W * 0.72;
+      const comp = ajustar(ctx, o.texto.split(/\s+/), { ancho, alto: H * 0.16, max: 34 * s, min: 16 * s, lh: 1.4, fuente });
+      escribir(ctx, comp, { x: (W - ancho) / 2, y: cy + tam * 0.75, ancho, lh: 1.4, alinear: 'centro', fuente, color: () => '#3a3833' });
+    }
+    const pie = formato === 'escritorio' ? H * 0.9 : (formato === 'post' ? H - Math.min(W, H) * 0.085 : H * 0.84);
+    etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, pie, '#6b6862', s, 'center');
+    firma(ctx, W / 2, formato === 'celular' ? H * 0.3 : Math.min(W, H) * 0.095, '#6b6862', s, 'center');
+    grano(ctx, W, H, 0.08, 'multiply');
   },
 };
 

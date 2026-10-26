@@ -33,7 +33,7 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 | Búsqueda | Instantánea y sin acentos, en toda la Biblia, en un testamento o en un libro |
 | Hábito | Sello AMEN al terminar un capítulo, cuadrícula de cobertura de los 1189 capítulos (sin rachas), cintas («Marcar» en cada capítulo) |
 | Memoria | Versículos que se desvanecen palabra a palabra, con repaso espaciado |
-| Láminas | Cualquier versículo como fondo de pantalla (celular o computadora) o para compartir (post 4:5, historia 9:16), en seis acabados: Grabado, Cartel, Ultramar, Aura, Aerosol y Cruz. En el menú de inicio, el versículo del día aparece en todos como un tablero |
+| Láminas | Cualquier versículo como fondo de pantalla (celular o computadora) o para compartir (post 4:5, historia 9:16), en diez acabados: Grabado, Cartel, Ultramar, Aura, Aerosol, Cruz, Pedrería, Primario, Riso y Calor. En el menú de inicio, el versículo del día aparece en todos como un tablero |
 | Voz | Lectura en voz alta con las voces del sistema |
 | Respaldo | Exportar e importar todo en un JSON legible |
 
@@ -105,5 +105,5 @@ Cada fila guarda la fecha de cambio y una marca de borrado, ya preparada para la
 - **Léxico Strong:** [Open Scriptures](https://github.com/openscriptures/strongs), CC BY-SA.
 - **Interlineal hebreo y griego, léxicos:** [STEP Bible](https://www.stepbible.org) (Tyndale House, Cambridge), datos TAHOT, TAGNT, TBESH y TBESG, CC BY 4.0.
 - **Grabados:** Gustave Doré, *La Grande Bible de Tours* (1866), dominio público, vía [Project Gutenberg](https://www.gutenberg.org/ebooks/8710) («The Doré Bible Gallery»). Se obtienen con el flujo «Traer grabados» y `herramientas/preparar_grabados.py`.
-- **Fuentes tipográficas:** Literata, Bodoni Moda, Pinyon Script, Inter Tight, Archivo, Atkinson Hyperlegible Next y Noto Serif Hebrew, todas con licencia SIL Open Font License.
+- **Fuentes tipográficas:** Literata, Bodoni Moda, Pinyon Script, Inter Tight, Fraunces, Archivo, Atkinson Hyperlegible Next y Noto Serif Hebrew, todas con licencia SIL Open Font License.
 - **Estética:** inspirada en las Biblias de diseño editorial; nombre y emblema propios (el crismón ΧΡ es un símbolo cristiano del siglo IV, de libre uso).

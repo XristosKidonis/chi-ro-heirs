@@ -3,7 +3,7 @@
   // Viene de la selección del lector o de la galería del menú de inicio (ui.lamina).
   import { ui, etiquetaSeleccion, avisar } from '../../lib/ui.svelte.js';
   import { usuario } from '../../lib/usuario.svelte.js';
-  import { ESTILOS, FORMATOS, TONOS, dibujarLamina } from '../../lib/laminas.js';
+  import { ESTILOS, FORMATOS, VARIANTES, dibujarLamina } from '../../lib/laminas.js';
   import { guardarArchivo } from '../../lib/archivos.js';
   import { t } from '../../lib/i18n.svelte.js';
 
@@ -36,11 +36,13 @@
     dibujando = true;
     const o = $state.snapshot(origen);
     await dibujarLamina(lienzo, {
-      ...o, estilo, formato, tono, texto: frase,
+      ...o, estilo, formato, tono: tonoDe(estilo), texto: frase, rotulo: t('lam.rotulo'),
       imagen: usuario.portadas[o.libro] || undefined,
     });
     if (n === pedido) dibujando = false;
   }
+
+  const tonoDe = (e) => (VARIANTES[e]?.includes(tono) ? tono : VARIANTES[e]?.[0]);
 
   let espera;
   $effect(() => {
@@ -74,9 +76,9 @@
       <div class="chips">
         {#each ESTILOS as e}<button aria-pressed={estilo === e} onclick={() => (estilo = e)}>{t(`lam.e.${e}`)}</button>{/each}
       </div>
-      {#if estilo === 'cartel'}
+      {#if VARIANTES[estilo]}
         <div class="chips">
-          {#each Object.keys(TONOS) as k}<button aria-pressed={tono === k} onclick={() => (tono = k)}>{t(`pos.${k}`)}</button>{/each}
+          {#each VARIANTES[estilo] as k}<button aria-pressed={tonoDe(estilo) === k} onclick={() => (tono = k)}>{t(`lam.t.${k}`)}</button>{/each}
         </div>
       {/if}
       <span class="etiqueta-ui">{t('lam.formato')}</span>
