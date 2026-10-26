@@ -11,15 +11,10 @@ export const FORMATOS = {
   escritorio: { w: 2560, h: 1600 },  // fondo de pantalla de la computadora
 };
 
-export const ESTILOS = ['portadilla', 'cartel', 'ultramar', 'aura', 'aerosol', 'pedreria', 'primario', 'riso', 'calor'];
+export const ESTILOS = ['portadilla', 'ultramar', 'aura', 'aerosol', 'pedreria', 'primario', 'riso', 'calor'];
 // acabados con variantes de color
-export const VARIANTES = { cartel: ['cuero', 'papel', 'lacre'], riso: ['amarillo', 'verde'] };
+export const VARIANTES = { riso: ['amarillo', 'verde'] };
 const RISO = { amarillo: '#f2df45', verde: '#b6ee5a' };
-export const TONOS = {
-  cuero: { fondo: '#0d0c0b', tinta: '#efece6', acento: '#e55a50', grano: 0.1 },
-  papel: { fondo: '#f7f6f2', tinta: '#0e0e0e', acento: '#b3201e', grano: 0.07 },
-  lacre: { fondo: '#a51d1a', tinta: '#f7f3ec', acento: '#0e0e0e', grano: 0.12 },
-};
 
 const F = {
   bodoni: '"Bodoni Moda", Didot, serif',
@@ -330,40 +325,6 @@ const DIBUJAR = {
     ctx.fillText(o.referencia, m, yRef);
     etiqueta(ctx, o.version, m, yRef + 44 * s, 'rgba(241,238,232,0.62)', s);
     if (o.credito) etiqueta(ctx, o.credito, W - m, m + 10 * s, 'rgba(241,238,232,0.5)', s * 0.8, 'right');
-  },
-
-  // Bodoni con la palabra clave en caligrafía roja, en Cuero, Papel o Lacre
-  cartel(ctx, o) {
-    const { W, H, s, formato } = o;
-    const e = TONOS[o.tono] || TONOS.cuero;
-    ctx.fillStyle = e.fondo;
-    ctx.fillRect(0, 0, W, H);
-    const z = zona(W, H, formato);
-    const clave = palabraClave(o.texto, o.clave);
-    const fuente = (t, p) => (esClave(p, clave) ? `400 ${t * 1.34}px ${F.pinyon}` : `400 ${t}px ${F.bodoni}`);
-    const comp = ajustar(ctx, o.texto.split(/\s+/), { ancho: z.w, alto: z.h, max: 132 * s, min: 28 * s, lh: 1.08, fuente, trk: -0.012 });
-    const alto = comp.lineas.length * comp.tam * 1.08;
-    const y0 = formato === 'escritorio' ? (H - alto) / 2 - 60 * s : z.y + (z.h - alto) * 0.35;
-    const x0 = formato === 'escritorio' ? W * 0.12 : z.x;
-    const ancho = formato === 'escritorio' ? W * 0.62 : z.w;
-    if (formato === 'escritorio') {
-      const c2 = ajustar(ctx, o.texto.split(/\s+/), { ancho, alto: H * 0.56, max: 150 * s, min: 28 * s, lh: 1.08, fuente, trk: -0.012 });
-      Object.assign(comp, c2);
-    }
-    const altoF = comp.lineas.length * comp.tam * 1.08;
-    const yF = formato === 'escritorio' ? (H - altoF) / 2 - 60 * s : Math.max(z.y, (formato === 'celular' ? H * 0.58 : H * 0.5) - (altoF + 190 * s) / 2);
-    escribir(ctx, comp, { x: x0, y: yF, ancho, lh: 1.08, fuente, trk: -0.012, color: (p) => (esClave(p, clave) ? e.acento : e.tinta) });
-    const yr = yF + altoF + 110 * s;
-    ctx.font = `400 ${84 * s}px ${F.pinyon}`;
-    ctx.fillStyle = e.tinta;
-    ctx.fillText(o.referencia, x0, yr);
-    ctx.fillStyle = e.acento;
-    ctx.fillRect(x0, yr + 34 * s, 80 * s, 4 * s);
-    etiqueta(ctx, o.version, x0, yr + 84 * s, e.tinta, s);
-    const pie = z.pie || H - z.m;
-    firma(ctx, formato === 'escritorio' ? W * 0.12 : z.x, formato === 'escritorio' ? H * 0.1 : (formato === 'celular' ? H * 0.28 : z.m + 10 * s), e.tinta, s);
-    if (formato !== 'escritorio') etiqueta(ctx, 'Toma y lee', W - z.m, pie, e.tinta, s * 0.9, 'right');
-    grano(ctx, W, H, e.grano);
   },
 
   // Tono sobre tono: azul ultramar y el versículo en un azul apenas más claro
@@ -719,6 +680,6 @@ export async function dibujarLamina(canvas, o) {
     credito: o.imagen ? '' : g ? `Gustave Doré · ${g.titulo}` : '',
   };
   ctx.save();
-  await DIBUJAR[o.estilo in DIBUJAR ? o.estilo : 'cartel'](ctx, datos);
+  await DIBUJAR[o.estilo in DIBUJAR ? o.estilo : 'portadilla'](ctx, datos);
   ctx.restore();
 }

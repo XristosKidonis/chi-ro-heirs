@@ -33,7 +33,7 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 | Búsqueda | Instantánea y sin acentos, en toda la Biblia, en un testamento o en un libro |
 | Hábito | Sello AMEN al terminar un capítulo, cuadrícula de cobertura de los 1189 capítulos (sin rachas), cintas («Marcar» en cada capítulo) |
 | Memoria | Versículos que se desvanecen palabra a palabra, con repaso espaciado |
-| Láminas | Cualquier versículo como fondo de pantalla (celular o computadora) o para compartir (post 4:5, historia 9:16), en nueve acabados: Grabado, Cartel, Ultramar, Aura, Aerosol, Pedrería, Primario, Riso y Calor. En el menú de inicio, el versículo del día aparece en todos como un tablero |
+| Láminas | Cualquier versículo como fondo de pantalla (celular o computadora) o para compartir (post 4:5, historia 9:16), en ocho acabados: Grabado, Ultramar, Aura, Aerosol, Pedrería, Primario, Riso y Calor. En el menú de inicio, el versículo del día aparece en todos como un tablero |
 | Voz | Lectura en voz alta con las voces del sistema |
 | Respaldo | Exportar e importar todo en un JSON legible |
 

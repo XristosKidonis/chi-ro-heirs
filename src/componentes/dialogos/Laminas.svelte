@@ -22,7 +22,7 @@
 
   let estilo = $state(ui.lamina?.estilo || 'portadilla');
   let formato = $state(ui.lamina?.formato || 'post');
-  let tono = $state(ui.lamina?.tono || 'cuero');
+  let tono = $state(ui.lamina?.tono || 'amarillo');
   let frase = $state('');
   let lienzo = $state();
   let dibujando = $state(false);

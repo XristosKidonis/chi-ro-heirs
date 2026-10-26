@@ -29,7 +29,6 @@
   const MURO = [
     { estilo: 'portadilla', formato: 'historia' },
     { estilo: 'ultramar', formato: 'post' },
-    { estilo: 'cartel', formato: 'post', tono: 'papel' },
     { estilo: 'aura', formato: 'historia' },
     { estilo: 'aerosol', formato: 'post' },
     { estilo: 'pedreria', formato: 'post' },
