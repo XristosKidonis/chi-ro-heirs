@@ -120,6 +120,12 @@
   const genero = (n) => GENEROS.find(([a, b]) => n >= a && n <= b);
   const leidosDe = (l) => Array.from({ length: l.capitulos }, (_, i) => usuario.leidos[`${l.n}.${i + 1}`]).filter(Boolean).length;
   const altoLomo = (l) => Math.max(150, 118 + Math.min(l.capitulos, 66) * 1.45);
+  const anchoLomo = (l) => Math.round(30 + Math.min(l.capitulos, 50) / 5);
+  // el título dorado se achica en los nombres largos para que entre entero entre los nervios
+  const tamNombre = (l) => {
+    const n = nombreLibro(l).length;
+    return Math.max(8.5, Math.min(11.5, (altoLomo(l) - 108) / (n * (n > 8 ? 0.8 : 0.95)))).toFixed(1);
+  };
   const totalLeidos = $derived(Object.keys(usuario.leidos).length);
 
   const sugerencias = $derived.by(() => {
@@ -281,12 +287,15 @@
             {#each LIBROS.filter((l) => l.testamento === tes) as l (l.n)}
               {@const g = genero(l.n)}
               {@const leidos = leidosDe(l)}
-              <button class="lomo {g[3]}" class:abierto={libroAbierto === l} style="height: {altoLomo(l)}px"
+              <button class="lomo {g[3]}" class:abierto={libroAbierto === l} class:completo={leidos === l.capitulos}
+                style="height: {altoLomo(l)}px; width: {anchoLomo(l)}px"
                 onclick={() => (libroAbierto = libroAbierto === l ? null : l)} title="{nombreLibro(l)} · {t(`gen.${g[2]}`)}">
-                <span class="banda" aria-hidden="true"></span>
-                <span class="nombre">{nombreLibro(l)}</span>
-                <span class="caps-n">{l.capitulos}</span>
-                {#if leidos}<span class="lleno" style="height: {(leidos / l.capitulos) * 100}%"></span>{/if}
+                <span class="cabezada" aria-hidden="true"></span>
+                <span class="nervios" aria-hidden="true"><i></i><i></i></span>
+                <span class="nombre" class:largo={nombreLibro(l).length > 8} style="font-size: {tamNombre(l)}px">{nombreLibro(l)}</span>
+                <span class="nervios" aria-hidden="true"><i></i><i></i></span>
+                <span class="tejuelo">{l.capitulos}</span>
+                {#if leidos}<span class="leido" style="height: {(leidos / l.capitulos) * 100}%" aria-hidden="true"></span>{/if}
               </button>
             {/each}
           </div>
