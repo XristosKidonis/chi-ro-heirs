@@ -170,11 +170,11 @@ await paso('progreso refleja el capítulo leído', async () => {
   await pag.waitForSelector('.cob-celdas button.leido');
 });
 
-await paso('lámina en los diez acabados', async () => {
+await paso('lámina en los nueve acabados', async () => {
   await pag.locator('.texto [data-v="16"] .num').click();
   await pag.click('.acc-botones button:has-text("Lámina")');
   await pag.waitForSelector('.estudio-lamina canvas', { timeout: 10000 });
-  for (const e of ['Cartel', 'Ultramar', 'Aura', 'Aerosol', 'Cruz', 'Pedrería', 'Primario', 'Riso', 'Calor', 'Grabado']) {
+  for (const e of ['Cartel', 'Ultramar', 'Aura', 'Aerosol', 'Pedrería', 'Primario', 'Riso', 'Calor', 'Grabado']) {
     await pag.click(`.chips button:has-text("${e}")`);
     await pag.waitForTimeout(600);
     await pag.waitForSelector('.lamina-vista:not(.cargando)', { timeout: 10000 });

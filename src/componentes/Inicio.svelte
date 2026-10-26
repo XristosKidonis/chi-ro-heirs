@@ -32,7 +32,6 @@
     { estilo: 'cartel', formato: 'post', tono: 'papel' },
     { estilo: 'aura', formato: 'historia' },
     { estilo: 'aerosol', formato: 'post' },
-    { estilo: 'cruz', formato: 'post' },
     { estilo: 'pedreria', formato: 'post' },
     { estilo: 'riso', formato: 'historia', tono: 'amarillo' },
     { estilo: 'primario', formato: 'post' },
