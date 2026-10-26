@@ -12,8 +12,8 @@
 @font-face { font-family: 'Bodoni Moda'; font-weight: 400; font-style: italic; font-display: swap; src: url(/fuentes/bodoni-moda-latin-400-italic.woff2) format('woff2'); }
 @font-face { font-family: 'Bodoni Moda'; font-weight: 700; font-style: normal; font-display: swap; src: url(/fuentes/bodoni-moda-latin-700-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Pinyon Script'; font-weight: 400; font-display: swap; src: url(/fuentes/pinyon-script-latin-400-normal.woff2) format('woff2'); }
-@font-face { font-family: 'Anton'; font-weight: 400; font-display: swap; src: url(/fuentes/anton-latin-400-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Inter Tight'; font-weight: 300; font-display: swap; src: url(/fuentes/inter-tight-latin-300-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-weight: 400; font-display: swap; src: url(/fuentes/inter-tight-latin-400-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Inter Tight'; font-weight: 900; font-display: swap; src: url(/fuentes/inter-tight-latin-900-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Archivo'; font-weight: 400; font-display: swap; src: url(/fuentes/archivo-latin-400-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Archivo'; font-weight: 600; font-display: swap; src: url(/fuentes/archivo-latin-600-normal.woff2) format('woff2'); }
@@ -45,7 +45,6 @@
 
   --f-titulo: 'Bodoni Moda', 'Bodoni 72', Didot, 'Times New Roman', serif;
   --f-caligrafia: 'Pinyon Script', 'Snell Roundhand', 'Apple Chancery', cursive;
-  --f-cartel: 'Anton', Impact, 'Haettenschweiler', 'Arial Narrow', sans-serif;
   --f-grotesca: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --f-literata: 'Literata', 'Iowan Old Style', Georgia, serif;
   --f-atkinson: 'Atkinson Hyperlegible Next', Verdana, sans-serif;
@@ -198,7 +197,7 @@ svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-widt
 .frontis-lamina::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(6, 5, 4, 0.45), transparent 20%, transparent 50%, rgba(6, 5, 4, 0.82)); }
 .frontis-etiqueta { position: absolute; z-index: 2; top: 22px; left: 24px; font: 600 10px var(--f-ui); letter-spacing: 0.22em; text-transform: uppercase; color: rgba(239, 236, 230, 0.8); }
 .frontis-titulo { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; margin: 0; padding: 0 0.06em 0 0.04em; white-space: nowrap;
-  font: 300 min(calc(100cqi / (var(--n) * 0.58)), 24cqi)/0.74 var(--f-grotesca); letter-spacing: -0.07em; color: #f1eee8; transform: translateY(-0.02em); }
+  font: 400 min(calc(100cqi / (var(--n) * 0.44)), 21cqi)/1.1 var(--f-caligrafia); color: #f4f1eb; padding: 0 0.3em 0.02em 0.22em; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35); }
 .frontis-pie { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 18px; padding: 12px 24px; border-bottom: 1px solid var(--linea); font: 400 12px var(--f-ui); color: var(--tenue); }
 .frontis-pie b { font-weight: 600; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tinta-2); }
 .frontis-acciones { display: flex; gap: 16px; }
@@ -274,8 +273,9 @@ svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-widt
 .estudio-cuerpo { flex: 1; overflow-y: auto; padding: 22px 22px 60px; min-width: 0; }
 .estudio-cuerpo h3 { margin: 0 0 6px; font: 600 10px var(--f-ui); letter-spacing: 0.22em; text-transform: uppercase; color: var(--tenue); }
 .seccion + .seccion { margin-top: 28px; }
-.cartel { font: 400 clamp(30px, 3vw, 40px)/0.98 var(--f-cartel); text-transform: uppercase; color: var(--tinta); margin: 6px 0 12px; text-wrap: balance; }
-.cartel em { font-style: normal; color: var(--acento); }
+/* cartel: Bodoni en minúsculas y la palabra clave en caligrafía roja, como en la marca */
+.cartel { font: 400 clamp(30px, 2.7vw, 38px)/1.02 var(--f-titulo); letter-spacing: -0.015em; color: var(--tinta); margin: 6px 0 14px; text-wrap: balance; }
+.cartel em { font: 400 1.32em/0.8 var(--f-caligrafia); font-style: normal; letter-spacing: 0; color: var(--acento); }
 .ayuda { color: var(--tinta-2); font-size: 14px; margin: 0; max-width: 46ch; }
 .ayuda kbd, .tecla { font: 600 11px var(--f-ui); border: 1px solid var(--linea); padding: 1px 5px; border-radius: 2px; }
 .nota-pie { font-size: 12px; color: var(--tenue); margin: 8px 0 0; }
@@ -395,11 +395,11 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
 .portada-marca b { font: 700 17px var(--f-titulo); letter-spacing: 0.16em; }
 .portada-marca i { font: 400 27px/1 var(--f-caligrafia); font-style: normal; color: var(--tinta-2); }
 .portada-centro { position: relative; align-self: center; max-width: min(1040px, 100%); }
-.portada-verso { margin: 0; font-family: var(--f-cartel); line-height: 0.96; text-transform: uppercase; color: var(--tinta); text-wrap: balance; overflow-wrap: anywhere; animation: aparecer 1.1s cubic-bezier(.2, .8, .2, 1) both; }
-.portada-verso .roja { color: var(--acento); }
+.portada-verso { margin: 0; font-family: var(--f-titulo); font-weight: 400; line-height: 1.04; letter-spacing: -0.015em; color: var(--tinta); text-wrap: balance; overflow-wrap: anywhere; animation: aparecer 1.1s cubic-bezier(.2, .8, .2, 1) both; }
+.portada-verso .roja { font: 400 1.3em/0.8 var(--f-caligrafia); letter-spacing: 0; color: var(--acento); }
 .portada-ref { margin: 22px 0 0; font: 400 clamp(40px, 4.4vw, 60px)/1 var(--f-caligrafia); color: var(--tinta); display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; animation: aparecer 1.1s 0.25s cubic-bezier(.2, .8, .2, 1) both; }
 @keyframes aparecer { from { opacity: 0; transform: translateY(14px); } }
-.portada-pie .lema { font: 400 22px var(--f-cartel); text-transform: uppercase; letter-spacing: 0.02em; color: var(--tinta); }
+.portada-pie .lema { font: 400 24px var(--f-titulo); letter-spacing: -0.01em; color: var(--tinta); }
 .tocar { display: inline-flex; align-items: center; gap: 12px; font: 600 10.5px var(--f-ui); letter-spacing: 0.3em; text-transform: uppercase; color: var(--tinta-2); }
 .tocar i { display: block; width: 46px; height: 1px; background: var(--acento); animation: latido 2.4s ease-in-out infinite; transform-origin: left; }
 @keyframes latido { 0%, 100% { transform: scaleX(0.35); } 50% { transform: scaleX(1); } }
@@ -437,9 +437,17 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
 .lista-cintas li::before { content: ""; display: inline-block; width: 6px; height: 10px; margin-right: 8px; background: var(--acento); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%); }
 
 /* estantería: los 66 libros como lomos */
+/* láminas: el versículo del día como tablero de Pinterest */
+.laminas-inicio { display: grid; gap: 14px; }
+.muro { columns: 3 220px; column-gap: 14px; }
+.pin { position: relative; display: block; width: 100%; margin: 0 0 14px; break-inside: avoid; border-radius: 2px; overflow: hidden; background: var(--superficie); }
+.pin img { display: block; width: 100%; height: auto; transition: transform 0.5s cubic-bezier(.2, .8, .2, 1), opacity 0.3s; }
+.pin:hover img { transform: scale(1.025); }
+.pin .etiqueta-ui { position: absolute; left: 10px; bottom: 9px; padding: 4px 7px; background: rgba(13, 12, 11, 0.72); color: #efece6; opacity: 0; transition: opacity 0.2s; }
+.pin:hover .etiqueta-ui, .pin:focus-visible .etiqueta-ui { opacity: 1; }
 .estanteria { display: grid; gap: 12px; }
 .estante-cabeza { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
-.estante-cabeza h2 { margin: 0; font: 400 34px/1 var(--f-cartel); text-transform: uppercase; }
+.estante-cabeza h2 { margin: 0; font: 400 40px/1 var(--f-titulo); letter-spacing: -0.015em; }
 .estante { display: flex; align-items: flex-end; gap: 3px; overflow-x: auto; padding: 14px 2px 0; border-bottom: 3px solid var(--linea); scrollbar-width: thin; }
 .lomo {
   --lomo-fondo: var(--superficie-2); --lomo-tinta: var(--tinta);
@@ -505,9 +513,10 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
 
 /* ---------- diálogos ---------- */
 .dlg { width: min(660px, calc(100% - 24px)); max-height: calc(100% - 48px); padding: 0; background: var(--superficie); color: var(--tinta); border: 1px solid var(--linea); border-radius: 3px; box-shadow: var(--sombra); }
+.dlg.dlg-ancho { width: min(1080px, calc(100% - 24px)); }
 .dlg::backdrop { background: rgba(0, 0, 0, 0.6); }
 .dlg-cabeza { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 12px; border-bottom: 1px solid var(--linea); }
-.dlg-cabeza h2 { margin: 0; font: 400 34px/1 var(--f-cartel); text-transform: uppercase; }
+.dlg-cabeza h2 { margin: 0; font: 400 36px/1 var(--f-titulo); letter-spacing: -0.015em; }
 .dlg-cuerpo { padding: 18px 20px 24px; overflow-y: auto; }
 .dlg h3 { margin: 22px 0 8px; font: 600 10px var(--f-ui); letter-spacing: 0.22em; text-transform: uppercase; color: var(--tenue); }
 .dlg h3:first-child { margin-top: 0; }
@@ -578,4 +587,21 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .trazo { stroke-dashoffset: 0; }
+}
+
+/* estudio de láminas */
+.estudio-lamina { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(250px, 1fr); gap: 22px; align-items: start; }
+.lamina-vista { display: grid; place-items: center; background: var(--fondo); border: 1px solid var(--linea); padding: 14px; min-height: 300px; }
+.lamina-vista canvas { display: block; max-width: 100%; max-height: min(62vh, 640px); width: auto; height: auto; box-shadow: var(--sombra); transition: opacity 0.2s; }
+.lamina-vista.cargando canvas { opacity: 0.75; }
+.lamina-controles { display: grid; gap: 10px; align-content: start; }
+.lamina-controles .etiqueta-ui { margin-top: 6px; }
+.lamina-controles textarea { width: 100%; resize: vertical; font: 400 15px/1.45 var(--f-texto); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { padding: 7px 11px; border: 1px solid var(--linea); border-radius: 2px; font: 600 10px var(--f-ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tinta-2); }
+.chips button:hover { color: var(--tinta); }
+.chips button[aria-pressed="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--fondo); }
+@media (max-width: 760px) {
+  .estudio-lamina { grid-template-columns: 1fr; }
+  .muro { columns: 2 140px; }
 }

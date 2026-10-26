@@ -12,6 +12,7 @@ export const ui = $state({
   seleccion: [],        // números de versículo seleccionados
   ancla: null,          // último versículo tocado (para Mayús+clic)
   palabra: null,        // { texto, libro, cap, v }
+  lamina: null,         // lámina pedida desde el menú de inicio: { texto, referencia, clave, version, libro, estilo, formato }
   dialogo: null,        // 'versiones' | 'ajustes' | 'respaldo' | 'poster'
   aviso: null,          // { texto, error }
   leyendo: null,        // versículo que lee la voz

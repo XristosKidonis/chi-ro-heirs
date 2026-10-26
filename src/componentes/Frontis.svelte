@@ -11,7 +11,7 @@
   const datos = $derived(LIBROS[libro - 1]);
   const g = $derived(grabado(libro));
   const propia = $derived(usuario.portadas[libro]);
-  const nombre = $derived(nombreLibro(datos).toUpperCase());
+  const nombre = $derived(nombreLibro(datos));
   let entrada = $state();
   let cargada = $state(false);
 

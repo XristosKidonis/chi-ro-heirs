@@ -3,7 +3,7 @@
   import Versiones from './dialogos/Versiones.svelte';
   import Ajustes from './dialogos/Ajustes.svelte';
   import Respaldo from './dialogos/Respaldo.svelte';
-  import Poster from './dialogos/Poster.svelte';
+  import Laminas from './dialogos/Laminas.svelte';
   import { ui } from '../lib/ui.svelte.js';
   import { t } from '../lib/i18n.svelte.js';
   let dlg;
@@ -15,7 +15,7 @@
   });
 </script>
 
-<dialog class="dlg" bind:this={dlg} onclose={() => (ui.dialogo = null)} aria-labelledby="dlg-titulo">
+<dialog class="dlg" class:dlg-ancho={ui.dialogo === 'poster'} bind:this={dlg} onclose={() => { ui.dialogo = null; ui.lamina = null; }} aria-labelledby="dlg-titulo">
   {#if ui.dialogo}
     <div class="dlg-cabeza">
       <h2 id="dlg-titulo">{t(`dlg.${ui.dialogo}`)}</h2>
@@ -25,7 +25,7 @@
       {#if ui.dialogo === 'versiones'}<Versiones />
       {:else if ui.dialogo === 'ajustes'}<Ajustes />
       {:else if ui.dialogo === 'respaldo'}<Respaldo />
-      {:else if ui.dialogo === 'poster'}<Poster />{/if}
+      {:else if ui.dialogo === 'poster'}<Laminas />{/if}
     </div>
   {/if}
 </dialog>

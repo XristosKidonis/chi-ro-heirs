@@ -53,7 +53,7 @@ await paso('portada y menú de inicio', async () => {
 });
 await paso('arranca en Génesis 1 con NTV y portadilla', async () => {
   const h1 = await pag.textContent('.frontis-titulo');
-  if (!/GÉNESIS/.test(h1)) throw new Error(h1);
+  if (!/Génesis/.test(h1)) throw new Error(h1);
   const sub = await pag.textContent('.texto .subtitulo');
   if (!/Título/.test(sub)) throw new Error('sin subtítulo NTV');
 });
@@ -170,12 +170,21 @@ await paso('progreso refleja el capítulo leído', async () => {
   await pag.waitForSelector('.cob-celdas button.leido');
 });
 
-await paso('póster', async () => {
+await paso('lámina en los seis acabados', async () => {
   await pag.locator('.texto [data-v="16"] .num').click();
-  await pag.click('.acc-botones button:has-text("Póster")');
-  await pag.waitForSelector('.poster-vista img', { timeout: 10000 });
+  await pag.click('.acc-botones button:has-text("Lámina")');
+  await pag.waitForSelector('.estudio-lamina canvas', { timeout: 10000 });
+  for (const e of ['Cartel', 'Ultramar', 'Aura', 'Aerosol', 'Cruz', 'Grabado']) {
+    await pag.click(`.chips button:has-text("${e}")`);
+    await pag.waitForTimeout(600);
+    await pag.waitForSelector('.lamina-vista:not(.cargando)', { timeout: 10000 });
+  }
+  await pag.click('.chips button:has-text("Fondo de celular")');
+  await pag.waitForTimeout(800);
+  const [w, h] = await pag.evaluate(() => { const c = document.querySelector('.estudio-lamina canvas'); return [c.width, c.height]; });
+  if (w !== 1179 || h !== 2556) throw new Error(`tamaño ${w}x${h}`);
 });
-await pag.screenshot({ path: `${OUT}/07-poster.png` });
+await pag.screenshot({ path: `${OUT}/07-lamina.png` });
 await pag.click('.dlg .dlg-cabeza .ico');
 
 await paso('los datos sobreviven a recargar', async () => {

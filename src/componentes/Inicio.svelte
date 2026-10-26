@@ -10,6 +10,7 @@
   import { LIBROS, TOTAL_CAPITULOS, nombreLibro, nombreRef, parsearReferencia, normalizar } from '../lib/libros.js';
   import { versiculoDelDia } from '../lib/versiculosDelDia.js';
   import { grabado } from '../lib/grabados.js';
+  import { dibujarLamina } from '../lib/laminas.js';
   import { t, idioma, fecha } from '../lib/i18n.svelte.js';
 
   const vd = versiculoDelDia();
@@ -23,6 +24,44 @@
   let buscador = $state();
 
   const ingles = $derived(idioma() === 'en');
+
+  // Galería de láminas: el versículo del día en cada acabado, como un tablero de Pinterest
+  const MURO = [
+    { estilo: 'portadilla', formato: 'historia' },
+    { estilo: 'ultramar', formato: 'post' },
+    { estilo: 'cartel', formato: 'post', tono: 'papel' },
+    { estilo: 'aura', formato: 'historia' },
+    { estilo: 'aerosol', formato: 'post' },
+    { estilo: 'cruz', formato: 'post' },
+  ];
+  let muro = $state([]);
+  const laminaDelDia = () => ({
+    texto,
+    referencia: nombreRef(vd.libro, vd.cap, vd.v, vd.hasta),
+    clave: (ingles ? vd.claves.en : vd.claves.es)[0],
+    version: versionTexto,
+    libro: vd.libro,
+  });
+  $effect(() => {
+    if (!texto || ui.pasoInicio !== 'menu') return;
+    const base = laminaDelDia();
+    let vivo = true;
+    (async () => {
+      const lista = [];
+      for (const m of MURO) {
+        const c = document.createElement('canvas');
+        await dibujarLamina(c, { ...base, ...m, escala: 0.34 });
+        if (!vivo) return;
+        lista.push({ ...m, url: c.toDataURL('image/jpeg', 0.86) });
+        muro = [...lista];
+      }
+    })();
+    return () => { vivo = false; };
+  });
+  function abrirLamina(m) {
+    ui.lamina = { ...laminaDelDia(), estilo: m.estilo, formato: m.formato, tono: m.tono };
+    ui.dialogo = 'poster';
+  }
   const pos = $derived(usuario.ajustes.pos);
 
   // Texto del versículo del día: la versión del usuario si responde pronto; si no, una incluida.
@@ -47,13 +86,13 @@
     const H = alto * (ancho > 900 ? 0.48 : 0.5);
     const chars = Math.max(20, texto.length);
     const palabraLarga = Math.max(4, ...texto.split(/\s+/).map((w) => w.length));
-    const porArea = Math.sqrt((H * W) / (0.52 * chars));
-    const porPalabra = W / (palabraLarga * 0.56);
-    return Math.round(Math.max(28, Math.min(124, porArea, porPalabra)));
+    const porArea = Math.sqrt((H * W) / (0.6 * chars));
+    const porPalabra = W / (palabraLarga * 0.6);
+    return Math.round(Math.max(28, Math.min(112, porArea, porPalabra)));
   });
 
   const claves = $derived((ingles ? vd.claves.en : vd.claves.es).map((k) => normalizar(k)));
-  const palabras = $derived(texto.toUpperCase().replace(/[«»"“”]/g, '').split(/\s+/).filter(Boolean).map((w) => {
+  const palabras = $derived(texto.replace(/[«»"“”]/g, '').split(/\s+/).filter(Boolean).map((w) => {
     const n = normalizar(w).replace(/[^a-z0-9]/g, '');
     return { w, roja: claves.some((k) => n === k || (k.length >= 5 && n.startsWith(k))) };
   }));
@@ -211,6 +250,21 @@
           <span class="t-grande">{Math.round((totalLeidos / TOTAL_CAPITULOS) * 1000) / 10}%</span>
           <span class="t-pie">{t('ini.capLeidos', { n: totalLeidos, total: TOTAL_CAPITULOS })}</span>
           <div class="barra-prog"><i style="width: {(totalLeidos / TOTAL_CAPITULOS) * 100}%"></i></div>
+        </div>
+      </div>
+
+      <div class="laminas-inicio">
+        <div class="estante-cabeza">
+          <h2>{t('lam.titulo')}</h2>
+          <span class="nota-pie">{t('lam.ayuda')}</span>
+        </div>
+        <div class="muro">
+          {#each muro as m (m.estilo)}
+            <button class="pin" class:alto={m.formato === 'historia'} onclick={() => abrirLamina(m)}>
+              <img src={m.url} alt={`${t(`lam.e.${m.estilo}`)} · ${nombreRef(vd.libro, vd.cap, vd.v, vd.hasta)}`} />
+              <span class="etiqueta-ui">{t(`lam.e.${m.estilo}`)}</span>
+            </button>
+          {/each}
         </div>
       </div>
 

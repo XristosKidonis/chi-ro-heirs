@@ -29,7 +29,7 @@
     if (a === 'cerrar') ui.seleccion = [];
     else if (a === 'copiar') copiar();
     else if (a === 'memoria') aMemoria();
-    else if (a === 'poster') ui.dialogo = 'poster';
+    else if (a === 'poster') { ui.lamina = null; ui.dialogo = 'poster'; }
     else abrirPestana(a);
   }
 </script>
