@@ -224,9 +224,7 @@ export function cargarImagen(src) {
   });
 }
 
-let sinFirma = false;
 function firma(ctx, x, y, color, s, alinear = 'left') {
-  if (sinFirma) return;
   ctx.save();
   ctx.font = `600 ${17 * s}px ${F.ui}`;
   espaciado(ctx, 5 * s);
@@ -298,22 +296,14 @@ export function fraseCorta(texto, clave, max = 8) {
     p += `${clausulas[j - 1].sep} ${clausulas[j].t}`;
     n += clausulas[j].n;
   }
-  let pw = p.split(/\s+/);
-  // una cláusula que se pasa por poco queda entera («Todo lo puedo en Cristo que me fortalece»)
-  if (pw.length > max + 2) {
+  const pw = p.split(/\s+/);
+  if (pw.length > max) {
     const idx = Math.max(0, pw.findIndex((w) => k && limpiar(w).startsWith(k)));
     const ini = Math.max(0, Math.min(idx - Math.floor(max / 2), pw.length - max));
-    pw = pw.slice(ini, ini + max);
+    p = pw.slice(ini, ini + max).join(' ');
   }
-  // que no empiece con «porque», «y», «pues»… ni termine colgando en «que», «de», «los»…
-  while (pw.length > 3 && INICIOS.has(limpiar(pw[0]))) pw = pw.slice(1);
-  while (pw.length > 3 && COLGANTES.has(limpiar(pw.at(-1)))) pw = pw.slice(0, -1);
-  p = pw.join(' ').replace(/[,;:]+$/, '');
-  return p.charAt(0).toUpperCase() + p.slice(1);
+  return p;
 }
-const INICIOS = new Set(['porque', 'pues', 'y', 'mas', 'pero', 'entonces', 'for', 'and', 'but', 'then', 'so']);
-const COLGANTES = new Set(['que', 'de', 'me', 'te', 'nos', 'le', 'les', 'acerca', 'sobre', 'como', 'del', 'los', 'las', 'el', 'la', 'lo', 'un', 'una', 'y', 'a', 'al', 'en', 'por', 'para', 'con', 'se', 'mi', 'tu', 'su', 'sus', 'mis', 'es', 'no',
-  'the', 'of', 'a', 'an', 'and', 'to', 'in', 'for', 'that', 'with', 'my', 'your', 'his', 'is', 'be', 'not']);
 
 // Reparte la frase en renglones parecidos y da a cada uno el tamaño que llena el ancho
 // (las palabras cortas como «Y» o «EN» quedan más chicas, como en los carteles de pedrería).
@@ -377,10 +367,10 @@ const DIBUJAR = {
     firma(ctx, m, m + 10 * s, 'rgba(241,238,232,0.85)', s);
     ctx.font = `400 ${58 * s}px ${F.pinyon}`;
     ctx.fillStyle = '#f1eee8';
-    const yRef = formato === 'celular' ? H * 0.3 : m + (sinFirma ? 150 : 86) * s;
+    const yRef = formato === 'celular' ? H * 0.3 : m + 86 * s;
     ctx.fillText(o.referencia, m, yRef);
     etiqueta(ctx, o.version, m, yRef + 44 * s, 'rgba(241,238,232,0.62)', s);
-    if (o.credito) etiqueta(ctx, o.credito, W - m, m + (sinFirma ? 64 : 10) * s, 'rgba(241,238,232,0.5)', s * 0.8, 'right');
+    if (o.credito) etiqueta(ctx, o.credito, W - m, m + 10 * s, 'rgba(241,238,232,0.5)', s * 0.8, 'right');
   },
 
   // Tono sobre tono: azul ultramar y el versículo en un azul apenas más claro
@@ -767,17 +757,8 @@ const DIBUJAR = {
 };
 
 // Dibuja una lámina en el canvas. o: { estilo, formato, tono, texto, clave, referencia, version, libro, imagen, escala }
-// Láminas oscuras y claras: la portada elige el logotipo y el texto de encima según esto.
-export const OSCURAS = new Set(['portadilla', 'ultramar', 'aura', 'pedreria']);
-
-// o.medida = { w, h } dibuja a un tamaño libre (la portada a pantalla completa); el diseño
-// se elige por la proporción. o.sinFirma omite el «CHI-RO HEIRS» de la lámina.
 export async function dibujarLamina(canvas, o) {
-  if (o.medida) {
-    const r = o.medida.w / o.medida.h;
-    o = { ...o, formato: r > 1.15 ? 'escritorio' : r < 0.52 ? 'celular' : r < 0.7 ? 'historia' : 'post' };
-  }
-  const f = o.medida || FORMATOS[o.formato] || FORMATOS.post;
+  const f = FORMATOS[o.formato] || FORMATOS.post;
   const escala = o.escala || 1;
   const W = Math.round(f.w * escala);
   const H = Math.round(f.h * escala);
@@ -794,11 +775,6 @@ export async function dibujarLamina(canvas, o) {
     credito: o.imagen ? '' : g ? `Gustave Doré · ${g.titulo}` : '',
   };
   ctx.save();
-  sinFirma = !!o.sinFirma;
-  try {
-    await DIBUJAR[o.estilo in DIBUJAR ? o.estilo : 'portadilla'](ctx, datos);
-  } finally {
-    sinFirma = false;
-    ctx.restore();
-  }
+  await DIBUJAR[o.estilo in DIBUJAR ? o.estilo : 'portadilla'](ctx, datos);
+  ctx.restore();
 }
