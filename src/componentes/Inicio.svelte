@@ -10,7 +10,6 @@
   import { LIBROS, TOTAL_CAPITULOS, nombreLibro, nombreRef, parsearReferencia, normalizar } from '../lib/libros.js';
   import { versiculoDelDia } from '../lib/versiculosDelDia.js';
   import { grabado } from '../lib/grabados.js';
-  import Logotipo from './Logotipo.svelte';
   import { dibujarLamina } from '../lib/laminas.js';
   import { t, idioma, fecha } from '../lib/i18n.svelte.js';
 
@@ -187,7 +186,7 @@
     <section class="portada-w" role="button" tabindex="0" aria-label={t('ini.toca')} onclick={entrarAlMenu}>
       <div class="marca-agua" aria-hidden="true"><Emblema tam={1000} /></div>
       <header class="portada-cabeza">
-        <span class="portada-marca"><Logotipo alto={38} aura /></span>
+        <span class="portada-marca"><span class="marca-caligrafia">Chi-Ro Heirs</span></span>
         <span class="etiqueta-ui">{t('ini.diaVerso')} · {hoy}</span>
       </header>
       <div class="portada-centro">
@@ -208,7 +207,7 @@
     <section class="menu-inicio">
       <header class="menu-cabeza">
         <button class="portada-marca" onclick={() => (ui.pasoInicio = 'portada')} title={t('ini.portada')}>
-          <Logotipo alto={30} />
+          <span class="marca-caligrafia">Chi-Ro Heirs</span>
         </button>
         <button class="boton" onclick={() => (ui.vista = 'lector')}>{t('ini.abrir')} →</button>
       </header>

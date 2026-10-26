@@ -7,7 +7,6 @@
   import Acciones from './componentes/Acciones.svelte';
   import Dialogo from './componentes/Dialogo.svelte';
   import Emblema from './componentes/Emblema.svelte';
-  import Logotipo from './componentes/Logotipo.svelte';
   import Inicio from './componentes/Inicio.svelte';
   import { ui, irA, recargarCapitulo } from './lib/ui.svelte.js';
   import { usuario, iniciarUsuario } from './lib/usuario.svelte.js';
@@ -97,7 +96,7 @@
       <p class="cartel">{t('app.noAbrir')} <em>{t('app.noAbrirEm')}</em></p>
       <p class="ayuda">{fallo}</p>
     {:else}
-      <span class="arranque-marca"><Logotipo alto={96} apilado aura /></span>
+      <span class="arranque-marca"><span class="marca-caligrafia">Chi-Ro Heirs</span></span>
       <span class="arranque-lema">Herederos de Dios y coherederos con Cristo · Ro 8:17</span>
     {/if}
   </div>
