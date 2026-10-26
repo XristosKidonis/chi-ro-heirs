@@ -11,9 +11,13 @@ const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = createRequire(process.env.PLAYWRIGHT_DIR || import.meta.url)('playwright');
 const fuente = fs.readFileSync(`${RAIZ}/public/fuentes/archivo-latin-variable.woff2`).toString('base64');
 
+// grande: fuera de foco con halo amplio (arranque, marca, instaladores).
+// chico: para la barra y el menú; poco halo y grano fino dentro de la letra, dibujado ya a su tamaño
+// para que la textura no se pierda al achicarlo.
 const VARIANTES = {
-  apilado: { lineas: ['CHI-RO', 'HEIRS'], ancho: 1400 },
-  horizontal: { lineas: ['CHI-RO HEIRS'], ancho: 2400 },
+  apilado: { lineas: ['CHI-RO', 'HEIRS'], ancho: 1400, foco: 0.09, halo: 0.32, haloA: 0.7, huecos: 0 },
+  horizontal: { lineas: ['CHI-RO HEIRS'], ancho: 2400, foco: 0.09, halo: 0.32, haloA: 0.7, huecos: 0 },
+  chico: { lineas: ['CHI-RO HEIRS'], ancho: 330, foco: 0.03, halo: 0.13, haloA: 0.32, huecos: 0.14, soloApp: true },
 };
 const TINTAS = { hueso: [241, 238, 232], tinta: [20, 20, 20] };
 
@@ -64,8 +68,8 @@ for (const [nombre, v] of Object.entries(VARIANTES)) {
         return o.getImageData(0, 0, W, H).data;
       };
       const tam = Math.min(...tams);
-      const foco = difuminar(capa, tam * 0.09);
-      const halo = difuminar(capa, tam * 0.32);
+      const foco = difuminar(capa, Math.max(1, tam * v.foco));
+      const halo = difuminar(capa, tam * v.halo);
       const out = lienzo(W, H);
       const o = out.getContext('2d');
       const img = o.createImageData(W, H);
@@ -75,23 +79,24 @@ for (const [nombre, v] of Object.entries(VARIANTES)) {
         const ha = halo[i + 3] / 255;
         if (fo < 0.01 && ha < 0.01) continue;
         let a = 0;
-        if (fo > 0.5 + (Math.random() - 0.5) * 0.7) a = 0.93 + Math.random() * 0.07;
-        else if (Math.random() < Math.pow(ha, 1.3) * 0.7) a = 0.45 + Math.random() * 0.45;
+        if (fo > 0.5 + (Math.random() - 0.5) * 0.7) a = Math.random() < v.huecos ? 0.35 : 0.93 + Math.random() * 0.07;
+        else if (Math.random() < Math.pow(ha, 1.3) * v.haloA) a = 0.45 + Math.random() * 0.45;
         if (!a) continue;
         d[i] = rgb[0]; d[i + 1] = rgb[1]; d[i + 2] = rgb[2];
         d[i + 3] = Math.round(a * 255);
       }
       o.putImageData(img, 0, 0);
+      if (v.soloApp) return [null, out.toDataURL('image/webp', 0.9)];
       const chico = lienzo(Math.round(W * 0.42), Math.round(H * 0.42));
       const ch = chico.getContext('2d');
       ch.imageSmoothingQuality = 'high';
       ch.drawImage(out, 0, 0, chico.width, chico.height);
       return [out.toDataURL('image/png'), chico.toDataURL('image/webp', 0.82)];
     }, { fuente, v, rgb });
-    const [png, webp] = url.map((u) => Buffer.from(u.split(',')[1], 'base64'));
-    fs.writeFileSync(`${RAIZ}/marca/png/logotipo-${nombre}-${tono}.png`, png);
+    const [png, webp] = url.map((u) => u && Buffer.from(u.split(',')[1], 'base64'));
+    if (png) fs.writeFileSync(`${RAIZ}/marca/png/logotipo-${nombre}-${tono}.png`, png);
     fs.writeFileSync(`${RAIZ}/public/img/logotipo-${nombre}-${tono}.webp`, webp);
-    console.log('listo', nombre, tono, png.length, webp.length);
+    console.log('listo', nombre, tono, png?.length, webp.length);
   }
 }
 await b.close();

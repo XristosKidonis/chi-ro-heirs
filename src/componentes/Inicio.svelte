@@ -207,7 +207,7 @@
     <section class="menu-inicio">
       <header class="menu-cabeza">
         <button class="portada-marca" onclick={() => (ui.pasoInicio = 'portada')} title={t('ini.portada')}>
-          <span class="logotipo" role="img" aria-label="Chi-Ro Heirs"></span>
+          <span class="logotipo chico" role="img" aria-label="Chi-Ro Heirs"></span>
         </button>
         <button class="boton" onclick={() => (ui.vista = 'lector')}>{t('ini.abrir')} →</button>
       </header>

@@ -61,6 +61,7 @@
   --alto-barra: 58px;
   --logotipo: url(/img/logotipo-horizontal-hueso.webp);
   --logotipo-apilado: url(/img/logotipo-apilado-hueso.webp);
+  --logotipo-chico: url(/img/logotipo-chico-hueso.webp);
   color-scheme: dark;
 }
 
@@ -72,7 +73,7 @@
     --sombra: 0 18px 50px rgba(20, 18, 15, 0.16); --grano: 0.04;
     --m-oro: rgba(242, 196, 40, 0.5); --m-rojo: rgba(214, 40, 28, 0.32); --m-azul: rgba(60, 110, 255, 0.28);
     --m-verde: rgba(40, 170, 100, 0.3); --m-hueso: rgba(14, 14, 14, 0.12); --seleccion: rgba(14, 14, 14, 0.05);
-    --logotipo: url(/img/logotipo-horizontal-tinta.webp); --logotipo-apilado: url(/img/logotipo-apilado-tinta.webp);
+    --logotipo: url(/img/logotipo-horizontal-tinta.webp); --logotipo-apilado: url(/img/logotipo-apilado-tinta.webp); --logotipo-chico: url(/img/logotipo-chico-tinta.webp);
     color-scheme: light;
   }
 }
@@ -82,7 +83,7 @@
   --sombra: 0 18px 50px rgba(20, 18, 15, 0.16); --grano: 0.04;
   --m-oro: rgba(242, 196, 40, 0.5); --m-rojo: rgba(214, 40, 28, 0.32); --m-azul: rgba(60, 110, 255, 0.28);
   --m-verde: rgba(40, 170, 100, 0.3); --m-hueso: rgba(14, 14, 14, 0.12); --seleccion: rgba(14, 14, 14, 0.05);
-  --logotipo: url(/img/logotipo-horizontal-tinta.webp); --logotipo-apilado: url(/img/logotipo-apilado-tinta.webp);
+  --logotipo: url(/img/logotipo-horizontal-tinta.webp); --logotipo-apilado: url(/img/logotipo-apilado-tinta.webp); --logotipo-chico: url(/img/logotipo-chico-tinta.webp);
   color-scheme: light;
 }
 
@@ -123,6 +124,8 @@ svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-widt
 .logotipo { display: inline-block; flex: none; height: var(--alto, 34px); aspect-ratio: 3.913; margin: calc(var(--alto, 34px) * -0.09) 0;
   background: var(--logotipo) center / contain no-repeat; }
 .logotipo.apilado { aspect-ratio: 1.4415; background-image: var(--logotipo-apilado); }
+/* en la barra y el menú: el mismo logotipo con poco halo y grano fino, para que no se empaste en chico */
+.logotipo.chico { aspect-ratio: 3.897; background-image: var(--logotipo-chico); }
 .ir { flex: 1 1 220px; max-width: 340px; min-width: 0; position: relative; }
 .ir input, .sel select {
   width: 100%; height: 36px; padding: 0 12px;
