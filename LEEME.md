@@ -54,7 +54,7 @@ Por la licencia, el texto de la NTV y la NLT no se guarda en disco: se pide al l
 
 ## Marca
 
-Logos y recursos en [`marca/`](marca/). Guía de marca completa: https://claude.ai/artifact/V2rWgxXXhJef5VdWbXjq3w
+Logotipo (estilo Aura, en modo claro y oscuro), monogramas y recursos en [`marca/`](marca/). Guía de marca completa: https://claude.ai/artifact/V2rWgxXXhJef5VdWbXjq3w
 
 ## Desarrollo
 

@@ -186,7 +186,7 @@
     <section class="portada-w" role="button" tabindex="0" aria-label={t('ini.toca')} onclick={entrarAlMenu}>
       <div class="marca-agua" aria-hidden="true"><Emblema tam={1000} /></div>
       <header class="portada-cabeza">
-        <span class="portada-marca"><Emblema tam={34} /><b>CHI-RO</b><i>Heirs</i></span>
+        <span class="portada-marca"><span class="logotipo" role="img" aria-label="Chi-Ro Heirs"></span></span>
         <span class="etiqueta-ui">{t('ini.diaVerso')} · {hoy}</span>
       </header>
       <div class="portada-centro">
@@ -207,7 +207,7 @@
     <section class="menu-inicio">
       <header class="menu-cabeza">
         <button class="portada-marca" onclick={() => (ui.pasoInicio = 'portada')} title={t('ini.portada')}>
-          <Emblema tam={30} /><b>CHI-RO</b><i>Heirs</i>
+          <span class="logotipo" role="img" aria-label="Chi-Ro Heirs"></span>
         </button>
         <button class="boton" onclick={() => (ui.vista = 'lector')}>{t('ini.abrir')} →</button>
       </header>

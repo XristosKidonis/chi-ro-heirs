@@ -14,6 +14,8 @@ const OUT = `${RAIZ}/src-tauri/instalador`;
 const b64 = (f) => fs.readFileSync(f).toString('base64');
 const fuente = (familia, peso, archivo) =>
   `@font-face{font-family:${familia};font-weight:${peso};src:url(data:font/woff2;base64,${b64(`${F}/${archivo}`)})}`;
+// el logotipo Aura (hueso sobre oscuro, tinta sobre claro), recortado al ancho de las letras con su halo
+const logo = (tono, alto) => `<img src="data:image/png;base64,${b64(`${RAIZ}/marca/png/logotipo-horizontal-${tono}.png`)}" style="height:${alto}px;margin:-${Math.round(alto * 0.09)}px 0;display:block">`;
 const lamina = (n) => `data:image/webp;base64,${b64(`${RAIZ}/public/grabados/dore-${String(n).padStart(3, '0')}.webp`)}`;
 
 const estilos = `<style>
@@ -38,7 +40,7 @@ const xr = (c, w) => `<svg width="${w}" height="${w}" viewBox="0 0 100 100" fill
 // Columna con lámina para la barra lateral de NSIS y el diálogo de MSI (164 px de ancho)
 const columna = (n) => `
   <div class="lamina" style="left:0;top:0;width:164px;height:314px"><img src="${lamina(n)}"></div>
-  <div class="marca" style="position:absolute;top:18px;left:14px;color:#efece6;--t:11px">${xr('#efece6', 16)}<b>CHI-RO</b><i>Heirs</i></div>
+  <div style="position:absolute;top:14px;left:8px">${logo('hueso', 26)}</div>
   <div style="position:absolute;bottom:16px;left:14px;right:10px;color:#efece6">
     <div style="font:300 30px/.9 Grotesca;letter-spacing:-.06em">Toma<br>y lee.</div>
     <div class="et" style="font-size:6.5px;margin-top:8px;opacity:.7">Grabado de Gustave Doré</div>
@@ -49,8 +51,8 @@ const piezas = {
   'dmg-fondo': [660, 400, `<body style="--w:660px;--h:400px;background:#f7f6f2;color:#0e0e0e">
     <div class="lamina" style="left:0;top:0;width:236px;height:400px"><img src="${lamina(95)}" style="object-position:40% 50%"></div>
     <div class="et" style="position:absolute;left:18px;bottom:16px;color:#efece6;opacity:.75;font-size:7px">Doré · La conversión de Saulo</div>
-    <div style="position:absolute;left:266px;right:30px;top:30px;display:flex;justify-content:space-between;align-items:baseline">
-      <div class="marca" style="--t:12px">${xr('#0e0e0e', 17)}<b>CHI-RO</b><i style="color:#46433f">Heirs</i></div>
+    <div style="position:absolute;left:266px;right:30px;top:30px;display:flex;justify-content:space-between;align-items:center">
+      <div style="margin-left:-8px">${logo('tinta', 28)}</div>
       <span class="et" style="color:#6b6b6b">Lector bíblico</span>
     </div>
     <div style="position:absolute;left:266px;right:30px;top:62px;border-top:1px solid #0e0e0e"></div>
@@ -67,11 +69,11 @@ const piezas = {
   'nsis-lateral': [164, 314, `<body style="--w:164px;--h:314px;background:#121110">${columna(95)}</body>`],
   // Windows NSIS: cabecera de las páginas internas (150x57)
   'nsis-cabecera': [150, 57, `<body style="--w:150px;--h:57px;background:#ffffff;color:#0e0e0e;display:flex;align-items:center;justify-content:flex-end;padding-right:12px">
-    <div class="marca" style="--t:11px">${xr('#0e0e0e', 20)}<b>CHI-RO</b><i style="color:#46433f">Heirs</i></div>
+    ${logo('tinta', 30)}
   </body>`],
   // Windows MSI: banner superior (493x58); el título del paso se escribe a la izquierda
   'msi-banner': [493, 58, `<body style="--w:493px;--h:58px;background:#ffffff;color:#0e0e0e">
-    <div class="marca" style="position:absolute;right:18px;top:19px;--t:11px">${xr('#0e0e0e', 20)}<b>CHI-RO</b><i style="color:#46433f">Heirs</i></div>
+    <div style="position:absolute;right:10px;top:15px">${logo('tinta', 30)}</div>
   </body>`],
   // Windows MSI: diálogo de bienvenida (493x312); la franja izquierda de 164 px es la imagen
   'msi-dialogo': [493, 312, `<body style="--w:493px;--h:312px;background:#ffffff">${columna(95)}</body>`],

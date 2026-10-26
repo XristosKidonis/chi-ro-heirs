@@ -54,7 +54,7 @@
   </button>
   <button class="marca" onclick={() => { ui.pasoInicio = 'menu'; ui.vista = 'inicio'; }} aria-label="Chi-Ro Heirs · {t('ini.abrir')}" title="Inicio">
     <Emblema tam={30} />
-    <span class="marca-t"><b>CHI-RO</b><i>Heirs</i></span>
+    <span class="logotipo marca-t" role="img" aria-label="Chi-Ro Heirs"></span>
   </button>
   <form class="ir" onsubmit={enviar} role="search">
     <input bind:this={entrada} bind:value={texto} type="text" placeholder={t('barra.irBuscar')}

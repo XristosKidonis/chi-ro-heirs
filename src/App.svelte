@@ -96,7 +96,7 @@
       <p class="cartel">{t('app.noAbrir')} <em>{t('app.noAbrirEm')}</em></p>
       <p class="ayuda">{fallo}</p>
     {:else}
-      <span class="arranque-marca"><b>CHI-RO</b><i>Heirs</i></span>
+      <span class="logotipo apilado arranque-marca" role="img" aria-label="Chi-Ro Heirs"></span>
       <span class="arranque-lema">Herederos de Dios y coherederos con Cristo · Ro 8:17</span>
     {/if}
   </div>
