@@ -59,9 +59,6 @@
   --tam-texto: 21px;
   --interlineado: 1.6;
   --alto-barra: 58px;
-  --logotipo: url(/img/logotipo-horizontal-hueso.webp);
-  --logotipo-apilado: url(/img/logotipo-apilado-hueso.webp);
-  --logotipo-chico: url(/img/logotipo-chico-hueso.webp);
   color-scheme: dark;
 }
 
@@ -73,7 +70,6 @@
     --sombra: 0 18px 50px rgba(20, 18, 15, 0.16); --grano: 0.04;
     --m-oro: rgba(242, 196, 40, 0.5); --m-rojo: rgba(214, 40, 28, 0.32); --m-azul: rgba(60, 110, 255, 0.28);
     --m-verde: rgba(40, 170, 100, 0.3); --m-hueso: rgba(14, 14, 14, 0.12); --seleccion: rgba(14, 14, 14, 0.05);
-    --logotipo: url(/img/logotipo-horizontal-tinta.webp); --logotipo-apilado: url(/img/logotipo-apilado-tinta.webp); --logotipo-chico: url(/img/logotipo-chico-tinta.webp);
     color-scheme: light;
   }
 }
@@ -83,7 +79,6 @@
   --sombra: 0 18px 50px rgba(20, 18, 15, 0.16); --grano: 0.04;
   --m-oro: rgba(242, 196, 40, 0.5); --m-rojo: rgba(214, 40, 28, 0.32); --m-azul: rgba(60, 110, 255, 0.28);
   --m-verde: rgba(40, 170, 100, 0.3); --m-hueso: rgba(14, 14, 14, 0.12); --seleccion: rgba(14, 14, 14, 0.05);
-  --logotipo: url(/img/logotipo-horizontal-tinta.webp); --logotipo-apilado: url(/img/logotipo-apilado-tinta.webp); --logotipo-chico: url(/img/logotipo-chico-tinta.webp);
   color-scheme: light;
 }
 
@@ -118,14 +113,7 @@ svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-widt
   background: var(--fondo); border-bottom: 1px solid var(--linea);
 }
 .marca { display: flex; align-items: center; gap: 10px; color: var(--tinta); margin-right: 6px; white-space: nowrap; }
-.marca-t { --alto: 30px; }
-/* logotipo Aura: CHI-RO HEIRS fuera de foco con halo de grano; hueso en Cuero, tinta en Papel.
-   La imagen trae su propio halo alrededor, por eso el margen negativo. */
-.logotipo { display: inline-block; flex: none; height: var(--alto, 34px); aspect-ratio: 3.913; margin: calc(var(--alto, 34px) * -0.09) 0;
-  background: var(--logotipo) center / contain no-repeat; }
-.logotipo.apilado { aspect-ratio: 1.4415; background-image: var(--logotipo-apilado); }
-/* en la barra y el menú: el mismo logotipo con poco halo y grano fino, para que no se empaste en chico */
-.logotipo.chico { aspect-ratio: 3.897; background-image: var(--logotipo-chico); }
+.marca-t { display: flex; align-items: center; color: var(--tinta); }
 .ir { flex: 1 1 220px; max-width: 340px; min-width: 0; position: relative; }
 .ir input, .sel select {
   width: 100%; height: 36px; padding: 0 12px;
@@ -593,7 +581,7 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
 /* carga inicial: el crismón se dibuja */
 .arranque { height: 100%; display: grid; place-items: center; align-content: center; gap: 18px; text-align: center; }
 .arranque .cartel { font-size: 28px; }
-.arranque-marca { --alto: 120px; margin: 0; animation: aparecer 1s 0.5s both; }
+.arranque-marca { color: var(--tinta); animation: aparecer 1s 0.5s both; }
 .arranque-lema { font: 400 22px var(--f-caligrafia); color: var(--tinta-2); animation: aparecer 1s 0.9s both; }
 .trazo { stroke-dasharray: 260; stroke-dashoffset: 260; animation: trazar 1.4s cubic-bezier(.6, 0, .3, 1) forwards; }
 .trazo.t2 { animation-delay: 0.35s; }

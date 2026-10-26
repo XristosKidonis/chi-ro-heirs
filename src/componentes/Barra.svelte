@@ -1,5 +1,6 @@
 <script>
   import Emblema from './Emblema.svelte';
+  import Logotipo from './Logotipo.svelte';
   import Icono from './Icono.svelte';
   import { ui, irA, abrirPestana, avisar } from '../lib/ui.svelte.js';
   import { usuario, ajustar } from '../lib/usuario.svelte.js';
@@ -54,7 +55,7 @@
   </button>
   <button class="marca" onclick={() => { ui.pasoInicio = 'menu'; ui.vista = 'inicio'; }} aria-label="Chi-Ro Heirs · {t('ini.abrir')}" title="Inicio">
     <Emblema tam={30} />
-    <span class="logotipo chico marca-t" role="img" aria-label="Chi-Ro Heirs"></span>
+    <span class="marca-t"><Logotipo alto={21} /></span>
   </button>
   <form class="ir" onsubmit={enviar} role="search">
     <input bind:this={entrada} bind:value={texto} type="text" placeholder={t('barra.irBuscar')}
