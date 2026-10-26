@@ -390,10 +390,8 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.5 var(--f
   position: relative; min-height: 100%; display: grid; grid-template-rows: auto 1fr auto; gap: 24px;
   padding: clamp(24px, 4.5vw, 64px) max(clamp(20px, 5vw, 72px), env(safe-area-inset-right, 0px)) clamp(24px, 4vw, 56px) max(clamp(20px, 5vw, 72px), env(safe-area-inset-left, 0px));
   cursor: pointer; overflow: hidden; outline: none;
-  background: radial-gradient(120% 90% at 85% 40%, var(--superficie-2) 0%, var(--fondo) 62%);
+  background: var(--fondo);
 }
-.marca-agua { position: absolute; right: -12vh; top: 50%; transform: translateY(-50%); color: var(--tinta); opacity: 0.045; pointer-events: none; }
-.marca-agua svg { width: auto; height: 122vh; display: block; }
 .portada-cabeza, .portada-pie { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
 .portada-cabeza { padding-left: clamp(70px, 9vw, 120px); }
 .portada-marca { display: inline-flex; align-items: center; gap: 10px; color: var(--tinta); font-size: 42px; }

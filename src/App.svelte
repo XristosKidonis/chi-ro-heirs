@@ -6,7 +6,6 @@
   import Estudio from './componentes/Estudio.svelte';
   import Acciones from './componentes/Acciones.svelte';
   import Dialogo from './componentes/Dialogo.svelte';
-  import Emblema from './componentes/Emblema.svelte';
   import Inicio from './componentes/Inicio.svelte';
   import { ui, irA, recargarCapitulo } from './lib/ui.svelte.js';
   import { usuario, iniciarUsuario } from './lib/usuario.svelte.js';
@@ -91,7 +90,6 @@
 
 {#if !listo}
   <div class="arranque">
-    <Emblema tam={110} animado anillo />
     {#if fallo}
       <p class="cartel">{t('app.noAbrir')} <em>{t('app.noAbrirEm')}</em></p>
       <p class="ayuda">{fallo}</p>

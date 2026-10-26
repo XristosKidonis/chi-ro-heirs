@@ -3,7 +3,6 @@
   //  1. Portada: el versículo del día como un cartel, a pantalla completa. Se toca para entrar.
   //  2. Menú: saludo, buscador de libros y pasajes, continuar leyendo, cintas y la estantería de los 66 libros.
   import { onMount, tick } from 'svelte';
-  import Emblema from './Emblema.svelte';
   import { ui, irA } from '../lib/ui.svelte.js';
   import { usuario } from '../lib/usuario.svelte.js';
   import { pasaje, info } from '../lib/biblia.js';
@@ -184,7 +183,6 @@
   {#if ui.pasoInicio === 'portada'}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <section class="portada-w" role="button" tabindex="0" aria-label={t('ini.toca')} onclick={entrarAlMenu}>
-      <div class="marca-agua" aria-hidden="true"><Emblema tam={1000} /></div>
       <header class="portada-cabeza">
         <span class="portada-marca"><span class="marca-caligrafia">Chi-Ro Heirs</span></span>
         <span class="etiqueta-ui">{t('ini.diaVerso')} · {hoy}</span>
