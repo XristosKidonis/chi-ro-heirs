@@ -280,13 +280,26 @@ function pintarX(ctx, texto, x, y, k) {
 export function fraseCorta(texto, clave, max = 8) {
   const ws = texto.split(/\s+/).filter(Boolean);
   if (ws.length <= max) return texto.trim();
-  const partes = texto.split(/[,;:.!?¿¡—]+/).map((x) => x.trim()).filter((x) => x.split(/\s+/).length >= 2);
+  // cláusulas con su puntuación; se parte de la que tiene la palabra clave y se suman las siguientes mientras quepan
+  const trozos = texto.split(/([,;:.!?¿¡—]+)/);
+  const clausulas = [];
+  for (let i = 0; i < trozos.length; i += 2) {
+    const t = trozos[i].trim();
+    if (t) clausulas.push({ t, sep: (trozos[i + 1] || '').trim(), n: t.split(/\s+/).length });
+  }
   const k = clave ? limpiar(clave) : '';
-  let p = partes.find((x) => k && x.split(/\s+/).some((w) => limpiar(w).startsWith(k))) || partes[0] || texto;
+  let i = clausulas.findIndex((c) => c.n >= 2 && k && c.t.split(/\s+/).some((w) => limpiar(w).startsWith(k)));
+  if (i < 0) i = Math.max(0, clausulas.findIndex((c) => c.n >= 2));
+  let p = clausulas[i].t;
+  let n = clausulas[i].n;
+  for (let j = i + 1; j < clausulas.length && n + clausulas[j].n <= max; j++) {
+    p += `${clausulas[j - 1].sep} ${clausulas[j].t}`;
+    n += clausulas[j].n;
+  }
   const pw = p.split(/\s+/);
   if (pw.length > max) {
-    const i = Math.max(0, pw.findIndex((w) => k && limpiar(w).startsWith(k)));
-    const ini = Math.max(0, Math.min(i - Math.floor(max / 2), pw.length - max));
+    const idx = Math.max(0, pw.findIndex((w) => k && limpiar(w).startsWith(k)));
+    const ini = Math.max(0, Math.min(idx - Math.floor(max / 2), pw.length - max));
     p = pw.slice(ini, ini + max).join(' ');
   }
   return p;
@@ -382,39 +395,48 @@ const DIBUJAR = {
     grano(ctx, W, H, 0.05, 'soft-light');
   },
 
-  // Grotesca negra con halo granulado, como una fotocopia que brilla; cada renglón llena el ancho
+  // Aura: como una fotocopia desenfocada que brilla. Grotesca condensada negrísima en blanco sobre negro,
+  // renglones apretados que llenan el ancho, todo fuera de foco y con grano, y un halo suave alrededor.
   aura(ctx, o) {
     const { W, H, s, formato } = o;
-    ctx.fillStyle = '#050505';
+    ctx.fillStyle = '#030303';
     ctx.fillRect(0, 0, W, H);
-    const z = zona(W, H, formato);
-    const ancho = formato === 'escritorio' ? W * 0.5 : W * 0.84;
-    const fuente = (t) => `900 ${t}px ${F.grot}`;
+    const { k, fuente } = condensada(ctx, 900, 'condensed');
+    const horizontal = formato === 'escritorio';
+    const ancho = horizontal ? W * 0.52 : W * 0.8;
+    const altoMax = horizontal ? H * 0.7 : formato === 'post' ? H * 0.74 : H * 0.48;
+    const renglones = pila(ctx, fraseCorta(o.texto, o.clave, 6).toUpperCase().replace(/[.,;:]+$/, ''), { ancho, alto: altoMax, max: 520 * s, fuente, k, lh: 0.86 });
+    const alto = renglones.reduce((a, r) => a + r.tam * 0.86, 0);
     const capa = lienzo(W, H);
     const c = capa.getContext('2d');
-    espaciado(c, 0);
-    const renglones = pila(c, fraseCorta(o.texto, o.clave, 6).toUpperCase().replace(/[.,;:]+$/, ''), { ancho, alto: formato === 'escritorio' ? H * 0.66 : formato === 'post' ? H * 0.66 : z.h * 1.05, max: 360 * s, fuente, lh: 0.9 });
-    const alto = renglones.reduce((a, r) => a + r.tam * 0.9, 0);
-    let y = (formato === 'celular' ? H * 0.56 : H * 0.5) - alto / 2;
     c.fillStyle = '#fff';
+    let y = (formato === 'celular' ? H * 0.55 : H * 0.5) - alto / 2;
     for (const r of renglones) {
       c.font = fuente(r.tam);
-      const w = c.measureText(r.texto).width;
-      c.fillText(r.texto, (W - w) / 2, y + r.tam * 0.8);
-      y += r.tam * 0.9;
+      const w = c.measureText(r.texto).width * k;
+      pintarX(c, r.texto, (W - w) / 2, y + r.tam * 0.79, k);
+      y += r.tam * 0.86;
     }
     const tam = Math.min(...renglones.map((r) => r.tam));
-    ctx.globalAlpha = 0.45;
-    ctx.drawImage(aerosol(capa, tam * 0.4, 0.85, 1.7), 0, 0);
-    ctx.globalAlpha = 1;
-    ctx.drawImage(aerosol(capa, tam * 0.12, 1.1, 0.9), 0, 0);
-    ctx.globalAlpha = 0.9;
-    ctx.drawImage(aerosol(capa, tam * 0.035, 1, 0.6), 0, 0);
-    ctx.globalAlpha = 1;
-    const pie = formato === 'escritorio' ? H * 0.92 : z.pie || H - z.m;
-    etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, pie, 'rgba(255,255,255,0.6)', s, 'center');
-    firma(ctx, W / 2, formato === 'celular' ? H * 0.3 : z.m + 10 * s, 'rgba(255,255,255,0.6)', s, 'center');
-    grano(ctx, W, H, 0.22);
+    // fuera de foco: la letra se difumina y el umbral con ruido le da el borde de fotocopia
+    const foco = difuminar(capa, tam * 0.09).getContext('2d').getImageData(0, 0, W, H).data;
+    const halo = difuminar(capa, tam * 0.32).getContext('2d').getImageData(0, 0, W, H).data;
+    const img = ctx.getImageData(0, 0, W, H);
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const f = foco[i + 3] / 255;
+      const h = halo[i + 3] / 255;
+      if (h < 0.01 && f < 0.01) continue;
+      const r = Math.random();
+      let v = 0;
+      if (f > 0.5 + (r - 0.5) * 0.7) v = 235 + Math.random() * 20;
+      else if (Math.random() < Math.pow(h, 1.3) * 0.7) v = 120 + Math.random() * 110;
+      if (v) d[i] = d[i + 1] = d[i + 2] = v;
+    }
+    ctx.putImageData(img, 0, 0);
+    const m = Math.min(W, H) * 0.05;
+    etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, formato === 'celular' ? H * 0.86 : H - m, 'rgba(255,255,255,0.35)', s * 0.85, 'center');
+    grano(ctx, W, H, 0.24);
   },
 
   // El versículo impreso en mayúsculas justificadas y la palabra clave a mano, en aerosol rojo
@@ -529,45 +551,48 @@ const DIBUJAR = {
     etiqueta(ctx, `${o.referencia} · ${o.version}`, W / 2, formato === 'celular' ? H * 0.86 : H - m, 'rgba(255,255,255,0.4)', s * 0.85, 'center');
   },
 
-  // Primario: amarillo plano, grotesca negra justificada abajo y la palabra clave en rojo
+  // Primario: amarillo limón plano, grotesca negrita en mayúsculas abajo, justificada a los dos lados
+  // (aunque queden huecos grandes, como en el original), la palabra clave en rojo y la última en azul.
   primario(ctx, o) {
     const { W, H, s, formato } = o;
-    ctx.fillStyle = '#ffe500';
+    ctx.fillStyle = '#fff200';
     ctx.fillRect(0, 0, W, H);
-    const m = Math.min(W, H) * 0.075;
-    const ancho = formato === 'escritorio' ? W * 0.56 : W - 2 * m;
-    const x0 = formato === 'escritorio' ? W - m - ancho : m;
-    const altoMax = formato === 'post' ? H * 0.36 : formato === 'escritorio' ? H * 0.42 : H * 0.3;
+    const horizontal = formato === 'escritorio';
+    const ancho = horizontal ? W * 0.46 : W * 0.78;
+    const x0 = horizontal ? W * 0.46 : (W - ancho) / 2;
+    const altoMax = horizontal ? H * 0.34 : formato === 'post' ? H * 0.3 : H * 0.24;
     const fuente = (t) => `800 ${t}px ${F.grot}`;
+    const frase = fraseCorta(o.texto, o.clave, 14).toUpperCase();
+    const palabras = frase.split(/\s+/);
     const clave = palabraClave(o.texto, o.clave);
-    let comp = ajustar(ctx, o.texto.toUpperCase().split(/\s+/), { ancho, alto: altoMax, max: 96 * s, min: 24 * s, lh: 0.98, fuente, trk: -0.01 });
-    // sin viudas: una palabra sola en el último renglón se ve como un error
-    for (let i = 0; i < 8 && comp.lineas.length > 1 && comp.lineas.at(-1).length === 1; i++) {
-      comp = ajustar(ctx, o.texto.toUpperCase().split(/\s+/), { ancho, alto: altoMax, max: comp.tam * 0.95, min: 24 * s, lh: 0.98, fuente, trk: -0.01 });
+    const ultima = palabras.at(-1);
+    const azul = !esClave(ultima, clave) && palabras.length > 2 ? ultima : null;
+    let comp = ajustar(ctx, palabras, { ancho, alto: altoMax, max: 84 * s, min: 22 * s, lh: 0.96, fuente, trk: -0.012 });
+    for (let i = 0; i < 8 && comp.lineas.length > 1 && comp.lineas.at(-1).length === 1 && comp.lineas.at(-1)[0] !== azul; i++) {
+      comp = ajustar(ctx, palabras, { ancho, alto: altoMax, max: comp.tam * 0.95, min: 22 * s, lh: 0.96, fuente, trk: -0.012 });
     }
-    const lh = comp.tam * 0.98;
-    const fondo = formato === 'celular' ? H * 0.84 : formato === 'historia' ? H * 0.8 : H - m;
+    const lh = comp.tam * 0.96;
+    const fondo = formato === 'celular' ? H * 0.82 : formato === 'historia' ? H * 0.8 : H - Math.min(W, H) * 0.1;
     const y0 = fondo - comp.lineas.length * lh;
     ctx.font = fuente(comp.tam);
-    espaciado(ctx, -0.01 * comp.tam);
+    espaciado(ctx, -0.012 * comp.tam);
     comp.lineas.forEach((l, i) => {
       const anchos = l.map((p) => ctx.measureText(p).width);
       const total = anchos.reduce((a, b) => a + b, 0);
-      const ultima = i === comp.lineas.length - 1;
-      const justo = l.length > 1 && !ultima ? (ancho - total) / (l.length - 1) : comp.espacio;
-      // justifica solo si el hueco no se vuelve un agujero; si no, alinea a la izquierda
-      const hueco = justo > comp.espacio * 2.6 ? comp.espacio : justo;
-      let x = x0;
+      const esUltima = i === comp.lineas.length - 1;
+      // justificado a los dos lados; la última línea va centrada
+      const hueco = l.length > 1 && !esUltima ? Math.min((ancho - total) / (l.length - 1), comp.espacio * 9) : comp.espacio;
+      const anchoLinea = total + hueco * (l.length - 1);
+      let x = esUltima || l.length === 1 ? x0 + (ancho - anchoLinea) / 2 : x0;
       l.forEach((p, j) => {
-        ctx.fillStyle = esClave(p, clave) ? '#e3241b' : '#141414';
+        ctx.fillStyle = esClave(p, clave) ? '#e8231c' : p === azul && esUltima ? '#1f4fd6' : '#1c1c1c';
         ctx.fillText(p, x, y0 + lh * i + comp.tam * 0.8);
         x += anchos[j] + hueco;
       });
     });
     espaciado(ctx, 0);
-    etiqueta(ctx, `${o.referencia} · ${o.version}`, x0, formato === 'celular' ? H * 0.3 : m + 10 * s, '#1d4fd8', s);
-    firma(ctx, formato === 'escritorio' ? W - m : W - m, formato === 'celular' ? H * 0.3 : m + 10 * s, '#141414', s, 'right');
-    grano(ctx, W, H, 0.06, 'multiply');
+    etiqueta(ctx, `${o.referencia} · ${o.version}`, x0 + ancho / 2, fondo + Math.max(46 * s, comp.tam * 0.7), 'rgba(28,28,28,0.55)', s * 0.85, 'center');
+    grano(ctx, W, H, 0.05, 'multiply');
   },
 
   // Riso: como un carrusel impreso en risografía. Rótulo arriba, franjas de color del mismo ancho con la frase
