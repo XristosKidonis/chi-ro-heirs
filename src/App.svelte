@@ -89,6 +89,19 @@
 
 <svelte:window onkeydown={tecla} onclick={clic} />
 
+<!-- filtros de las referencias: «aura» desenfoca con grano como una fotocopia; «riso» corre el borde de la tinta -->
+<svg class="filtros" aria-hidden="true" width="0" height="0">
+  <filter id="aura-ui" x="-10%" y="-30%" width="120%" height="160%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="b" />
+    <feTurbulence type="fractalNoise" baseFrequency="1.8" numOctaves="2" result="r" />
+    <feDisplacementMap in="b" in2="r" scale="6" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+  <filter id="riso-ui" x="-5%" y="-10%" width="110%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="2.2" numOctaves="1" result="r" />
+    <feDisplacementMap in="SourceGraphic" in2="r" scale="2.4" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
+
 {#if !listo}
   <div class="arranque">
     <Emblema tam={110} animado anillo />

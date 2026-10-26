@@ -3,14 +3,13 @@
   //  1. Portada: el versículo del día como un cartel, a pantalla completa. Se toca para entrar.
   //  2. Menú: saludo, buscador de libros y pasajes, continuar leyendo, cintas y la estantería de los 66 libros.
   import { onMount, tick } from 'svelte';
-  import Emblema from './Emblema.svelte';
   import { ui, irA } from '../lib/ui.svelte.js';
   import { usuario } from '../lib/usuario.svelte.js';
   import { pasaje, info } from '../lib/biblia.js';
   import { LIBROS, TOTAL_CAPITULOS, nombreLibro, nombreRef, parsearReferencia, normalizar } from '../lib/libros.js';
   import { versiculoDelDia } from '../lib/versiculosDelDia.js';
   import { grabado } from '../lib/grabados.js';
-  import { dibujarLamina } from '../lib/laminas.js';
+  import { dibujarLamina, ESTILOS, OSCURAS } from '../lib/laminas.js';
   import { t, idioma, fecha } from '../lib/i18n.svelte.js';
 
   const vd = versiculoDelDia();
@@ -82,22 +81,36 @@
     }
   });
 
-  // Tamaño del cartel: lo más grande que quepa en el espacio disponible
-  const tamCartel = $derived.by(() => {
-    const W = ancho > 900 ? Math.min(ancho * 0.6, 1040) : ancho - 48;
-    const H = alto * (ancho > 900 ? 0.48 : 0.5);
-    const chars = Math.max(20, texto.length);
-    const palabraLarga = Math.max(4, ...texto.split(/\s+/).map((w) => w.length));
-    const porArea = Math.sqrt((H * W) / (0.6 * chars));
-    const porPalabra = W / (palabraLarga * 0.6);
-    return Math.round(Math.max(28, Math.min(112, porArea, porPalabra)));
+  // Portada: el versículo del día como lámina a pantalla completa. Cada día toca un acabado distinto
+  // y con las flechas se puede pasar al siguiente.
+  const diaDelAno = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  let acabado = $state(ESTILOS[diaDelAno % ESTILOS.length]);
+  let lienzoPortada = $state();
+  let portadaLista = $state(false);
+  const oscura = $derived(OSCURAS.has(acabado));
+  function cambiarAcabado(e, paso) {
+    e.stopPropagation();
+    const i = ESTILOS.indexOf(acabado);
+    acabado = ESTILOS[(i + paso + ESTILOS.length) % ESTILOS.length];
+  }
+  let esperaPortada;
+  $effect(() => {
+    if (!texto || !lienzoPortada || ui.pasoInicio !== 'portada') return;
+    const o = { ...laminaDelDia(), estilo: acabado, tono: 'amarillo', rotulo: t('lam.rotulo'), sinFirma: true };
+    const r = Math.min(window.devicePixelRatio || 1, 2);
+    const medida = { w: Math.round(ancho * r), h: Math.round(alto * r) };
+    clearTimeout(esperaPortada);
+    esperaPortada = setTimeout(async () => {
+      const c = document.createElement('canvas');
+      await dibujarLamina(c, { ...o, medida });
+      if (!lienzoPortada) return;
+      lienzoPortada.width = c.width;
+      lienzoPortada.height = c.height;
+      lienzoPortada.getContext('2d').drawImage(c, 0, 0);
+      portadaLista = true;
+    }, portadaLista ? 160 : 0);
+    return () => clearTimeout(esperaPortada);
   });
-
-  const claves = $derived((ingles ? vd.claves.en : vd.claves.es).map((k) => normalizar(k)));
-  const palabras = $derived(texto.replace(/[«»"“”]/g, '').split(/\s+/).filter(Boolean).map((w) => {
-    const n = normalizar(w).replace(/[^a-z0-9]/g, '');
-    return { w, roja: claves.some((k) => n === k || (k.length >= 5 && n.startsWith(k))) };
-  }));
 
   const saludo = $derived.by(() => {
     const h = new Date().getHours();
@@ -183,24 +196,19 @@
 <div class="inicio">
   {#if ui.pasoInicio === 'portada'}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <section class="portada-w" role="button" tabindex="0" aria-label={t('ini.toca')} onclick={entrarAlMenu}>
-      <div class="marca-agua" aria-hidden="true"><Emblema tam={1000} /></div>
+    <section class="portada-w" class:oscura class:lista={portadaLista} role="button" tabindex="0" aria-label={t('ini.toca')} onclick={entrarAlMenu}>
+      <canvas class="portada-lamina" bind:this={lienzoPortada} aria-label={texto ? `${texto} ${nombreRef(vd.libro, vd.cap, vd.v, vd.hasta)}` : ''}></canvas>
       <header class="portada-cabeza">
-        <span class="portada-marca"><span class="logotipo" role="img" aria-label="Chi-Ro Heirs"></span></span>
-        <span class="etiqueta-ui">{t('ini.diaVerso')} · {hoy}</span>
+        <span class="logotipo" role="img" aria-label="Chi-Ro Heirs"></span>
+        <span class="portada-dato"><span class="solo-escritorio">{t('ini.diaVerso')} · </span>{hoy}</span>
       </header>
-      <div class="portada-centro">
-        {#if texto}
-          <p class="portada-verso" style="font-size: {tamCartel}px">
-            {#each palabras as p}<span class:roja={p.roja}>{p.w}</span>{' '}{/each}
-          </p>
-          <p class="portada-ref">{nombreRef(vd.libro, vd.cap, vd.v, vd.hasta)} <span class="etiqueta-ui">{versionTexto}</span></p>
-        {/if}
-      </div>
       <footer class="portada-pie">
-        <span class="lema">{t('ini.lema')}</span>
         <span class="tocar"><i></i>{t('ini.toca')}</span>
-        <span class="etiqueta-ui solo-escritorio">chi-ro heirs · Ro 8:17</span>
+        <span class="acabados" role="group" aria-label={t('lam.acabado')}>
+          <button onclick={(e) => cambiarAcabado(e, -1)} aria-label="←">←</button>
+          <span>{t(`lam.e.${acabado}`)}</span>
+          <button onclick={(e) => cambiarAcabado(e, 1)} aria-label="→">→</button>
+        </span>
       </footer>
     </section>
   {:else}

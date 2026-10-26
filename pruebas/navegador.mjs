@@ -44,7 +44,7 @@ async function entrar(p) {
 }
 await pag.goto(DIRECCION);
 await paso('portada y menú de inicio', async () => {
-  await pag.waitForSelector('.portada-verso');
+  await pag.waitForSelector('.portada-w.lista', { timeout: 30000 });
   await pag.click('.portada-w');
   await pag.waitForSelector('.lomo');
   if ((await pag.locator('.lomo').count()) !== 66) throw new Error('faltan lomos');
