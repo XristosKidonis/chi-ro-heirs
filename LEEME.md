@@ -4,6 +4,10 @@ Lector bíblico personal, ligero y local. Tiene la NTV y la NLT desde la API ofi
 
 > *«Y si hijos, también herederos; herederos de Dios y coherederos con Cristo».* Romanos 8:17
 
+## Para quien siga el proyecto
+
+La carpeta [`traspaso/`](traspaso/00-LEEME-PRIMERO.md) explica cómo se construyó la app, las decisiones creativas, qué aprobó y qué rechazó el dueño, y muestra todos los intentos con imágenes. Está pensada para que otra persona o IA continúe el trabajo.
+
 ## Probar en el navegador
 
 Versión web de prueba, sin instalar nada: **https://xristoskidonis.github.io/chi-ro-heirs/**

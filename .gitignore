@@ -5,3 +5,6 @@ datos/fuentes/
 src-tauri/target/
 src-tauri/gen/
 .DS_Store
+
+# Referencias de terceros del traspaso: solo van en el ZIP, no en el repositorio público
+traspaso/imagenes/A-referencias-de-inspiracion/
