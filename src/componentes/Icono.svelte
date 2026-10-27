@@ -27,6 +27,7 @@
     biblioteca: 'M5 4h4v16H5zM10 4h4v16h-4zM15.5 4.8l3.6-1 3.6 15.3-3.6 1z',
     archivo: 'M4 6h16M4 12h16M4 18h10',
     laminas: 'M4 4h7v9H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 15h7v5H4z',
+    historia: 'M3 8l9-4.5L21 8M5 8h14M6 10.5v7M10 10.5v7M14 10.5v7M18 10.5v7M4 20h16',
   };
 </script>
 

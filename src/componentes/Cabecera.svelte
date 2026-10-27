@@ -7,7 +7,7 @@
   import { t } from '../lib/i18n.svelte.js';
   import { amb, pausar } from '../lib/ambiente.svelte.js';
 
-  const VISTAS = ['inicio', 'biblioteca', 'lector', 'archivo', 'laminas'];
+  const VISTAS = ['inicio', 'biblioteca', 'lector', 'archivo', 'laminas', 'historia'];
   const guardados = $derived(String(usuario.guardados.length).padStart(2, '0'));
 </script>
 

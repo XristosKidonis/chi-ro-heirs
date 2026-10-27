@@ -6,8 +6,9 @@
   import { usuario, ajustar, marcarLeido, indiceRetroenlaces } from '../lib/usuario.svelte.js';
   import { info, versionEstudio } from '../lib/biblia.js';
   import { LIBROS, clave, nombreRef, nombreLibro, capituloSiguiente } from '../lib/libros.js';
-  import { t, fecha as fechaLocal } from '../lib/i18n.svelte.js';
+  import { t, idioma, fecha as fechaLocal } from '../lib/i18n.svelte.js';
   import { significado } from '../lib/clave.js';
+  import { INDICE, prueba } from '../lib/evidencias.js';
 
   const pos = $derived(usuario.ajustes.pos);
   const libro = $derived(LIBROS[pos.libro - 1]);
@@ -35,6 +36,7 @@
     return () => ro.disconnect();
   });
   const margen = $derived(!!usuario.ajustes.margen);
+  const conHistoria = $derived(usuario.ajustes.historia !== false);
   const margenLado = $derived(margen && !par && anchoLector >= 1040);
   const notasCap = $derived.by(() => {
     const prefijo = `${pos.libro}.${pos.cap}.`;
@@ -57,6 +59,8 @@
       const color = usuario.subrayados[clave(pos.libro, pos.cap, x.v)] || null;
       if (color && color !== previo && significado(color)) out.push({ id: `c${x.v}`, v: x.v, tipo: 'clave', color });
       previo = color;
+      const hist = conHistoria && INDICE[clave(pos.libro, pos.cap, x.v)];
+      if (hist) out.push({ id: `h${x.v}`, v: x.v, tipo: 'historia', pruebas: hist.map(prueba) });
       for (const n of notasCap[x.v] || []) out.push({ id: `n${n.id}`, v: x.v, tipo: 'nota', nota: n });
       if (ui.seleccion.length === 1 && ui.seleccion[0] === x.v && !notasCap[x.v]) out.push({ id: `+${x.v}`, v: x.v, tipo: 'nueva' });
     }
@@ -162,11 +166,22 @@
     return w.length > 1 ? { texto: w, version: nodo.parentElement.closest('.t').dataset.ver } : null;
   }
 
+  // abre la fuente histórica y el pasaje lado a lado
+  function verHistoria(v) {
+    ui.evidencias = INDICE[clave(pos.libro, pos.cap, v)] || [];
+    ui.evidenciaVerso = { libro: pos.libro, cap: pos.cap, v };
+    ui.dialogo = 'evidencia';
+  }
+
   function tocar(e) {
     const marca = e.target.closest('.marca-nota, .marca-retro');
     const el = e.target.closest('[data-v]');
     if (!el) return;
     const v = Number(el.dataset.v);
+    if (e.target.closest('.marca-historia')) {
+      verHistoria(v);
+      return;
+    }
     if (marca) {
       ui.seleccion = [v];
       abrirPestana('notas');
@@ -248,7 +263,7 @@
             {@const k = clave(pos.libro, pos.cap, x.v)}
             {#if ui.cap.titulos[x.v]}<span class="subtitulo">{ui.cap.titulos[x.v]}</span>{/if}
             {#snippet verso()}
-              <span class="v" class:sel={ui.seleccion.includes(x.v)} class:leyendo={ui.leyendo === x.v} data-v={x.v}><span class="num">{x.v}</span><span class="t" data-ver={ver?.id} data-m={usuario.subrayados[k]}>{x.texto}</span>{#if notasPorClave[k]}<span class="marca-nota" title={t('lector.notasAqui')}>{notasPorClave[k]}</span>{/if}{#if retro[k]}<span class="marca-retro" title={t('lector.mencionado')}>↩{retro[k].length}</span>{/if}</span>
+              <span class="v" class:sel={ui.seleccion.includes(x.v)} class:leyendo={ui.leyendo === x.v} data-v={x.v}><span class="num">{x.v}</span><span class="t" data-ver={ver?.id} data-m={usuario.subrayados[k]}>{x.texto}</span>{#if notasPorClave[k]}<span class="marca-nota" title={t('lector.notasAqui')}>{notasPorClave[k]}</span>{/if}{#if retro[k]}<span class="marca-retro" title={t('lector.mencionado')}>↩{retro[k].length}</span>{/if}{#if conHistoria && INDICE[k]}<span class="marca-historia" role="button" tabindex="-1" title={t('his.marca')}>{t('his.marcaCorta')}</span>{/if}</span>
             {/snippet}
             {#if par}
               <div class="fila">
@@ -275,6 +290,11 @@
                   <button class="m-nota" onclick={() => abrirNotaEn(it.v)}>
                     <span class="m-ref">{refNota(it.nota)}{it.nota.tipo !== 'Nota' ? ` · ${t(`notas.tipo.${it.nota.tipo}`)}` : ''}{#if it.nota.respondida} · {t('margen.respondida')}{/if}</span>
                     <span class="m-texto">{it.nota.texto}</span>
+                  </button>
+                {:else if it.tipo === 'historia'}
+                  <button class="m-historia" onclick={() => verHistoria(it.v)}>
+                    <span class="m-ref">{t('his.margen')}</span>
+                    {#each it.pruebas as p (p.id)}<span class="m-hist-t">{p.titulo[idioma()]}</span>{/each}
                   </button>
                 {:else if it.tipo === 'clave'}
                   <span class="m-clave"><i class="arc-color" data-m={it.color} aria-hidden="true"></i>{significado(it.color)}</span>

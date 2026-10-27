@@ -322,6 +322,53 @@ await paso('ambiente: música dentro de la app, sonidos, apagado al Amén y Spot
   await pag.waitForFunction(() => /^Juan\s*3/.test(document.querySelector('.cap-titulo')?.textContent || ''));
 });
 
+await paso('Historia: expediente, ¿firme o viral?, línea del tiempo y lado a lado desde el lector', async () => {
+  await pag.click('.cab-link:has-text("Historia")');
+  await pag.waitForSelector('.his-prueba');
+  if ((await pag.locator('.his-prueba').count()) !== 24) throw new Error('faltan pruebas de Jesús');
+  await pag.click('#prueba-tacito .his-fila');
+  const cita = await pag.textContent('#prueba-tacito .his-cita');
+  if (!/Poncio Pilato/.test(cita) || !(await pag.locator('#prueba-tacito .contraste').count())) throw new Error('ficha de Tácito: ' + cita);
+  await pag.click('.filtro:has-text("Juan el Bautista")');
+  if ((await pag.locator('.his-prueba').count()) !== 7) throw new Error('faltan pruebas de Juan');
+  // ¿Firme o viral?: una ronda completa
+  await pag.click('.filtro:has-text("¿Firme o viral?")');
+  for (let i = 0; i < 14; i++) {
+    await pag.click('.quiz-op >> nth=0');
+    await pag.waitForSelector('.quiz-veredicto');
+    await pag.click('.quiz-acciones .boton:not(.secundario)');
+  }
+  const marcador = await pag.textContent('.quiz-marcador');
+  if (!/\/14/.test(marcador)) throw new Error('marcador: ' + marcador);
+  await pag.click('.filtro:has-text("Línea del tiempo")');
+  if ((await pag.locator('.tl-lista li').count()) < 12) throw new Error('línea del tiempo corta');
+  // de una prueba al pasaje
+  await pag.click('.filtro:has-text("Jesús")');
+  await pag.click('#prueba-pilato .his-fila');
+  await pag.click('#prueba-pilato .his-ref:has-text("Lucas 3:1")');
+  await pag.waitForFunction(() => /^Lucas\s*3/.test(document.querySelector('.cap-titulo')?.textContent || ''));
+  await pag.waitForSelector('.texto [data-v="1"] .marca-historia');
+  // en el lector: la marca abre la Biblia y Josefo lado a lado
+  await ir(pag, 'mc 6:17');
+  await pag.waitForSelector('.texto [data-v="17"] .marca-historia');
+  await pag.click('.texto [data-v="17"] .marca-historia');
+  await pag.waitForSelector('.ev .contraste');
+  await pag.waitForFunction(() => /Herodes/.test(document.querySelector('.ev-texto')?.textContent || ''));
+  await pag.screenshot({ path: `${OUT}/13d-historia.png` });
+  await pag.click('.dlg-cabeza .ico');
+  // se pueden ocultar las marcas
+  await pag.click('.cab-accion[aria-label="Ajustes"]');
+  await pag.click('#aj-historia');
+  await pag.click('.dlg-cabeza .ico');
+  if (await pag.locator('.marca-historia').count()) throw new Error('las marcas no se ocultan');
+  await pag.click('.cab-accion[aria-label="Ajustes"]');
+  await pag.click('#aj-historia');
+  await pag.click('.dlg-cabeza .ico');
+  await pag.waitForSelector('.texto [data-v="17"] .marca-historia');
+  await ir(pag, 'juan 3');
+  await pag.waitForFunction(() => /^Juan\s*3/.test(document.querySelector('.cap-titulo')?.textContent || ''));
+});
+
 await paso('Láminas: índice neutro → Color → volver al índice', async () => {
   await pag.click('.cab-link:has-text("Láminas")');
   await pag.waitForSelector('.coleccion');
@@ -464,7 +511,7 @@ await paso('móvil (390 y 320 px): todas las pantallas sin desbordes horizontale
     await pm.goto(DIRECCION);
     await pm.waitForSelector('.inicio-entrada');
     const anchos = { inicio: await pm.evaluate(() => document.documentElement.scrollWidth) };
-    for (const [n, nombre] of [[1, 'biblioteca'], [2, 'lector'], [3, 'archivo'], [4, 'laminas']]) {
+    for (const [n, nombre] of [[1, 'biblioteca'], [2, 'lector'], [3, 'archivo'], [4, 'laminas'], [5, 'historia']]) {
       if (nombre === 'biblioteca') await pm.click('.inicio-entrada >> nth=1');
       else await pm.click(`.nav-movil button >> nth=${n}`);
       await pm.waitForTimeout(700);

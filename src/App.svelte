@@ -8,6 +8,7 @@
   import Biblioteca from './componentes/vistas/Biblioteca.svelte';
   import Archivo from './componentes/vistas/Archivo.svelte';
   import Galeria from './componentes/vistas/Galeria.svelte';
+  import Historia from './componentes/vistas/Historia.svelte';
   import Lector from './componentes/Lector.svelte';
   import Estudio from './componentes/Estudio.svelte';
   import Acciones from './componentes/Acciones.svelte';
@@ -128,6 +129,7 @@
         <main class="vista">
           {#if ui.vista === 'biblioteca'}<Biblioteca />
           {:else if ui.vista === 'archivo'}<Archivo />
+          {:else if ui.vista === 'historia'}<Historia />
           {:else}<Galeria />{/if}
         </main>
       {/if}

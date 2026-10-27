@@ -4,7 +4,10 @@ import { capitulo as cargarCapitulo, info } from './biblia.js';
 import { clave, nombreRef, nombreLibro, LIBROS } from './libros.js';
 
 export const ui = $state({
-  vista: 'inicio',      // 'inicio' | 'biblioteca' | 'lector' | 'archivo' | 'laminas'
+  vista: 'inicio',      // 'inicio' | 'biblioteca' | 'lector' | 'archivo' | 'laminas' | 'historia'
+  historia: { pestana: 'jesus', abierta: null }, // sección Historia: pestaña y prueba abierta
+  evidencias: [],       // pruebas que muestra el diálogo «lado a lado» del lector
+  evidenciaVerso: null, // { libro, cap, v } desde donde se abrió
   navAbierta: false,    // selector de libros y capítulos del lector
   buscadorAbierto: false, // búsqueda global (Ctrl/Cmd K)
   coleccion: null,      // colección de láminas abierta: null (índice) | 'tipografia' | 'color' | 'imagen'

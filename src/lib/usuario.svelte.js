@@ -14,6 +14,7 @@ export const AJUSTES_INICIALES = {
   calma: false,           // modo Calma: el lector sin barras
   margen: false,          // modo margen: notas y clave de colores al costado del versículo, como una Biblia de márgenes anchos
   claveColores: {},       // qué significa cada color de subrayado: { verde: 'Fe', … }
+  historia: true,         // marcas de evidencia histórica junto a los versículos que tienen una
   tamano: 21,
   interlineado: 1.6,
   fuente: 'literata',     // literata | atkinson

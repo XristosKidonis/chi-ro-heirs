@@ -6,6 +6,7 @@
   import Laminas from './dialogos/Laminas.svelte';
   import Clave from './dialogos/Clave.svelte';
   import Ambiente from './dialogos/Ambiente.svelte';
+  import Evidencia from './dialogos/Evidencia.svelte';
   import { ui } from '../lib/ui.svelte.js';
   import { t } from '../lib/i18n.svelte.js';
   let dlg;
@@ -17,7 +18,7 @@
   });
 </script>
 
-<dialog class="dlg" class:dlg-ancho={ui.dialogo === 'poster'} bind:this={dlg} onclose={() => { ui.dialogo = null; ui.lamina = null; }} aria-labelledby="dlg-titulo">
+<dialog class="dlg" class:dlg-ancho={ui.dialogo === 'poster' || ui.dialogo === 'evidencia'} bind:this={dlg} onclose={() => { ui.dialogo = null; ui.lamina = null; }} aria-labelledby="dlg-titulo">
   {#if ui.dialogo}
     <div class="dlg-cabeza">
       <h2 id="dlg-titulo">{t(`dlg.${ui.dialogo}`)}</h2>
@@ -29,7 +30,8 @@
       {:else if ui.dialogo === 'respaldo'}<Respaldo />
       {:else if ui.dialogo === 'poster'}<Laminas />
       {:else if ui.dialogo === 'clave'}<Clave />
-      {:else if ui.dialogo === 'ambiente'}<Ambiente />{/if}
+      {:else if ui.dialogo === 'ambiente'}<Ambiente />
+      {:else if ui.dialogo === 'evidencia'}<Evidencia />{/if}
     </div>
   {/if}
 </dialog>
