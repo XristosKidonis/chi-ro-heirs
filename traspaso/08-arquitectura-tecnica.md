@@ -50,13 +50,13 @@ src/
 public/
   fuentes/                 woff2 (licencias OFL en LICENCIAS.txt)
   grabados/                65 láminas de Doré en webp (~11 MB), dore-NNN.webp
-  img/emblema.svg
+  img/icono-192.png, icono-180.png   favicon e icono de pantalla de inicio
 src-tauri/                 Rust: copia biblias.db a la carpeta de datos y registra los plugins; instalador/ (imágenes del DMG y NSIS/MSI)
 herramientas/
   construir_datos.py       descarga los textos abiertos y crea datos/biblias.db
   preparar_grabados.py     procesa los grabados de Gutenberg (820 px, autocontraste, webp q58)
   instalador.mjs           dibuja con Playwright las imágenes de los instaladores
-  logotipo.mjs             genera el logotipo Aura (PNG) en marca/png
+  marca.mjs                genera el icono y el logotipo nítido CHI—RO (PNG) en marca/png
 marca/                     monogramas ΧΡ (svg/png), sello, logotipo Aura (png), LEEME.md
 pruebas/navegador.mjs      prueba funcional de 21 pasos
 .github/workflows/
