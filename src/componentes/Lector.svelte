@@ -162,9 +162,34 @@
     let b = off;
     while (a > 0 && letra(t[a - 1])) a--;
     while (b < t.length && letra(t[b])) b++;
-    const w = t.slice(a, b).replace(/^['’]+|['’]+$/g, '');
-    return w.length > 1 ? { texto: w, version: nodo.parentElement.closest('.t').dataset.ver } : null;
+    while (a < b && /['’]/.test(t[a])) a++;
+    while (b > a && /['’]/.test(t[b - 1])) b--;
+    const w = t.slice(a, b);
+    if (w.length < 2) return null;
+    const rango = document.createRange();
+    rango.setStart(nodo, a);
+    rango.setEnd(nodo, b);
+    return { texto: w, version: nodo.parentElement.closest('.t').dataset.ver, rango };
   }
+
+  // La palabra bajo el mouse se marca, para que se vea cuál se va a estudiar al tocarla;
+  // la tocada queda marcada mientras el estudio la tenga. (Resaltado CSS: no toca el texto.)
+  const marcas = typeof CSS !== 'undefined' && CSS.highlights && typeof Highlight !== 'undefined';
+  let rangoElegido = null;
+  function encima(e) {
+    if (!marcas || e.pointerType !== 'mouse') return;
+    const p = e.target.closest('.t') ? palabraEn(e) : null;
+    if (p) CSS.highlights.set('palabra-encima', new Highlight(p.rango));
+    else CSS.highlights.delete('palabra-encima');
+  }
+  const fuera = () => marcas && CSS.highlights.delete('palabra-encima');
+  $effect(() => {
+    if (!marcas) return;
+    const p = ui.palabra;
+    const vivo = p && rangoElegido && p.libro === pos.libro && p.cap === pos.cap && ui.seleccion.includes(p.v);
+    if (vivo) CSS.highlights.set('palabra-elegida', new Highlight(rangoElegido));
+    else CSS.highlights.delete('palabra-elegida');
+  });
 
   // abre la fuente histórica y el pasaje lado a lado
   function verHistoria(v) {
@@ -191,7 +216,8 @@
     if (sel && !sel.isCollapsed && sel.toString().trim().length > 2) return; // el usuario está seleccionando texto
     const p = palabraEn(e);
     // la palabra tocada es la que se estudia; tocar el número (sin palabra) no deja una palabra vieja
-    ui.palabra = p ? { ...p, libro: pos.libro, cap: pos.cap, v } : null;
+    rangoElegido = p?.rango || null;
+    ui.palabra = p ? { texto: p.texto, version: p.version, libro: pos.libro, cap: pos.cap, v } : null;
     if (e.shiftKey && ui.ancla) {
       // Mayús + clic: rango
       const [a, b] = [Math.min(ui.ancla, v), Math.max(ui.ancla, v)];
@@ -258,7 +284,7 @@
           </div>
         {/if}
         <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-        <div class={claseTexto} onclick={tocar}>
+        <div class={claseTexto} onclick={tocar} onpointermove={encima} onpointerleave={fuera}>
           {#each ui.cap.versos as x (x.v)}
             {@const k = clave(pos.libro, pos.cap, x.v)}
             {#if ui.cap.titulos[x.v]}<span class="subtitulo">{ui.cap.titulos[x.v]}</span>{/if}

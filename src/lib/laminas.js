@@ -305,6 +305,65 @@ export function fraseCorta(texto, clave, max = 8) {
   return p;
 }
 
+// Cuánto cabe en grande en cada acabado: palabras de la frase, o «palabra» si destaca una sola
+// (Aerosol escribe el versículo entero y una palabra a mano; Calor, solo una palabra).
+export const CABEN = { portadilla: 5, ultramar: 6, aura: 6, pedreria: 7, primario: 14, riso: 6, aerosol: 'palabra', calor: 'palabra' };
+
+// La frase grande: la que eligió la persona o, si no eligió, el trozo automático
+const grande = (o, max) => o.grande?.trim() || fraseCorta(o.texto, o.clave, max);
+
+// Trozos del versículo que caben en grande, para elegir uno con un toque, en el orden del texto.
+// Se corta por la puntuación y antes de «y», «que», «el cual», «porque»…; lo que sigue largo
+// se parte en partes parejas sin dejar «de», «la» o «el» colgando al final.
+const CORTE = /^(y|e|o|u|que|porque|pues|pero|mas|sino|cuando|donde|como|para|el cual|la cual|los cuales|las cuales|and|that|which|who|for|but|so|when|where|because)$/i;
+const DEBIL = /^(de|del|la|las|el|los|lo|un|una|a|al|en|y|e|o|que|con|por|su|sus|mi|tu|se|no|the|a|an|of|to|in|and|his|her|my|your|with|by|for)$/i;
+// Parte una tira larga en renglones de hasta «max» palabras eligiendo los cortes más naturales:
+// ningún trozo termina en «de», «la», «el»…, ninguno queda de una palabra y los largos se parecen.
+function partir(ws, max) {
+  const n = ws.length;
+  const mejor = Array(n + 1).fill(Infinity);
+  const desde = Array(n + 1).fill(0);
+  mejor[0] = 0;
+  for (let b = 1; b <= n; b++) {
+    for (let a = Math.max(0, b - max); a < b; a++) {
+      const largo = b - a;
+      const costo = mejor[a] + 4 + (max - largo) ** 2 * 0.4 + (largo === 1 ? 30 : 0) + (b < n && DEBIL.test(ws[b - 1]) ? 25 : 0);
+      if (costo < mejor[b]) { mejor[b] = costo; desde[b] = a; }
+    }
+  }
+  const out = [];
+  for (let b = n; b > 0; b = desde[b]) out.unshift(ws.slice(desde[b], b).join(' '));
+  return out;
+}
+
+export function trozos(texto, max) {
+  const out = [];
+  for (const c of texto.split(/[,;:.!?¿¡—()«»"“”]+/)) {
+    const ws = c.trim().split(/\s+/).filter(Boolean);
+    if (ws.length < 2) continue;
+    // segmentos: cortes antes de las palabras de enlace
+    const segs = [];
+    let act = [];
+    ws.forEach((w, k) => {
+      const dos = `${w} ${ws[k + 1] || ''}`;
+      if (act.length >= 2 && (CORTE.test(w) || CORTE.test(dos))) { segs.push(act); act = []; }
+      act.push(w);
+    });
+    if (act.length) segs.push(act);
+    // se juntan mientras quepan; los largos se parten parejo
+    let junto = [];
+    const soltar = () => { if (junto.length >= 2) out.push(junto.join(' ')); junto = []; };
+    for (const sg of segs) {
+      if (junto.length + sg.length <= max) { junto.push(...sg); continue; }
+      soltar();
+      if (sg.length <= max) { junto = [...sg]; continue; }
+      out.push(...partir(sg, max));
+    }
+    soltar();
+  }
+  return [...new Set(out)];
+}
+
 // Reparte la frase en renglones parecidos y da a cada uno el tamaño que llena el ancho
 // (las palabras cortas como «Y» o «EN» quedan más chicas, como en los carteles de pedrería).
 function pila(ctx, texto, { ancho, alto, max, fuente, k = 1, lh = 0.92 }) {
@@ -356,7 +415,7 @@ const DIBUJAR = {
 
     // la frase en grotesca fina, enorme, que se recorta contra el borde inferior
     const m = Math.min(W, H) * 0.075;
-    const frase = fraseCorta(o.texto, o.clave, 5).toUpperCase().replace(/[.,;:]+$/, '');
+    const frase = grande(o, 5).toUpperCase().replace(/[.,;:]+$/, '');
     const fuente = (t) => `300 ${t}px ${F.grot}`;
     const ancho = horizontal ? W * 0.44 : W - m * 0.6;
     const x0 = horizontal ? W * 0.53 : m * 0.3;
@@ -384,7 +443,7 @@ const DIBUJAR = {
     const ancho = formato === 'escritorio' ? W * 0.5 : W * 0.7;
     const altoMax = formato === 'escritorio' ? H * 0.34 : H * 0.3;
     const fuente = (t) => `400 ${t}px ${F.grot}`;
-    const frase = fraseCorta(o.texto, o.clave, 6).toUpperCase().replace(/[.,;:]+$/, '');
+    const frase = grande(o, 6).toUpperCase().replace(/[.,;:]+$/, '');
     const comp = ajustar(ctx, frase.split(/\s+/), { ancho, alto: altoMax, max: 150 * s, min: 26 * s, lh: 0.9, fuente, trk: -0.075 });
     const alto = comp.lineas.length * comp.tam * 0.9;
     const cy = formato === 'celular' ? H * 0.56 : formato === 'historia' ? H * 0.47 : H * 0.5;
@@ -405,7 +464,7 @@ const DIBUJAR = {
     const horizontal = formato === 'escritorio';
     const ancho = horizontal ? W * 0.52 : W * 0.8;
     const altoMax = horizontal ? H * 0.7 : formato === 'post' ? H * 0.74 : H * 0.48;
-    const renglones = pila(ctx, fraseCorta(o.texto, o.clave, 6).toUpperCase().replace(/[.,;:]+$/, ''), { ancho, alto: altoMax, max: 520 * s, fuente, k, lh: 0.86 });
+    const renglones = pila(ctx, grande(o, 6).toUpperCase().replace(/[.,;:]+$/, ''), { ancho, alto: altoMax, max: 520 * s, fuente, k, lh: 0.86 });
     const alto = renglones.reduce((a, r) => a + r.tam * 0.86, 0);
     const capa = lienzo(W, H);
     const c = capa.getContext('2d');
@@ -467,7 +526,7 @@ const DIBUJAR = {
     });
     espaciado(ctx, 0);
     // palabra a mano
-    const pal = palabraClave(o.texto, o.clave);
+    const pal = o.grande?.trim() || palabraClave(o.texto, o.clave);
     const palabra = pal.charAt(0).toUpperCase() + pal.slice(1).toLowerCase();
     const capa = lienzo(W, H);
     const c = capa.getContext('2d');
@@ -506,7 +565,7 @@ const DIBUJAR = {
     const horizontal = formato === 'escritorio';
     const ancho = horizontal ? W * 0.6 : W * 0.88;
     const altoMax = horizontal ? H * 0.72 : formato === 'post' ? H * 0.8 : H * 0.5;
-    const renglones = pila(ctx, fraseCorta(o.texto, o.clave, 7).toUpperCase().replace(/[.,;:]+$/, ''), { ancho, alto: altoMax, max: 520 * s, fuente, k, lh: 0.9 });
+    const renglones = pila(ctx, grande(o, 7).toUpperCase().replace(/[.,;:]+$/, ''), { ancho, alto: altoMax, max: 520 * s, fuente, k, lh: 0.9 });
     const alto = renglones.reduce((a, r) => a + r.tam * 0.9, 0);
     const capa = lienzo(W, H);
     const c = capa.getContext('2d');
@@ -562,7 +621,7 @@ const DIBUJAR = {
     const x0 = horizontal ? W * 0.46 : (W - ancho) / 2;
     const altoMax = horizontal ? H * 0.34 : formato === 'post' ? H * 0.3 : H * 0.24;
     const fuente = (t) => `800 ${t}px ${F.grot}`;
-    const frase = fraseCorta(o.texto, o.clave, 14).toUpperCase();
+    const frase = grande(o, 14).toUpperCase();
     const palabras = frase.split(/\s+/);
     const clave = palabraClave(o.texto, o.clave);
     const ultima = palabras.at(-1);
@@ -610,7 +669,7 @@ const DIBUJAR = {
     const anchoFranja = horizontal ? W * 0.56 : W * 0.86;
     const cx = W / 2;
     // renglones parejos: dos o tres, todos al mismo cuerpo, el más largo llena la franja
-    const frase = fraseCorta(o.texto, o.clave, 6).toUpperCase().replace(/[.,;:]+$/, '');
+    const frase = grande(o, 6).toUpperCase().replace(/[.,;:]+$/, '');
     const ws = frase.split(/\s+/);
     const n = ws.length <= 2 ? ws.length : ws.length <= 5 ? 2 : 3;
     const meta = frase.length / n;
@@ -705,7 +764,7 @@ const DIBUJAR = {
     const { W, H, s, formato } = o;
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, W, H);
-    const corta = o.texto.split(/\s+/).length <= 3 ? o.texto : palabraClave(o.texto, o.clave);
+    const corta = o.grande?.trim() || (o.texto.split(/\s+/).length <= 3 ? o.texto : palabraClave(o.texto, o.clave));
     const palabra = corta.toLowerCase().replace(/[.,;:!?¡¿«»"]/g, '');
     const capa = lienzo(W, H);
     const c = capa.getContext('2d');

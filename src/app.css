@@ -92,7 +92,7 @@ img { display: block; max-width: 100%; }
 .marca-main { font: 650 28px/0.9 var(--f-display); letter-spacing: -0.079em; }
 .marca-sub { font: 600 8px var(--f-ui); letter-spacing: 0.23em; }
 .marca-grande { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; color: var(--tinta); }
-.marca-grande > span { font: 500 clamp(78px, 15vw, 190px)/0.87 var(--f-display); letter-spacing: -0.105em; white-space: nowrap; padding-right: 0.09em; }
+.marca-grande > span { font: 500 clamp(64px, min(15vw, 19vh), 190px)/0.87 var(--f-display); letter-spacing: -0.105em; white-space: nowrap; padding-right: 0.09em; }
 .marca-grande small { font: 500 clamp(10px, 1vw, 14px)/1 var(--f-ui); letter-spacing: 0.56em; padding-left: 0.56em; }
 /* decisión final: la marca nunca lleva filtros, sombras, desenfoque ni texturas */
 .marca-main, .marca-grande > span { filter: none !important; text-shadow: none !important; }
@@ -128,6 +128,7 @@ img { display: block; max-width: 100%; }
 .inicio-flecha { font: 400 20px var(--f-ui); color: #979793; transition: transform 0.15s; }
 .inicio-entrada:hover .inicio-flecha { transform: translate(3px, -3px); color: var(--tinta); }
 .inicio-ultima { width: min(460px, 100%); margin: 35px 0 0; font: 12px var(--f-ui); color: var(--tenue); }
+@media (max-height: 780px) and (min-width: 761px) { .inicio-entrada { font-size: 29px; } .inicio-ultima { margin-top: 18px; } .inicio .marca-grande { margin-bottom: 32px; } }
 .inicio-ultima button { margin-left: 6px; color: var(--tinta-2); border-bottom: 1px solid transparent; }
 .inicio-ultima button:hover { border-color: var(--tinta-2); }
 .inicio-empezar button { margin-left: 4px; color: var(--tinta); border-color: var(--linea); }
@@ -489,7 +490,7 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.6 var(--f
 .acc-texto { font: 400 13px var(--f-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .acc-fila { flex: 0 1 auto; display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; }
 .colores { display: flex; gap: 7px; align-items: center; }
-.colores button { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.12); transition: transform 0.15s; }
+.colores button:not(.acc-clave) { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.12); transition: transform 0.15s; }
 .colores [data-color="oro"] { background: #e8ba30; }
 .colores [data-color="rojo"] { background: #d3271c; }
 .colores [data-color="azul"] { background: #3460ff; }
@@ -771,7 +772,7 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
 .nota-linea { display: block; width: calc(100% - 31px); margin: -4px 0 14px 31px; padding: 6px 0 6px 12px; border-left: 2px solid var(--linea); text-align: left; font: italic 400 14px/1.5 var(--f-texto); color: var(--tinta-2); white-space: pre-line; }
 .nota-linea .m-ref { font-style: normal; }
 .colores .sin { background: linear-gradient(135deg, transparent 45%, currentColor 45%, currentColor 55%, transparent 55%); }
-.colores button:hover { transform: scale(1.15); }
+.colores button:not(.acc-clave):hover { transform: scale(1.15); }
 .acc-botones { display: flex; gap: 2px; flex-wrap: wrap; align-items: center; }
 .acc-botones button { display: inline-flex; align-items: center; gap: 5px; padding: 10px 8px; font: 500 10px var(--f-ui); letter-spacing: 0.06em; text-transform: uppercase; color: inherit; opacity: 0.78; }
 .acc-botones button:hover { opacity: 1; background: rgba(0, 0, 0, 0.04); }
@@ -842,6 +843,10 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
 .lamina-controles { display: grid; gap: 10px; align-content: start; }
 .lamina-controles .etiqueta-ui { margin-top: 6px; }
 .lamina-controles textarea { width: 100%; resize: vertical; font: 400 15px/1.5 var(--f-texto); }
+.lam-grande { display: grid; gap: 8px; padding: 12px 0 4px; border-top: 1px solid var(--linea); }
+.lam-grande .etiqueta-ui { margin-top: 0; }
+.lam-grande input { width: 100%; font: 500 14px var(--f-ui); text-transform: uppercase; letter-spacing: 0.02em; }
+.lam-trozos button { text-transform: none; letter-spacing: 0; font: 400 13px var(--f-texto); padding: 6px 9px; text-align: left; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chips button { padding: 8px 11px; border: 1px solid var(--linea); font: 500 10px var(--f-ui); letter-spacing: 0.06em; text-transform: uppercase; color: var(--tinta-2); }
 .chips button:hover { color: var(--tinta); border-color: var(--tinta-2); }
@@ -964,3 +969,7 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
   .inicio-entrada:hover, .archivo-entrada:hover .arc-verso, .archivo-entrada:hover .arc-nota, .cubierta:hover, .cubierta.firma:hover .cub-titulo,
   .coleccion:hover .col-nombre, .coleccion:hover .col-flecha, .inicio-entrada:hover .inicio-flecha, .obra:hover .obra-lamina img, .inicio-cultura-lamina:hover img { transform: none !important; }
 }
+
+/* Palabra bajo el mouse y palabra elegida para estudiar (CSS Custom Highlight API) */
+::highlight(palabra-encima) { background-color: rgba(24, 24, 24, 0.07); text-decoration: underline; text-decoration-color: rgba(24, 24, 24, 0.35); text-underline-offset: 3px; }
+::highlight(palabra-elegida) { background-color: rgba(24, 24, 24, 0.1); text-decoration: underline 1.5px; text-decoration-color: var(--tinta); text-underline-offset: 3px; }

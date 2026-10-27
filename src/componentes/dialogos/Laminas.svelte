@@ -3,7 +3,7 @@
   // Viene de la selección del lector o de la galería del menú de inicio (ui.lamina).
   import { ui, etiquetaSeleccion, avisar } from '../../lib/ui.svelte.js';
   import { usuario } from '../../lib/usuario.svelte.js';
-  import { ESTILOS, FORMATOS, VARIANTES, dibujarLamina } from '../../lib/laminas.js';
+  import { ESTILOS, FORMATOS, VARIANTES, CABEN, dibujarLamina, fraseCorta, palabraClave, trozos } from '../../lib/laminas.js';
   import { guardarArchivo } from '../../lib/archivos.js';
   import { t } from '../../lib/i18n.svelte.js';
 
@@ -30,13 +30,33 @@
 
   $effect(() => { frase = origen.texto; });
 
+  // Los acabados de letra enorme no caben el versículo entero: muestran un trozo o una palabra.
+  // Ese trozo se ve y se elige aquí; si no se toca, sale solo (la cláusula de la palabra que tocaste, o la primera).
+  const cabe = $derived(CABEN[estilo]);
+  const soloPalabra = $derived(cabe === 'palabra');
+  const nPalabras = $derived(frase.trim().split(/\s+/).filter(Boolean).length);
+  const recorta = $derived(soloPalabra ? nPalabras > 3 : nPalabras > cabe);
+  const automatico = $derived(soloPalabra ? palabraClave(frase, origen.clave) : fraseCorta(frase, origen.clave, cabe));
+  const opciones = $derived.by(() => {
+    if (!recorta) return [];
+    if (!soloPalabra) return [...new Set([automatico, ...trozos(frase, cabe)])].slice(0, 9);
+    // palabras con peso: sin repetir y sin las cortitas (de, que, el…)
+    const ws = frase.split(/\s+/).map((w) => w.replace(/[^\p{L}]/gu, '')).filter((w) => w.length > 3);
+    return [...new Set(ws)].slice(0, 12);
+  });
+  let grande = $state('');
+  let elegido = $state(false); // la persona eligió o escribió su trozo: ya no se pisa solo
+  $effect(() => { origen.texto; estilo; elegido = false; });
+  $effect(() => { if (!elegido) grande = automatico; });
+  const limpio = (x) => x.replace(/[.,;:!?¡¿«»"]+$/g, '').trim();
+
   async function dibujar() {
     if (!lienzo || !frase.trim()) return;
     const n = ++pedido;
     dibujando = true;
     const o = $state.snapshot(origen);
     await dibujarLamina(lienzo, {
-      ...o, estilo, formato, tono: tonoDe(estilo), texto: frase, rotulo: t('lam.rotulo'),
+      ...o, estilo, formato, tono: tonoDe(estilo), texto: frase, grande: recorta ? grande : '', rotulo: t('lam.rotulo'),
       imagen: usuario.portadas[o.libro] || undefined,
     });
     if (n === pedido) dibujando = false;
@@ -46,7 +66,7 @@
 
   let espera;
   $effect(() => {
-    estilo; formato; tono; frase; lienzo;
+    estilo; formato; tono; frase; grande; lienzo;
     clearTimeout(espera);
     espera = setTimeout(dibujar, 160);
     return () => clearTimeout(espera);
@@ -88,6 +108,21 @@
       <label class="etiqueta-ui" for="lam-frase">{t('lam.frase')}</label>
       <textarea id="lam-frase" class="campo" rows="4" bind:value={frase}></textarea>
       <p class="nota-pie">{t('lam.fraseAyuda')}</p>
+      {#if recorta}
+        <div class="lam-grande">
+          <label class="etiqueta-ui" for="lam-grande">{soloPalabra ? t('lam.palabraGrande') : t('lam.textoGrande')}</label>
+          <p class="nota-pie">{soloPalabra
+            ? t('lam.explicaPalabra', { e: t(`lam.e.${estilo}`) })
+            : t('lam.explicaTrozo', { e: t(`lam.e.${estilo}`), n: cabe, total: nPalabras })}</p>
+          <input id="lam-grande" class="campo" bind:value={grande} oninput={() => (elegido = true)} />
+          <div class="chips lam-trozos" role="group" aria-label={t('lam.otroTrozo')}>
+            {#each opciones as o (o)}
+              <button aria-pressed={limpio(grande).toLowerCase() === limpio(o).toLowerCase()} onclick={() => { grande = o; elegido = true; }}>{o}</button>
+            {/each}
+          </div>
+          {#if !soloPalabra}<p class="nota-pie">{t('lam.enteroEn')}</p>{/if}
+        </div>
+      {/if}
       <button class="boton" onclick={guardar}>{t('lam.guardar')}</button>
     </div>
   </div>

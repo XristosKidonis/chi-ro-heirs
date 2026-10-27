@@ -212,6 +212,12 @@ await paso('lámina en los ocho acabados', async () => {
     await pag.waitForTimeout(600);
     await pag.waitForSelector('.lamina-vista:not(.cargando)', { timeout: 10000 });
   }
+  // versículo largo en Grabado: se ve qué trozo va en grande y se puede elegir otro
+  const trozos = await pag.locator('.lam-trozos button').count();
+  if (trozos < 2) throw new Error('sin trozos para elegir');
+  const otro = await pag.textContent('.lam-trozos button >> nth=1');
+  await pag.click('.lam-trozos button >> nth=1');
+  if ((await pag.inputValue('#lam-grande')) !== otro) throw new Error('el trozo elegido no pasó al texto grande');
   await pag.click('.chips button:has-text("Fondo de celular")');
   await pag.waitForTimeout(800);
   const [w, h] = await pag.evaluate(() => { const c = document.querySelector('.estudio-lamina canvas'); return [c.width, c.height]; });

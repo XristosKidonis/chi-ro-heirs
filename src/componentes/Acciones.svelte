@@ -71,7 +71,7 @@
       <div class="acc-botones">
         <button class="acc-guardar" aria-pressed={guardada} onclick={() => accion('guardar')}>{guardada ? t('acc.quitarGuardado') : t('acc.guardar')}</button>
         <button onclick={() => accion('notas')}>{t('acc.nota')}</button>
-        <button class="acc-palabra" onclick={() => accion('estudiar')} title={t('acc.estudiar')}>{t('acc.estudiarCorto')}{#if ui.palabra} <i>«{ui.palabra.texto}»</i>{/if}</button>
+        <button class="acc-palabra" onclick={() => accion('estudiar')} title={ui.palabra ? t('acc.estudiarTocada', { p: ui.palabra.texto }) : t('acc.estudiarVerso')}>{t('acc.estudiarCorto')}{#if ui.palabra} <i>«{ui.palabra.texto}»</i>{/if}</button>
         <button onclick={() => accion('poster')}>{t('acc.poster')}</button>
         <button class="acc-mas" aria-expanded={mas} onclick={() => (mas = !mas)}>{t('aj.otros')} {mas ? '−' : '+'}</button>
         <button class="acc-cerrar" onclick={() => accion('cerrar')} aria-label={t('acc.quitarSel')} title={t('acc.quitarSel')}><Icono n="cerrar" /></button>
