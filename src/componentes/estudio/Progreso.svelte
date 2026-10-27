@@ -9,18 +9,15 @@
   const nt = $derived(leidos.length - at);
   const CAP_AT = LIBROS.slice(0, 39).reduce((a, l) => a + l.capitulos, 0);
   const CAP_NT = TOTAL_CAPITULOS - CAP_AT;
-  const pct = (a, b) => Math.round((a / b) * 1000) / 10;
 </script>
 
 <div class="seccion">
   <h3>{t('prog.lectura')}</h3>
-  <p class="cartel">{pct(leidos.length, TOTAL_CAPITULOS)}% <em>{t('prog.de')}</em></p>
   <div class="cifras">
     <div class="cifra"><b>{leidos.length}</b><span>{t('prog.capitulos', { n: TOTAL_CAPITULOS })}</span></div>
-    <div class="cifra"><b>{pct(at, CAP_AT)}%</b><span>{t('prog.at')}</span></div>
-    <div class="cifra"><b>{pct(nt, CAP_NT)}%</b><span>{t('prog.nt')}</span></div>
+    <div class="cifra"><b>{at}</b><span>{t('prog.at')} · {CAP_AT}</span></div>
+    <div class="cifra"><b>{nt}</b><span>{t('prog.nt')} · {CAP_NT}</span></div>
   </div>
-  <div class="barra-prog"><i style="width: {pct(leidos.length, TOTAL_CAPITULOS)}%"></i></div>
   <p class="nota-pie">{t('prog.sinRachas')}</p>
 </div>
 

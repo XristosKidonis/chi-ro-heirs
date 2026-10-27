@@ -1,6 +1,7 @@
 <script>
   import { usuario, ajustar } from '../../lib/usuario.svelte.js';
   import { lista } from '../../lib/biblia.js';
+  import { ui } from '../../lib/ui.svelte.js';
   import { t } from '../../lib/i18n.svelte.js';
   const a = $derived(usuario.ajustes);
 </script>
@@ -58,6 +59,11 @@
     <option value="">{t('aj.ninguna')}</option>
     {#each lista().filter((v) => v.id !== a.version) as v}<option value={v.id}>{v.id} · {v.nombre}</option>{/each}
   </select>
+</div>
+<h3>{t('aj.otros')}</h3>
+<div class="fila-botones">
+  <button class="boton secundario" onclick={() => (ui.dialogo = 'versiones')}>{t('aj.abrirVersiones')}</button>
+  <button class="boton secundario" onclick={() => (ui.dialogo = 'respaldo')}>{t('aj.abrirRespaldo')}</button>
 </div>
 <h3>{t('aj.voz')}</h3>
 <div class="ajuste">

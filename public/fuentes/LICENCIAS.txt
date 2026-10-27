@@ -1,4 +1,6 @@
 Todas las fuentes de esta carpeta usan la licencia SIL Open Font License 1.1 (OFL-1.1),
-obtenidas de los paquetes @fontsource en npm:
-Literata, Bodoni Moda, Pinyon Script, Inter Tight, Fraunces, Archivo, Atkinson Hyperlegible Next.
+obtenidas de los paquetes @fontsource y @fontsource-variable en npm:
+Inter Tight (variable), DM Sans (variable), Literata, Atkinson Hyperlegible Next, Noto Serif Hebrew,
+y para dibujar las láminas: Archivo, Fraunces, Pinyon Script.
+Bodoni Moda y los cortes estáticos de Inter Tight se conservan para herramientas/instalador.mjs.
 https://openfontlicense.org

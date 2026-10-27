@@ -1,4 +1,4 @@
-// Datos del usuario: subrayados, notas, memoria, capítulos leídos, cintas, portadas propias y ajustes.
+// Datos del usuario: subrayados, notas, guardados, memoria, capítulos leídos, cintas, portadas propias y ajustes.
 // Viven en memoria (reactivos) y se escriben en usuario.db. Cada fila guarda «actualizado»
 // y «borrado» para poder sincronizar entre dispositivos más adelante.
 import { bdUsuario } from './bd.js';
@@ -6,11 +6,12 @@ import { referenciasEnTexto, clave } from './libros.js';
 
 export const AJUSTES_INICIALES = {
   idioma: 'es',           // idioma de la interfaz: es | en
-  mostrarInicio: true,    // portada y menú al abrir
-  grabados: true,         // grabado a toda página al abrir cada libro
+  mostrarInicio: true,    // pantalla de inicio al abrir
+  grabados: false,        // grabado de Doré a toda página al abrir cada libro (opcional, en Ajustes)
   version: 'NTV',
   paralela: '',
-  tema: 'cuero',          // cuero | papel | sistema
+  tema: 'papel',          // papel (claro) | cuero (oscuro, solo el lector) | sistema
+  calma: false,           // modo Calma: el lector sin barras
   tamano: 21,
   interlineado: 1.6,
   fuente: 'literata',     // literata | atkinson
@@ -27,6 +28,7 @@ export const usuario = $state({
   error: '',
   subrayados: {},   // "43.3.16" -> color
   notas: [],
+  guardados: [],    // versículos guardados en «Mi archivo»: { clave, creada }
   memoria: [],
   leidos: {},       // "43.3" -> fecha
   cintas: [],
@@ -45,6 +47,8 @@ const TABLAS = [
      creada INTEGER, actualizado INTEGER, borrado INTEGER DEFAULT 0)`,
   `CREATE TABLE IF NOT EXISTS portadas (libro INTEGER PRIMARY KEY, imagen TEXT, actualizado INTEGER, borrado INTEGER DEFAULT 0)`,
   `CREATE TABLE IF NOT EXISTS ajustes (clave TEXT PRIMARY KEY, valor TEXT, actualizado INTEGER)`,
+  // añadida con el diseño «white industrial»: tabla nueva, no cambia ninguna de las anteriores
+  `CREATE TABLE IF NOT EXISTS guardados (clave TEXT PRIMARY KEY, creada INTEGER, actualizado INTEGER, borrado INTEGER DEFAULT 0)`,
 ];
 
 const ahora = () => Date.now();
@@ -66,6 +70,8 @@ export async function iniciarUsuario() {
   const vivos = (t) => db.select(`SELECT * FROM ${t} WHERE borrado = 0`);
   for (const f of await vivos('subrayados')) usuario.subrayados[f.clave] = f.color;
   usuario.notas = (await vivos('notas')).map((n) => ({ ...n, respondida: !!Number(n.respondida) }))
+    .sort((a, b) => b.creada - a.creada);
+  usuario.guardados = (await vivos('guardados')).map((g) => ({ clave: g.clave, creada: Number(g.creada) }))
     .sort((a, b) => b.creada - a.creada);
   usuario.memoria = await vivos('memoria');
   for (const f of await vivos('leidos')) usuario.leidos[f.cap] = Number(f.fecha);
@@ -140,6 +146,24 @@ export function indiceRetroenlaces(notas) {
   return idx;
 }
 
+// ---------- versículos guardados ----------
+export const estaGuardado = (k) => usuario.guardados.some((g) => g.clave === k);
+
+// Guarda o quita los versículos dados; si alguno no estaba guardado, se guardan todos.
+export function alternarGuardado(claves) {
+  const guardar = claves.some((k) => !estaGuardado(k));
+  for (const k of claves) {
+    if (guardar && !estaGuardado(k)) {
+      usuario.guardados.unshift({ clave: k, creada: ahora() });
+      ejecutar('INSERT OR REPLACE INTO guardados (clave, creada, actualizado, borrado) VALUES (?, ?, ?, 0)', [k, ahora(), ahora()]);
+    } else if (!guardar) {
+      usuario.guardados = usuario.guardados.filter((g) => g.clave !== k);
+      ejecutar('UPDATE guardados SET borrado = 1, actualizado = ? WHERE clave = ?', [ahora(), k]);
+    }
+  }
+  return guardar;
+}
+
 // ---------- capítulos leídos ----------
 export function marcarLeido(libro, cap, leido = true) {
   const k = `${libro}.${cap}`;
@@ -212,6 +236,7 @@ export function exportar() {
     exportado: new Date().toISOString(),
     subrayados: usuario.subrayados,
     notas: usuario.notas,
+    guardados: usuario.guardados,
     memoria: usuario.memoria,
     leidos: usuario.leidos,
     cintas: usuario.cintas,
@@ -239,6 +264,9 @@ export function importar(datos) {
   for (const m of datos.memoria || []) if (memorizar(m.ref)) n++;
   for (const k of Object.keys(datos.leidos || {})) {
     if (!usuario.leidos[k]) { const [b, c] = k.split('.').map(Number); marcarLeido(b, c); n++; }
+  }
+  for (const g of datos.guardados || []) {
+    if (g?.clave && !estaGuardado(g.clave)) { alternarGuardado([g.clave]); n++; }
   }
   for (const c of datos.cintas || []) {
     if (!usuario.cintas.some((x) => x.libro === c.libro && x.cap === c.cap)) { alternarCinta(c.libro, c.cap); n++; }

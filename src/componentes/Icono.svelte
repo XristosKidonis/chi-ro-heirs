@@ -20,6 +20,12 @@
     paralelo: 'M4 5h16M4 19h16M12 5v14',
     lector: 'M6 4h12v16H6zM9 8h6M9 12h6M9 16h4',
     original: 'M5 6l7 12M12 6l-3 5M17 6c2 0 3 1.5 3 3s-1 3-3 3h-2V6M15 12v6',
+    guardar: 'M6 4.3h12v16l-6-4.5-6 4.5z',
+    ajustes: 'M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4',
+    inicio: 'M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5',
+    biblioteca: 'M5 4h4v16H5zM10 4h4v16h-4zM15.5 4.8l3.6-1 3.6 15.3-3.6 1z',
+    archivo: 'M4 6h16M4 12h16M4 18h10',
+    laminas: 'M4 4h7v9H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 15h7v5H4z',
   };
 </script>
 

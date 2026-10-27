@@ -29,10 +29,10 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 
 | Función | Detalle |
 |---|---|
-| Inicio | Portada con el versículo del día como cartel; al tocarla, un menú con buscador de libros y pasajes, «continuar leyendo», tus cintas y una estantería con los 66 libros como lomos que se llenan de rojo al leerlos |
+| Inicio | La marca CHI—RO y tres entradas: Continuar leyendo, Biblioteca (los 66 libros como cubiertas tipográficas, con filtro y búsqueda) y Mi archivo (guardados, cintas, subrayados y notas en un índice) |
 | Versiones | **NTV** y **NLT** en línea (API oficial de Tyndale). **RV1909, RV1865, BSB, KJV** dentro de la app, sin conexión |
-| Portadillas | Cada libro abre con un grabado de Gustave Doré a toda página, en blanco y negro con grano y el nombre del libro encima. Puedes poner tu propia imagen (por ejemplo, de tu tablero de Pinterest): se guarda solo en tu equipo y nunca sale de él |
-| Lectura | Temas Cuero y Papel, modo lector sin números, texto corrido, Literata o Atkinson Hyperlegible, vista paralela |
+| Portadillas | Opcional (Ajustes → Grabados): cada libro abre con un grabado de Gustave Doré a toda página. Puedes poner tu propia imagen; se guarda solo en tu equipo |
+| Lectura | Lector claro (y oscuro a pedido), modo Calma sin barras, tamaño A−/A+, modo lector sin números, texto corrido, Literata o Atkinson Hyperlegible, vista paralela |
 | Subrayado | 5 colores de marcador, anclados a la referencia: lo que subrayas en la NTV aparece también en la RV1909 |
 | Notas | Tipos (observación, pregunta, aplicación, oración), `#etiquetas`, referencias que se vuelven enlaces y retroenlaces («mencionado en otras notas») |
 | Estudio de palabra | Toca una palabra: concordancia, mapa por libros, diccionario RAE, interlineal, Blue Letter Bible; Strong para versiones en inglés |
@@ -40,16 +40,16 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 | Idiomas | Interfaz en español o inglés (Ajustes → Idioma) |
 | Referencias cruzadas | Unas 159 000 de OpenBible.info, ordenadas por votos |
 | Búsqueda | Instantánea y sin acentos, en toda la Biblia, en un testamento o en un libro |
-| Hábito | Sello AMEN al terminar un capítulo, cuadrícula de cobertura de los 1189 capítulos (sin rachas), cintas («Marcar» en cada capítulo) |
+| Hábito | «Amén» al terminar un capítulo, cuadrícula de cobertura de los 1189 capítulos (sin rachas ni porcentajes), cintas por capítulo y versículos guardados |
 | Memoria | Versículos que se desvanecen palabra a palabra, con repaso espaciado |
-| Láminas | Cualquier versículo como fondo de pantalla (celular o computadora) o para compartir (post 4:5, historia 9:16), en ocho acabados: Grabado, Ultramar, Aura, Aerosol, Pedrería, Primario, Riso y Calor. En el menú de inicio, el versículo del día aparece en todos como un tablero |
+| Láminas | Cualquier versículo como fondo de pantalla (celular o computadora) o para compartir (post 4:5, historia 9:16). La galería abre con tres colecciones neutras, Tipografía (Aura, Primario, Pedrería), Color (Ultramar, Riso amarillo y verde, Calor) e Imagen (Aerosol, Grabado), y el color aparece solo al entrar |
 | Voz | Lectura en voz alta con las voces del sistema |
 | Respaldo | Exportar e importar todo en un JSON legible |
 
 **Atajos de teclado:**
-- `Ctrl/⌘ K` o `/`: ir a un pasaje o buscar.
+- `Ctrl/⌘ K` o `/`: buscar un libro, un pasaje o una palabra.
+- `Esc`: quitar la selección, cerrar paneles o salir del modo Calma.
 - `←` `→`: capítulo anterior o siguiente.
-- `Esc`: quitar la selección.
 - `Mayús` + clic: seleccionar un rango de versículos.
 
 ## NTV: clave gratuita
@@ -114,5 +114,5 @@ Cada fila guarda la fecha de cambio y una marca de borrado, ya preparada para la
 - **Léxico Strong:** [Open Scriptures](https://github.com/openscriptures/strongs), CC BY-SA.
 - **Interlineal hebreo y griego, léxicos:** [STEP Bible](https://www.stepbible.org) (Tyndale House, Cambridge), datos TAHOT, TAGNT, TBESH y TBESG, CC BY 4.0.
 - **Grabados:** Gustave Doré, *La Grande Bible de Tours* (1866), dominio público, vía [Project Gutenberg](https://www.gutenberg.org/ebooks/8710) («The Doré Bible Gallery»). Se obtienen con el flujo «Traer grabados» y `herramientas/preparar_grabados.py`.
-- **Fuentes tipográficas:** Literata, Bodoni Moda, Pinyon Script, Inter Tight, Fraunces, Archivo, Atkinson Hyperlegible Next y Noto Serif Hebrew, todas con licencia SIL Open Font License.
+- **Fuentes tipográficas:** Inter Tight, DM Sans, Literata, Atkinson Hyperlegible Next y Noto Serif Hebrew (interfaz y lectura); Archivo, Fraunces y Pinyon Script (solo en las láminas). Todas con licencia SIL Open Font License.
 - **Estética:** inspirada en las Biblias de diseño editorial; nombre y emblema propios (el crismón ΧΡ es un símbolo cristiano del siglo IV, de libre uso).

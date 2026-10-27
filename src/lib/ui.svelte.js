@@ -4,10 +4,11 @@ import { capitulo as cargarCapitulo, info } from './biblia.js';
 import { clave, nombreRef, nombreLibro, LIBROS } from './libros.js';
 
 export const ui = $state({
-  vista: 'inicio',      // 'inicio' (portada y menú) | 'lector'
-  pasoInicio: 'portada', // 'portada' | 'menu'
-  navAbierta: false,
-  estudioAbierto: typeof window !== 'undefined' ? window.innerWidth > 900 : true,
+  vista: 'inicio',      // 'inicio' | 'biblioteca' | 'lector' | 'archivo' | 'laminas'
+  navAbierta: false,    // selector de libros y capítulos del lector
+  buscadorAbierto: false, // búsqueda global (Ctrl/Cmd K)
+  coleccion: null,      // colección de láminas abierta: null (índice) | 'tipografia' | 'color' | 'imagen'
+  estudioAbierto: false, // el estudio se abre a pedido, como un margen junto al texto
   pestana: 'palabra',
   seleccion: [],        // números de versículo seleccionados
   ancla: null,          // último versículo tocado (para Mayús+clic)
@@ -30,8 +31,17 @@ export function avisar(texto, error = false) {
 
 export const pos = () => usuario.ajustes.pos;
 
+// Cambia de pantalla; al salir del lector se cierran la selección y los paneles
+export function abrirVista(v) {
+  if (v === 'laminas') ui.coleccion = null;
+  if (v !== 'lector') { ui.seleccion = []; ui.navAbierta = false; }
+  ui.vista = v;
+  if (typeof window !== 'undefined') requestAnimationFrame(() => document.querySelector('.vista')?.scrollTo?.(0, 0));
+}
+
 export function irA(libro, cap, v = null) {
   ui.vista = 'lector';
+  ui.buscadorAbierto = false;
   ui.seleccion = [];
   ui.ancla = null;
   ui.navAbierta = false;

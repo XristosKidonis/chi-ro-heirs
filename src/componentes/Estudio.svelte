@@ -16,7 +16,7 @@
   $effect(() => { ui.pestana; if (cuerpo) cuerpo.scrollTop = 0; });
 </script>
 
-<aside class="estudio" class:abierta={ui.estudioAbierto} aria-label={t('barra.estudio')}>
+<aside class="estudio" class:abierta={ui.estudioAbierto} aria-label={t('barra.estudio')} hidden={!ui.estudioAbierto}>
   <div class="pestanas pestanas-estudio" role="tablist">
     {#each PESTANAS as id}
       <button role="tab" aria-selected={ui.pestana === id} onclick={() => (ui.pestana = id)}>{t(`tab.${id}`)}</button>

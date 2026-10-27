@@ -1,10 +1,9 @@
 <script>
   import { tick, untrack } from 'svelte';
-  import Emblema from './Emblema.svelte';
   import Frontis from './Frontis.svelte';
-  import Icono from './Icono.svelte';
+  import LectorBarra from './LectorBarra.svelte';
   import { ui, irA, abrirPestana, avisar } from '../lib/ui.svelte.js';
-  import { usuario, ajustar, marcarLeido, alternarCinta, indiceRetroenlaces } from '../lib/usuario.svelte.js';
+  import { usuario, ajustar, marcarLeido, indiceRetroenlaces } from '../lib/usuario.svelte.js';
   import { info, versionEstudio } from '../lib/biblia.js';
   import { LIBROS, clave, nombreRef, nombreLibro, capituloSiguiente } from '../lib/libros.js';
   import { t, fecha as fechaLocal } from '../lib/i18n.svelte.js';
@@ -16,10 +15,8 @@
   const retro = $derived(indiceRetroenlaces(usuario.notas));
   const notasPorClave = $derived(usuario.notas.reduce((m, n) => ((m[n.ref] = (m[n.ref] || 0) + 1), m), {}));
   const leido = $derived(usuario.leidos[`${pos.libro}.${pos.cap}`]);
-  const cintaPuesta = $derived(usuario.cintas.some((c) => c.libro === pos.libro && c.cap === pos.cap));
   const anterior = $derived(capituloSiguiente(pos.libro, pos.cap, -1));
   const siguiente = $derived(capituloSiguiente(pos.libro, pos.cap, 1));
-  const avance = $derived((pos.cap / libro.capitulos) * 100);
   const conGrabado = $derived(pos.cap === 1 && usuario.ajustes.grabados !== false);
 
   let lector;
@@ -130,40 +127,16 @@
 </script>
 
 <div class="lector-marco">
-  <div class="canto" aria-hidden="true"><i style="height: {avance}%"></i></div>
   <main class="lector" bind:this={lector}>
+    {#if !usuario.ajustes.calma}<LectorBarra />{/if}
     {#if conGrabado}
       {#key pos.libro}<Frontis libro={pos.libro} />{/key}
     {/if}
     <article class="pagina" class:paralelo={!!par}>
-      <button class="marcador" class:puesto={cintaPuesta} onclick={() => avisar(alternarCinta(pos.libro, pos.cap) ? t('lector.cintaPuesta') : t('lector.cintaQuitada'))}
-        title={cintaPuesta ? t('lector.cintaQuitar') : t('lector.cintaPoner')} aria-pressed={cintaPuesta}>
-        <i aria-hidden="true"></i>{cintaPuesta ? t('lector.marcado') : t('lector.marcar')}
-      </button>
-
       <header class="cap-cabeza">
-        {#if conGrabado}
-          <div class="tras-frontis">
-            <span class="sub">{ver?.nombre}</span>
-            {#if libro.capitulos > 1}<span class="cap1">{t('lector.capitulo', { n: 1 })}</span>{/if}
-          </div>
-        {:else if pos.cap === 1}
-          <div class="portada">
-            <span class="etiqueta-ui">{libro.testamento === 'AT' ? t('nav.at') : t('nav.nt')} · {t('lector.libroDe', { n: libro.n })}</span>
-            <Emblema tam={46} />
-            <h1>{nombreLibro(libro)}</h1>
-            <span class="sub">{ver?.nombre}</span>
-            {#if libro.capitulos > 1}<span class="cap1">{t('lector.capitulo', { n: 1 })}</span>{/if}
-          </div>
-        {:else}
-          <div class="cabeza-corriente">
-            <div class="cabeza-izq">
-              <span class="etiqueta-ui">{ver?.nombre}</span>
-              <h1 class="libro">{nombreLibro(libro)}</h1>
-            </div>
-            <span class="numero" aria-label={t('lector.capitulo', { n: pos.cap })}>{pos.cap}</span>
-          </div>
-        {/if}
+        <span class="cap-sobre">{libro.testamento === 'AT' ? t('nav.at') : t('nav.nt')} / {ver?.id}{par ? ` ∥ ${par.id}` : ''}</span>
+        <h1 class="cap-titulo">{nombreLibro(libro)} <em>{pos.cap}</em></h1>
+        <div class="cap-filete" aria-hidden="true"></div>
       </header>
 
       {#if ui.cap.cargando && !ui.cap.versos.length}
@@ -201,21 +174,21 @@
           {/each}
         </div>
         {#if ui.cap.errorParalelo}<p class="nota-pie">{t('lector.paralelaNo', { e: ui.cap.errorParalelo })}</p>{/if}
+        <p class="pista-lectura">{t('lec.pista')}</p>
         <p class="licencia">{ver?.licencia}{par ? ` · ${par.licencia}` : ''}</p>
       {/if}
 
       <footer class="amen" class:hecho={!!leido} class:pendiente={!leido} bind:this={finEl}>
-        <div class="amen-palabra" aria-hidden="true">AMEN</div>
         <button class="sello" onclick={sello} aria-pressed={!!leido} title={leido ? t('lector.quitarLeido') : t('lector.marcarLeido')}>
-          <Emblema tam={42} titulo={leido ? t('lector.leidoEl', { fecha: fecha(leido) }) : t('lector.marcarLeido')} />
+          <span class="amen-palabra">{t('lec.amen')}</span>
+          <span class="amen-estado">{leido ? t('lector.leidoEl', { fecha: fecha(leido) }) : t('lector.marcarLeido')}</span>
         </button>
-        <span class="etiqueta-ui">{leido ? t('lector.leidoEl', { fecha: fecha(leido) }) : t('lector.tocaSello')}</span>
         <nav class="cap-nav" aria-label={t('lector.capitulos')}>
           {#if anterior}
-            <button class="nav-cap" onclick={() => irA(anterior.libro, anterior.cap)}><Icono n="ant" /><span>{nombreRef(anterior.libro, anterior.cap)}</span></button>
+            <button class="nav-cap" onclick={() => irA(anterior.libro, anterior.cap)}><small>← {t('lec.anterior')}</small><span>{nombreRef(anterior.libro, anterior.cap)}</span></button>
           {:else}<span></span>{/if}
           {#if siguiente}
-            <button class="nav-cap" onclick={() => irA(siguiente.libro, siguiente.cap)}><span>{nombreRef(siguiente.libro, siguiente.cap)}</span><Icono n="sig" /></button>
+            <button class="nav-cap siguiente" onclick={() => irA(siguiente.libro, siguiente.cap)}><small>{t('lec.siguiente')} →</small><span>{nombreRef(siguiente.libro, siguiente.cap)}</span></button>
           {/if}
         </nav>
       </footer>

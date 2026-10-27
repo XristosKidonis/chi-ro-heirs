@@ -12,6 +12,7 @@ Hay una ficha por imagen. Si no puedes ver una imagen, su ficha alcanza para ent
 | `D-intentos-descartados/` | Versiones anteriores y piezas que se quitaron | Agente | Fue la app | **No** |
 | `E-propuestas-y-decisiones/` | Tableros de opciones mostrados al dueño, con la opción elegida o pendiente | Agente | Maquetas | Lo marcado ELEGIDA o ELEGIDO, sí |
 | `F-laminas-acabados-actuales/` | Las láminas (fondos de pantalla y posts) que genera la app hoy | Agente | Sí (sección Láminas) | Provisional |
+| `G-integracion-white-industrial/` | **Diseño vigente** (rama `diseno/white-industrial`): capturas reales de la app integrada en 1440, 1280, 768 y 390 px | Agente, según la entrega aprobada | Sí | Integrado, pendiente de aprobación final para fusionar |
 
 En los nombres de archivo:
 
@@ -165,3 +166,31 @@ Las imágenes están a la mitad de su resolución real. La descripción de cada 
 | `F-00-zoom-textura-riso.jpg` | Acercamiento a la tinta de risografía (grano, huecos y franja corrida) |
 | `F-00-zoom-piedras-pedreria.jpg` | Acercamiento a las piedritas de strass |
 | `F-00-zoom-halo-calor.jpg` | Acercamiento al halo térmico (núcleo oscuro, banda amarilla y grano naranja) |
+
+## G. Integración «white industrial» (diseño vigente, 27 de octubre)
+
+Son capturas reales de la app (no del prototipo) tomadas con Playwright, con la RV1909 y los datos de ejemplo de la prueba (Juan 1:1 guardado, subrayado y con una nota).
+
+**Nombres:** `G-<ancho>-<nn>-<pantalla>.jpg`.
+
+| Número | Pantalla |
+|---|---|
+| 01 | Inicio |
+| 02 | Biblioteca |
+| 03 | Lector |
+| 04 | Selección de un versículo |
+| 05 | Estudio con el interlineal griego |
+| 06 | Selector de libros y capítulos |
+| 07 | Lector oscuro |
+| 08 | Modo Calma (solo escritorio) |
+| 09 | Mi archivo |
+| 10 | Índice de láminas |
+| 11 | Colección Color |
+| 12 | Editor de láminas |
+| 13 | Colección Tipografía |
+| 14 | Colección Imagen |
+| 15 | Búsqueda Ctrl K |
+| 16 | Ajustes |
+| 17 | Portadilla de Doré opcional (solo 1440) |
+
+Detalle en `../11-integracion-white-industrial.md`.

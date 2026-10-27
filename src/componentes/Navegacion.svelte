@@ -11,6 +11,7 @@
 
   let cuerpo = $state();
   $effect(() => {
+    if (!ui.navAbierta) return;
     abierto = pos.libro;
     // lleva el libro actual a la vista
     requestAnimationFrame(() => cuerpo?.querySelector('.libro-btn.actual')?.scrollIntoView({ block: 'start' }));
@@ -18,11 +19,12 @@
 
 </script>
 
-<nav class="nav" class:abierta={ui.navAbierta} aria-label={t('nav.libros')}>
+<nav class="nav" class:abierta={ui.navAbierta} aria-label={t('nav.libros')} hidden={!ui.navAbierta}>
   <div class="pestanas" role="tablist">
     {#each [['libros', t('nav.libros')], ['cintas', t('nav.cintas')], ['historial', t('nav.historial')]] as [id, nombre]}
       <button role="tab" aria-selected={pestana === id} onclick={() => (pestana = id)}>{nombre}</button>
     {/each}
+    <button class="ico nav-cerrar" onclick={() => (ui.navAbierta = false)} aria-label={t('tab.cerrar')}><Icono n="cerrar" /></button>
   </div>
   <div class="nav-cuerpo" bind:this={cuerpo}>
     {#if pestana === 'libros'}
