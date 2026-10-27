@@ -3,7 +3,8 @@
   import { ui, irA } from '../../lib/ui.svelte.js';
   import { usuario } from '../../lib/usuario.svelte.js';
   import { interlineal, lexico, concordanciaStrong, textos, versionEstudio } from '../../lib/biblia.js';
-  import { LIBROS, nombreRef } from '../../lib/libros.js';
+  import { untrack } from 'svelte';
+  import { LIBROS, nombreRef, normalizar } from '../../lib/libros.js';
   import { decodificar, sinCantilacion } from '../../lib/morfologia.js';
   import { t, idioma } from '../../lib/i18n.svelte.js';
   import Distribucion from './Distribucion.svelte';
@@ -18,7 +19,8 @@
   let mostrar = $state(30);
 
   const pos = $derived(usuario.ajustes.pos);
-  const v = $derived(ui.seleccion.length ? Math.min(...ui.seleccion) : null);
+  // el versículo que se estudia es el último tocado (si sigue seleccionado); si no, el primero
+  const v = $derived(ui.seleccion.length ? (ui.seleccion.includes(ui.ancla) ? ui.ancla : Math.min(...ui.seleccion)) : null);
   const hebreo = $derived(LIBROS[pos.libro - 1].testamento === 'AT');
   const vTexto = $derived(versionEstudio(usuario.ajustes.version));
 
@@ -29,6 +31,16 @@
     interlineal(pos.libro, pos.cap, v).then((p) => {
       if (pedido === `${pos.libro}.${pos.cap}.${v}`) palabras = p;
     });
+  });
+
+  // Si la palabra tocada en el texto coincide con una glosa, esa palabra original se abre sola
+  $effect(() => {
+    const p = ui.palabra;
+    if (!palabras?.length || !p || p.libro !== pos.libro || p.cap !== pos.cap || p.v !== v) return;
+    const q = normalizar(p.texto);
+    const w = palabras.find((w) => [w.glosa_es, w.glosa].filter(Boolean)
+      .some((g) => normalizar(g).split(/[^a-z0-9ñ]+/).includes(q)));
+    if (w) untrack(() => { elegida = w; });
   });
 
   // Al elegir una palabra: definición del léxico y todas sus apariciones

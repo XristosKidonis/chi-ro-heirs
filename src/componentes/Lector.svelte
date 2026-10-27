@@ -100,16 +100,28 @@
     const sel = window.getSelection();
     if (sel && !sel.isCollapsed && sel.toString().trim().length > 2) return; // el usuario está seleccionando texto
     const p = palabraEn(e);
-    if (p) ui.palabra = { ...p, libro: pos.libro, cap: pos.cap, v };
+    // la palabra tocada es la que se estudia; tocar el número (sin palabra) no deja una palabra vieja
+    ui.palabra = p ? { ...p, libro: pos.libro, cap: pos.cap, v } : null;
     if (e.shiftKey && ui.ancla) {
+      // Mayús + clic: rango
       const [a, b] = [Math.min(ui.ancla, v), Math.max(ui.ancla, v)];
       ui.seleccion = Array.from({ length: b - a + 1 }, (_, i) => a + i);
-    } else if (ui.seleccion.includes(v) && !p) {
-      ui.seleccion = ui.seleccion.filter((x) => x !== v);
-    } else if (!ui.seleccion.includes(v)) {
-      ui.seleccion = e.metaKey || e.ctrlKey || ui.seleccion.length ? [...ui.seleccion, v] : [v];
+    } else if (e.metaKey || e.ctrlKey) {
+      // Ctrl/⌘ + clic: suma o quita ese versículo
+      ui.seleccion = ui.seleccion.includes(v) ? ui.seleccion.filter((x) => x !== v) : [...ui.seleccion, v];
+    } else if (ui.seleccion.length === 1 && ui.seleccion[0] === v && !p) {
+      // tocar de nuevo el mismo versículo (fuera de una palabra) lo deselecciona
+      ui.seleccion = [];
+    } else {
+      // un toque simple reemplaza la selección: el estudio pasa al versículo nuevo
+      ui.seleccion = [v];
     }
     ui.ancla = v;
+    // si el versículo queda debajo de la barra de acciones, sube un poco el texto para que se vea
+    requestAnimationFrame(() => {
+      const abajo = el.getBoundingClientRect().bottom - (innerHeight - (innerWidth <= 760 ? 230 : 130));
+      if (abajo > 0 && ui.seleccion.length) lector.scrollBy({ top: abajo, behavior: 'smooth' });
+    });
   }
 
   function sello() {

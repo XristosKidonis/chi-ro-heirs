@@ -9,7 +9,8 @@
 
   const COLORES = ['oro', 'rojo', 'azul', 'verde', 'hueso'];
   let mas = $state(false);
-  $effect(() => { if (!ui.seleccion.length) mas = false; });
+  // «Más» se cierra al cambiar de versículo, para que la barra vuelva a ser chica
+  $effect(() => { ui.seleccion.join(','); mas = false; });
 
   const guardada = $derived(ui.seleccion.length > 0 && clavesSeleccion().every(estaGuardado));
 

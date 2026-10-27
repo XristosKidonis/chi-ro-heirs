@@ -2,7 +2,7 @@
   // Mi archivo: un índice editorial de lo tuyo (versículos guardados, cintas, subrayados y notas),
   // ordenado como la Biblia. Todo sale de usuario.db y cada entrada vuelve a su pasaje.
   import { irA, abrirPestana } from '../../lib/ui.svelte.js';
-  import { usuario } from '../../lib/usuario.svelte.js';
+  import { usuario, alternarGuardado, subrayar, alternarCinta } from '../../lib/usuario.svelte.js';
   import { textos, versionEstudio } from '../../lib/biblia.js';
   import { desclave, nombreRef, normalizar } from '../../lib/libros.js';
   import { t } from '../../lib/i18n.svelte.js';
@@ -52,6 +52,13 @@
     return entradas.filter((e) => deFiltro(e) && (!n || normalizar(`${referencia(e)} ${contenido(e)}`).includes(n)));
   });
 
+  // quitar desde el archivo, sin volver al lector (las notas se editan o borran en Estudio → Notas)
+  function quitar(e) {
+    if (e.tipo === 'guardado') alternarGuardado([e.k]);
+    else if (e.tipo === 'subrayado') subrayar([e.k], null);
+    else if (e.tipo === 'cinta') alternarCinta(e.libro, e.cap);
+  }
+
   function volver(e) {
     irA(e.libro, e.cap, e.v || null);
     if (e.tipo === 'nota') abrirPestana('notas');
@@ -99,7 +106,10 @@
           {:else}
             <p class="arc-verso">{texto[e.k] || '…'}{#if texto[e.k]}<small> {version}</small>{/if}</p>
           {/if}
-          <button class="arc-volver" onclick={() => volver(e)}>{t('arc.volver')} <span aria-hidden="true">↗</span></button>
+          <div class="arc-acciones">
+            <button class="arc-volver" onclick={() => volver(e)}>{t('arc.volver')} <span aria-hidden="true">↗</span></button>
+            {#if e.tipo !== 'nota'}<button class="arc-volver arc-quitar" onclick={() => quitar(e)}>{t('arc.quitar')}</button>{/if}
+          </div>
         </li>
       {/each}
     </ol>

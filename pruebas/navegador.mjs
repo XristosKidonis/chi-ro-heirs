@@ -289,6 +289,18 @@ await paso('interlineal griego de Jn 3:16 con glosas en español', async () => {
 });
 await pag.screenshot({ path: `${OUT}/10-interlineal-griego.png` });
 
+await paso('tocar otro versículo reemplaza la selección y el estudio lo sigue', async () => {
+  await pag.locator('.texto [data-v="17"] .t').click({ position: { x: 40, y: 12 } });
+  await pag.waitForFunction(() => /3:17/.test(document.querySelector('.ori-cabeza h3')?.textContent || ''));
+  const sel = await pag.evaluate(() => [...document.querySelectorAll('.texto .v.sel')].map((e) => e.dataset.v).join(','));
+  if (sel !== '17') throw new Error('selección: ' + sel);
+  await pag.keyboard.down('Control');
+  await pag.locator('.texto [data-v="18"] .num').click();
+  await pag.keyboard.up('Control');
+  const dos = await pag.evaluate(() => [...document.querySelectorAll('.texto .v.sel')].map((e) => e.dataset.v).join(','));
+  if (dos !== '17,18') throw new Error('Ctrl + clic: ' + dos);
+});
+
 await paso('interlineal hebreo de Gn 1:1 (derecha a izquierda)', async () => {
   await ir(pag, 'gn 1:1');
   await pag.waitForSelector('.interlineal.hebreo .palabra-orig');

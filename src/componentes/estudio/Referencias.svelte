@@ -6,7 +6,8 @@
   import { t } from '../../lib/i18n.svelte.js';
 
   let lista = $state(null);
-  const v = $derived(ui.seleccion.length ? Math.min(...ui.seleccion) : null);
+  // el versículo que se estudia es el último tocado (si sigue seleccionado); si no, el primero
+  const v = $derived(ui.seleccion.length ? (ui.seleccion.includes(ui.ancla) ? ui.ancla : Math.min(...ui.seleccion)) : null);
   const pos = $derived(usuario.ajustes.pos);
   // Los textos de las referencias salen de una versión local (instantáneo y sin conexión)
   const vTexto = $derived(versionEstudio(usuario.ajustes.version));
