@@ -31,6 +31,8 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 |---|---|
 | Inicio | La marca CHI—RO y tres entradas: Continuar leyendo, Biblioteca (los 66 libros como cubiertas tipográficas, con filtro y búsqueda) y Mi archivo (guardados, cintas, subrayados y notas en un índice) |
 | Versiones | **NTV** y **NLT** en línea (API oficial de Tyndale). Sin conexión, dentro de la app: en español **RV1909, PDT, VBL, BES, RV1865**; en inglés **BSB, WEB, FBV, BBE, LSV, KJV, ASV, YLT, Darby, Ginebra 1599**. Cada una con su tipo de traducción (de literal a paráfrasis), año y descripción |
+| Ambiente | Música dentro de la app (piano generativo «Quietud», himnos al piano, acordes «Aurora») y sonidos (lluvia, chimenea, viento, olas), sin internet; temporizador o apagado al terminar el capítulo; baja sola cuando la app lee en voz alta. Spotify se abre afuera: tu playlist o una búsqueda |
+| Clave de colores y margen | Significado propio para cada color de subrayado (con imagen para compartir) y modo margen con las notas al costado del versículo |
 | Portadillas | Opcional (Ajustes → Grabados): cada libro abre con un grabado de Gustave Doré a toda página. Puedes poner tu propia imagen; se guarda solo en tu equipo |
 | Lectura | Lector claro (y oscuro a pedido), modo Calma sin barras, tamaño A−/A+, modo lector sin números, texto corrido, Literata o Atkinson Hyperlegible, vista paralela |
 | Subrayado | 5 colores de marcador, anclados a la referencia: lo que subrayas en la NTV aparece también en la RV1909 |
@@ -115,6 +117,7 @@ Cada fila guarda la fecha de cambio y una marca de borrado, ya preparada para la
 - **Referencias cruzadas:** [OpenBible.info](https://www.openbible.info/labs/cross-references/), CC BY.
 - **Léxico Strong:** [Open Scriptures](https://github.com/openscriptures/strongs), CC BY-SA.
 - **Interlineal hebreo y griego, léxicos:** [STEP Bible](https://www.stepbible.org) (Tyndale House, Cambridge), datos TAHOT, TAGNT, TBESH y TBESG, CC BY 4.0.
+- **Piano del ambiente:** Salamander Grand Piano V3, de Alexander Holm (CC BY 3.0), vía el paquete npm `@audio-samples/piano-mp3-velocity8`. Las melodías de los himnos son de dominio público; los sonidos (lluvia, chimenea, viento, olas) y los acordes de «Aurora» se generan en la app. Detalle en `public/sonidos/LICENCIAS.txt`.
 - **Grabados:** Gustave Doré, *La Grande Bible de Tours* (1866), dominio público, vía [Project Gutenberg](https://www.gutenberg.org/ebooks/8710) («The Doré Bible Gallery»). Se obtienen con el flujo «Traer grabados» y `herramientas/preparar_grabados.py`.
 - **Fuentes tipográficas:** Inter Tight, DM Sans, Literata, Atkinson Hyperlegible Next y Noto Serif Hebrew (interfaz y lectura); Archivo, Fraunces y Pinyon Script (solo en las láminas). Todas con licencia SIL Open Font License.
 - **Estética:** inspirada en las Biblias de diseño editorial; nombre y emblema propios (el crismón ΧΡ es un símbolo cristiano del siglo IV, de libre uso).

@@ -282,6 +282,46 @@ await paso('modo margen: notas y clave a la altura de su versículo; en pantalla
 await pag.screenshot({ path: `${OUT}/13b-margen.png` });
 await pag.click('.lb-margen');
 
+await paso('ambiente: música dentro de la app, sonidos, apagado al Amén y Spotify afuera', async () => {
+  await pag.evaluate(() => { window.__abiertos = []; window.open = (u) => { window.__abiertos.push(u); return null; }; });
+  await ir(pag, 'sal 23');
+  await pag.waitForFunction(() => /Salmos/.test(document.querySelector('.cap-titulo')?.textContent || ''));
+  await pag.click('.lb-ambiente');
+  await pag.waitForSelector('.amb-musica');
+  if ((await pag.locator('.amb-musica').count()) !== 4) throw new Error('faltan músicas');
+  await pag.click('.amb-musica:has-text("Quietud")');
+  await pag.waitForFunction(() => document.querySelector('.amb-estado')?.textContent.startsWith('Quietud'), null, { timeout: 20000 });
+  await pag.click('.amb-musica:has-text("Himnos al piano")');
+  await pag.waitForFunction(() => /Sublime gracia|Doxología|Noche de paz|Himno de la alegría/.test(document.querySelector('.amb-estado')?.textContent || ''), null, { timeout: 20000 });
+  await pag.locator('input[data-capa="lluvia"]').evaluate((el) => { el.value = '0.6'; el.dispatchEvent(new Event('input', { bubbles: true })); });
+  await pag.click('.amb-tiempos .filtro:has-text("Al terminar el capítulo")');
+  // Spotify: un enlace inválido avisa; uno válido aparece como «Abrir mi playlist»; las búsquedas se abren afuera
+  await pag.fill('.dlg input[placeholder^="https://open.spotify.com"]', 'hola');
+  await pag.click('.dlg button:has-text("Guardar")');
+  await pag.waitForSelector('text=Ese enlace no parece de Spotify.');
+  await pag.fill('.dlg input[placeholder^="https://open.spotify.com"]', 'https://open.spotify.com/intl-es/playlist/37i9dQZF1DX0Yxoavh5qJV?si=abc');
+  await pag.click('.dlg button:has-text("Guardar")');
+  await pag.click('.amb-mia');
+  await pag.click('.amb-busquedas button >> nth=0');
+  const abiertos = await pag.evaluate(() => window.__abiertos);
+  if (abiertos[0] !== 'https://open.spotify.com/playlist/37i9dQZF1DX0Yxoavh5qJV' || !/open\.spotify\.com\/search\/.+\/playlists/.test(abiertos[1])) throw new Error('spotify: ' + abiertos.join(' | '));
+  await pag.screenshot({ path: `${OUT}/13c-ambiente.png` });
+  await pag.click('.dlg-cabeza .ico');
+  await pag.waitForSelector('.cab-ambiente');
+  // con «al terminar el capítulo», el Amén apaga el ambiente
+  if (await pag.locator('.amen.hecho').count()) await pag.click('.sello');
+  await pag.click('.sello');
+  await pag.waitForSelector('.cab-ambiente', { state: 'detached' });
+  await pag.click('.lb-ambiente');
+  await pag.click('.amb-tiempos .filtro:has-text("Nunca")');
+  await pag.click('.amb-play');
+  await pag.waitForSelector('.cab-ambiente');
+  await pag.click('.dlg-cabeza .ico');
+  await pag.click('.cab-ambiente');
+  await pag.waitForSelector('.cab-ambiente', { state: 'detached' });  await ir(pag, 'juan 3');
+  await pag.waitForFunction(() => /^Juan\s*3/.test(document.querySelector('.cap-titulo')?.textContent || ''));
+});
+
 await paso('Láminas: índice neutro → Color → volver al índice', async () => {
   await pag.click('.cab-link:has-text("Láminas")');
   await pag.waitForSelector('.coleccion');

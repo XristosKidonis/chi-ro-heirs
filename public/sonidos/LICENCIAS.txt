@@ -1,0 +1,9 @@
+Sonidos de Chi-Ro Heirs
+
+piano/  Salamander Grand Piano V3, de Alexander Holm.
+        Licencia Creative Commons Atribución 3.0 (CC BY 3.0): https://creativecommons.org/licenses/by/3.0/
+        Fuente: https://archive.org/details/SalamanderGrandPianoV3
+        (copia en MP3 del paquete npm @audio-samples/piano-mp3-velocity8; se usan las octavas 2 a 6)
+
+Las melodías de los himnos (New Britain, Old Hundredth, Stille Nacht, Ode an die Freude) son de dominio público.
+La lluvia, el fuego, el viento, las olas y los acordes de «Aurora» se generan en la app con Web Audio; no son grabaciones.

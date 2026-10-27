@@ -5,6 +5,7 @@
   import { ui, abrirVista } from '../lib/ui.svelte.js';
   import { usuario } from '../lib/usuario.svelte.js';
   import { t } from '../lib/i18n.svelte.js';
+  import { amb, pausar } from '../lib/ambiente.svelte.js';
 
   const VISTAS = ['inicio', 'biblioteca', 'lector', 'archivo', 'laminas'];
   const guardados = $derived(String(usuario.guardados.length).padStart(2, '0'));
@@ -18,6 +19,9 @@
     {/each}
   </nav>
   <div class="cab-acciones">
+    {#if amb.sonando}
+      <button class="cab-accion cab-ambiente" onclick={pausar} aria-label={t('amb.pausarAria')} title={t('amb.pausarAria')}><Icono n="musica" /><span class="cab-onda" aria-hidden="true"></span></button>
+    {/if}
     <button class="cab-accion" onclick={() => (ui.buscadorAbierto = true)} aria-label={t('cab.buscarAria')}><Icono n="buscar" /><span>{t('cab.buscar')}</span></button>
     <button class="cab-accion cab-guardados" onclick={() => abrirVista('archivo')} aria-label={t('cab.guardados')} title={t('cab.guardados')}><Icono n="guardar" /><span>{guardados}</span></button>
     <button class="cab-accion" onclick={() => (ui.dialogo = 'ajustes')} aria-label={t('cab.ajustes')} title={t('cab.ajustes')}><Icono n="ajustes" /></button>

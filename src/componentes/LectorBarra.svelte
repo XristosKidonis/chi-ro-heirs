@@ -8,6 +8,7 @@
   import { LIBROS, nombreLibro } from '../lib/libros.js';
   import { t } from '../lib/i18n.svelte.js';
   import { voz, leer, detener } from '../lib/voz.svelte.js';
+  import { amb } from '../lib/ambiente.svelte.js';
 
   const pos = $derived(usuario.ajustes.pos);
   const libro = $derived(LIBROS[pos.libro - 1]);
@@ -55,6 +56,8 @@
     <button class="lb-control lb-icono" onclick={() => ajustar('tema', oscuro ? 'papel' : 'cuero')} aria-pressed={oscuro} aria-label={t('lec.tema')} title={t('lec.tema')}><Icono n="tema" /></button>
     <button class="lb-control lb-icono" class:activo={voz.activa} onclick={() => (voz.activa ? detener() : leer())}
       aria-label={voz.activa ? t('barra.detener') : t('barra.leer')} title={voz.activa ? t('barra.detener') : t('barra.leer')}><Icono n={voz.activa ? 'pausa' : 'voz'} /></button>
+    <button class="lb-control lb-icono lb-ambiente" class:activo={amb.sonando} onclick={() => (ui.dialogo = 'ambiente')}
+      aria-label={t('amb.abrir')} title={t('amb.abrir')}><Icono n="musica" /></button>
     <button class="lb-control lb-icono marcador" class:puesto={cintaPuesta} aria-pressed={cintaPuesta}
       onclick={() => avisar(alternarCinta(pos.libro, pos.cap) ? t('lector.cintaPuesta') : t('lector.cintaQuitada'))}
       title={cintaPuesta ? t('lector.cintaQuitar') : t('lector.cintaPoner')} aria-label={cintaPuesta ? t('lector.cintaQuitar') : t('lector.cintaPoner')}><Icono n="guardar" /></button>
