@@ -1,0 +1,20 @@
+name: Diagnóstico API Tyndale
+on: push
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          mkdir r
+          for v in NTV NLT; do
+            curl -sS -D r/$v-cabeceras.txt -H "Origin: https://xristoskidonis.github.io" "https://api.nlt.to/api/passages?ref=John%203&version=$v&key=TEST" -o r/$v.html || echo "fallo curl $v" >> r/errores.txt
+            curl -sS -D r/$v-ps23-cab.txt "https://api.nlt.to/api/passages?ref=Psalms%2023&version=$v&key=TEST" -o r/$v-ps23.html || true
+            curl -sS -D r/$v-1jn-cab.txt "https://api.nlt.to/api/passages?ref=1%20John%201&version=$v&key=TEST" -o r/$v-1jn.html || true
+          done
+          curl -sS -X OPTIONS -D r/preflight.txt -H "Origin: https://xristoskidonis.github.io" -H "Access-Control-Request-Method: GET" "https://api.nlt.to/api/passages?ref=John%203&version=NTV&key=TEST" -o /dev/null || true
+          curl -sS "https://api.nlt.to/api/" -o r/raiz.html || true
+          ls -la r
+      - uses: actions/upload-artifact@v4
+        with:
+          name: respuestas
+          path: r
