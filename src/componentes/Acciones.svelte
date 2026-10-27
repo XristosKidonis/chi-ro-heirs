@@ -5,12 +5,23 @@
   import { ui, abrirPestana, clavesSeleccion, etiquetaSeleccion, avisar, copiarTexto } from '../lib/ui.svelte.js';
   import { usuario, subrayar, memorizar, alternarGuardado, estaGuardado } from '../lib/usuario.svelte.js';
   import { clave } from '../lib/libros.js';
+  import { COLORES, etiquetaColor, significado } from '../lib/clave.js';
   import { t } from '../lib/i18n.svelte.js';
 
-  const COLORES = ['oro', 'rojo', 'azul', 'verde', 'hueso'];
   let mas = $state(false);
   // «Más» se cierra al cambiar de versículo, para que la barra vuelva a ser chica
   $effect(() => { ui.seleccion.join(','); mas = false; });
+
+  // color de la selección (si todos los versículos comparten uno), para mostrar qué significa en tu clave
+  const colorSel = $derived.by(() => {
+    const cs = new Set(clavesSeleccion().map((k) => usuario.subrayados[k]));
+    return cs.size === 1 ? [...cs][0] || null : null;
+  });
+
+  function pintar(color) {
+    subrayar(clavesSeleccion(), color);
+    if (color && significado(color)) avisar(t('clave.subrayado', { s: significado(color) }));
+  }
 
   const guardada = $derived(ui.seleccion.length > 0 && clavesSeleccion().every(estaGuardado));
 
@@ -46,15 +57,16 @@
 {#if ui.seleccion.length}
   <div class="acciones" role="toolbar" aria-label={t('acc.aria')}>
     <div class="acc-cita">
-      <span class="acc-ref">{etiquetaSeleccion()} / {usuario.ajustes.version}</span>
+      <span class="acc-ref">{etiquetaSeleccion()} / {usuario.ajustes.version}{#if colorSel}{' · '}<i class="acc-sentido" data-m={colorSel}>{etiquetaColor(colorSel)}</i>{/if}</span>
       <span class="acc-texto">{textoSeleccion()}</span>
     </div>
     <div class="acc-fila">
       <div class="colores" role="group" aria-label={t('acc.subrayar')}>
         {#each COLORES as c}
-          <button data-color={c} onclick={() => subrayar(clavesSeleccion(), c)} aria-label="{t('acc.subrayar')}: {t(`color.${c}`)}" title={t(`color.${c}`)}></button>
+          <button data-color={c} onclick={() => pintar(c)} aria-label="{t('acc.subrayar')}: {etiquetaColor(c)}" title={etiquetaColor(c)}></button>
         {/each}
-        <button class="sin" onclick={() => subrayar(clavesSeleccion(), null)} aria-label={t('acc.quitarSub')} title={t('acc.quitarSub')}></button>
+        <button class="sin" onclick={() => pintar(null)} aria-label={t('acc.quitarSub')} title={t('acc.quitarSub')}></button>
+        <button class="acc-clave" onclick={() => (ui.dialogo = 'clave')} title={t('clave.abrir')}>{t('clave.corto')}</button>
       </div>
       <div class="acc-botones">
         <button class="acc-guardar" aria-pressed={guardada} onclick={() => accion('guardar')}>{guardada ? t('acc.quitarGuardado') : t('acc.guardar')}</button>

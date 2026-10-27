@@ -7,6 +7,7 @@
   import { info, versionEstudio } from '../lib/biblia.js';
   import { LIBROS, clave, nombreRef, nombreLibro, capituloSiguiente } from '../lib/libros.js';
   import { t, fecha as fechaLocal } from '../lib/i18n.svelte.js';
+  import { significado } from '../lib/clave.js';
 
   const pos = $derived(usuario.ajustes.pos);
   const libro = $derived(LIBROS[pos.libro - 1]);
@@ -21,6 +22,80 @@
 
   let lector;
   let finEl;
+  let paginaEl;
+
+  // ---------- modo margen ----------
+  // En pantallas anchas, las notas y tu clave de colores van en una columna al costado, a la altura
+  // de su versículo, como en una Biblia de márgenes anchos. En pantallas angostas van debajo del versículo.
+  let anchoLector = $state(1200);
+  $effect(() => {
+    if (!lector) return;
+    const ro = new ResizeObserver(([e]) => (anchoLector = e.contentRect.width));
+    ro.observe(lector);
+    return () => ro.disconnect();
+  });
+  const margen = $derived(!!usuario.ajustes.margen);
+  const margenLado = $derived(margen && !par && anchoLector >= 1040);
+  const notasCap = $derived.by(() => {
+    const prefijo = `${pos.libro}.${pos.cap}.`;
+    const m = {};
+    for (const n of usuario.notas) {
+      if (!n.ref?.startsWith(prefijo)) continue;
+      const v = Number(n.ref.slice(prefijo.length));
+      (m[v] ||= []).push(n);
+    }
+    for (const v in m) m[v].sort((a, b) => a.creada - b.creada);
+    return m;
+  });
+  // qué va en el margen: el significado del color al empezar cada tramo subrayado, las notas y,
+  // si hay un versículo elegido sin nota, un «+ escribir aquí»
+  const itemsMargen = $derived.by(() => {
+    if (!margenLado) return [];
+    const out = [];
+    let previo = null;
+    for (const x of ui.cap.versos) {
+      const color = usuario.subrayados[clave(pos.libro, pos.cap, x.v)] || null;
+      if (color && color !== previo && significado(color)) out.push({ id: `c${x.v}`, v: x.v, tipo: 'clave', color });
+      previo = color;
+      for (const n of notasCap[x.v] || []) out.push({ id: `n${n.id}`, v: x.v, tipo: 'nota', nota: n });
+      if (ui.seleccion.length === 1 && ui.seleccion[0] === x.v && !notasCap[x.v]) out.push({ id: `+${x.v}`, v: x.v, tipo: 'nueva' });
+    }
+    return out;
+  });
+  let alturas = $state({}); // id -> top en px, ya sin encimarse
+
+  function colocarMargen() {
+    if (!paginaEl || !itemsMargen.length) return;
+    const base = paginaEl.getBoundingClientRect().top;
+    const nuevo = {};
+    let fin = 0;
+    for (const it of itemsMargen) {
+      const v = paginaEl.querySelector(`.texto .v[data-v="${it.v}"]`);
+      const caja = paginaEl.querySelector(`.margen [data-id="${CSS.escape(it.id)}"]`);
+      if (!v || !caja) continue;
+      const top = Math.max(v.getBoundingClientRect().top - base, fin);
+      nuevo[it.id] = top;
+      fin = top + caja.offsetHeight + 10;
+    }
+    alturas = nuevo;
+  }
+  $effect(() => {
+    itemsMargen; usuario.ajustes.tamano; usuario.ajustes.interlineado; usuario.ajustes.fuente; anchoLector;
+    if (!margenLado) return;
+    let vivo = true;
+    tick().then(() => requestAnimationFrame(() => vivo && colocarMargen()));
+    const texto = paginaEl?.querySelector('.texto');
+    const ro = texto ? new ResizeObserver(() => vivo && colocarMargen()) : null;
+    ro?.observe(texto);
+    return () => { vivo = false; ro?.disconnect(); };
+  });
+
+  function abrirNotaEn(v) {
+    ui.seleccion = [v];
+    ui.ancla = v;
+    abrirPestana('notas');
+  }
+  const refNota = (n) => `${pos.cap}:${n.ref.split('.')[2]}${n.hasta ? `–${n.hasta}` : ''}`;
   let abierto = Date.now();
 
   // Al llegar un capítulo nuevo: volver arriba o llevar al versículo pedido.
@@ -144,7 +219,7 @@
     {#if conGrabado}
       {#key pos.libro}<Frontis libro={pos.libro} />{/key}
     {/if}
-    <article class="pagina" class:paralelo={!!par}>
+    <article class="pagina" class:paralelo={!!par} class:con-margen={margenLado} bind:this={paginaEl}>
       <header class="cap-cabeza">
         <span class="cap-sobre">{libro.testamento === 'AT' ? t('nav.at') : t('nav.nt')} / {ver?.id}{par ? ` ∥ ${par.id}` : ''}</span>
         <h1 class="cap-titulo">{nombreLibro(libro)} <em>{pos.cap}</em></h1>
@@ -183,8 +258,34 @@
             {:else}
               {@render verso()}{' '}
             {/if}
+            {#if margen && !margenLado && notasCap[x.v]}
+              {#each notasCap[x.v] as n (n.id)}
+                <button class="nota-linea" onclick={(e) => { e.stopPropagation(); abrirNotaEn(x.v); }}>
+                  <span class="m-ref">{refNota(n)}{n.tipo !== 'Nota' ? ` · ${t(`notas.tipo.${n.tipo}`)}` : ''}</span>{n.texto}
+                </button>
+              {/each}
+            {/if}
           {/each}
         </div>
+        {#if margenLado}
+          <aside class="margen" aria-label={t('margen.aria')}>
+            {#each itemsMargen as it (it.id)}
+              <div class="m-item item-{it.tipo}" data-id={it.id} style:top="{alturas[it.id] ?? 0}px" style:visibility={alturas[it.id] == null ? 'hidden' : null}>
+                {#if it.tipo === 'nota'}
+                  <button class="m-nota" onclick={() => abrirNotaEn(it.v)}>
+                    <span class="m-ref">{refNota(it.nota)}{it.nota.tipo !== 'Nota' ? ` · ${t(`notas.tipo.${it.nota.tipo}`)}` : ''}{#if it.nota.respondida} · {t('margen.respondida')}{/if}</span>
+                    <span class="m-texto">{it.nota.texto}</span>
+                  </button>
+                {:else if it.tipo === 'clave'}
+                  <span class="m-clave"><i class="arc-color" data-m={it.color} aria-hidden="true"></i>{significado(it.color)}</span>
+                {:else}
+                  <button class="m-nueva" onclick={() => abrirNotaEn(it.v)}>+ {t('margen.escribir', { v: it.v })}</button>
+                {/if}
+              </div>
+            {/each}
+            {#if !itemsMargen.length}<p class="m-vacio">{t('margen.vacio')}</p>{/if}
+          </aside>
+        {/if}
         {#if ui.cap.errorParalelo}<p class="nota-pie">{t('lector.paralelaNo', { e: ui.cap.errorParalelo })}</p>{/if}
         <p class="pista-lectura">{t('lec.pista')}</p>
         <p class="licencia">{ver?.licencia}{par ? ` · ${par.licencia}` : ''}</p>

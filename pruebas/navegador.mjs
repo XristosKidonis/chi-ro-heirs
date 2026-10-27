@@ -241,6 +241,47 @@ await paso('guardar en Mi archivo, filtrar y volver al pasaje desde una nota', a
 });
 await pag.screenshot({ path: `${OUT}/13-archivo.png` });
 
+await paso('clave de colores: significado, imagen y filtro en Mi archivo', async () => {
+  if (!(await pag.locator('.texto [data-v="16"].sel').count())) await pag.locator('.texto [data-v="16"] .num').click();
+  await pag.click('.acc-clave');
+  await pag.waitForSelector('.clave-fila');
+  await pag.fill('#clave-rojo', 'Jesús');
+  await pag.press('#clave-rojo', 'Tab');
+  const [descarga] = await Promise.all([pag.waitForEvent('download'), pag.click('button:has-text("Guardar mi clave como imagen")')]);
+  if (!/clave/.test(descarga.suggestedFilename())) throw new Error('imagen: ' + descarga.suggestedFilename());
+  await pag.click('.dlg-cabeza .ico');
+  await pag.waitForFunction(() => document.querySelector('.acc-sentido')?.textContent === 'Jesús');
+  const titulo = await pag.getAttribute('.colores [data-color="rojo"]', 'title');
+  if (titulo !== 'Jesús') throw new Error('título del color: ' + titulo);
+  await pag.keyboard.press('Escape');
+  await pag.click('.cab-link:has-text("Mi archivo")');
+  await pag.click('.filtro:has-text("Subrayados")');
+  await pag.click('.filtro-color:has-text("Jesús")');
+  const metas = await pag.locator('.archivo-entrada .arc-meta').allTextContents();
+  if (!metas.length || !metas.every((x) => /Jesús/.test(x))) throw new Error('filtro por color: ' + metas.join(' | '));
+  await pag.click('.archivo-entrada .arc-volver >> nth=0');
+  await pag.waitForFunction(() => /^Juan\s*3/.test(document.querySelector('.cap-titulo')?.textContent || ''));
+});
+
+await paso('modo margen: notas y clave a la altura de su versículo; en pantalla angosta, debajo', async () => {
+  await pag.click('.lb-margen');
+  await pag.waitForSelector('.pagina.con-margen .margen .m-nota');
+  await pag.waitForFunction(() => {
+    const v = document.querySelector('.texto .v[data-v="16"]').getBoundingClientRect().top;
+    const n = document.querySelector('.margen .m-item.item-nota');
+    return n && n.style.visibility !== 'hidden' && Math.abs(n.getBoundingClientRect().top - v) < 60;
+  });
+  const clave = await pag.locator('.margen .m-clave').first().textContent();
+  if (!/Jesús/.test(clave)) throw new Error('clave en el margen: ' + clave);
+  await pag.setViewportSize({ width: 980, height: 900 });
+  await pag.waitForSelector('.texto .nota-linea');
+  if (await pag.locator('.margen').count()) throw new Error('margen lateral en pantalla angosta');
+  await pag.setViewportSize({ width: 1440, height: 900 });
+  await pag.waitForSelector('.margen .m-nota');
+});
+await pag.screenshot({ path: `${OUT}/13b-margen.png` });
+await pag.click('.lb-margen');
+
 await paso('Láminas: índice neutro → Color → volver al índice', async () => {
   await pag.click('.cab-link:has-text("Láminas")');
   await pag.waitForSelector('.coleccion');

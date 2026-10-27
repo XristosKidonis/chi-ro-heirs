@@ -61,6 +61,7 @@
     <button class="lb-control lb-estudio" aria-pressed={ui.estudioAbierto} onclick={() => (ui.estudioAbierto = !ui.estudioAbierto)}>
       {ui.estudioAbierto ? t('lec.cerrarEstudio') : t('lec.estudio')} <span aria-hidden="true">↗</span>
     </button>
+    <button class="lb-control lb-margen" aria-pressed={!!usuario.ajustes.margen} onclick={() => ajustar('margen', !usuario.ajustes.margen)} title={t('margen.ayuda')}>{t('margen.boton')}</button>
     <button class="lb-control lb-calma" onclick={() => ajustar('calma', true)} title={t('lec.calmaAyuda')}>{t('lec.calma')} <span aria-hidden="true">⤢</span></button>
   </div>
 </div>

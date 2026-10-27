@@ -495,6 +495,42 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.6 var(--f
 .colores [data-color="azul"] { background: #3460ff; }
 .colores [data-color="verde"] { background: #26a060; }
 .colores [data-color="hueso"] { background: #c9c9c4; }
+.acc-clave { margin: 0 14px 0 6px; font: 600 9px var(--f-ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tenue); border-bottom: 1px solid var(--linea); padding: 2px 0; }
+.acc-clave:hover { color: var(--tinta); border-color: var(--tinta); }
+.acc-sentido { font-style: normal; letter-spacing: 0.06em; color: var(--tinta-2); padding: 0 4px; }
+.acc-sentido[data-m="oro"] { background: var(--m-oro); } .acc-sentido[data-m="rojo"] { background: var(--m-rojo); } .acc-sentido[data-m="azul"] { background: var(--m-azul); }
+.acc-sentido[data-m="verde"] { background: var(--m-verde); } .acc-sentido[data-m="hueso"] { background: var(--m-hueso); }
+/* Mi clave de colores */
+.clave-lista { list-style: none; margin: 16px 0 18px; padding: 0; border-top: 1px solid var(--tinta); }
+.clave-fila { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--linea); }
+.clave-num { font: 500 10px var(--f-ui); color: var(--tenue); width: 18px; }
+.clave-muestra { width: 34px; height: 14px; flex: none; }
+.clave-muestra[data-m="oro"] { background: #e8ba30; } .clave-muestra[data-m="rojo"] { background: #d3271c; } .clave-muestra[data-m="azul"] { background: #3460ff; }
+.clave-muestra[data-m="verde"] { background: #26a060; } .clave-muestra[data-m="hueso"] { background: #c9c9c4; }
+.clave-campo { flex: 1 1 auto; min-width: 0; font: 400 17px var(--f-texto); }
+.clave-cuenta { font: 500 11px var(--f-ui); color: var(--tenue); font-variant-numeric: tabular-nums; min-width: 22px; text-align: right; }
+.filtros-color { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: -4px 0 18px; }
+.filtro-color { display: inline-flex; align-items: center; gap: 2px; font: 400 13px var(--f-ui); color: var(--tenue); padding: 4px 0; border-bottom: 1px solid transparent; }
+.filtro-color .arc-color { margin: 0 6px 0 0; }
+.filtro-color small { margin-left: 4px; color: var(--decorado); }
+.filtro-color[aria-pressed="true"] { color: var(--tinta); border-color: var(--tinta); }
+.filtro-editar { margin-left: auto; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+/* Modo margen */
+.pagina.con-margen { max-width: 1110px; padding-right: 356px; }
+.margen { position: absolute; top: 0; right: 36px; bottom: 0; width: 280px; border-left: 1px solid var(--linea); }
+.m-item { position: absolute; left: 0; right: 0; padding-left: 20px; }
+.m-nota, .m-nueva { display: block; width: 100%; text-align: left; }
+.m-ref { display: block; font: 600 9px var(--f-ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tenue); margin-bottom: 4px; }
+.m-texto { display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; font: italic 400 14px/1.5 var(--f-texto); color: var(--tinta-2); white-space: pre-line; }
+.m-nota:hover .m-texto { color: var(--tinta); }
+.m-clave { display: inline-flex; align-items: center; font: 500 11px var(--f-ui); letter-spacing: 0.04em; color: var(--tinta-2); }
+.m-clave .arc-color { margin: 0 8px 0 0; }
+.m-nueva { font: 500 11px var(--f-ui); letter-spacing: 0.06em; color: var(--tenue); border-bottom: 1px dashed var(--linea); padding: 4px 0; }
+.m-nueva:hover { color: var(--tinta); border-color: var(--tinta); }
+.m-vacio { margin: 6px 0 0 20px; font: italic 400 13px/1.5 var(--f-texto); color: var(--decorado); }
+.lb-margen[aria-pressed="true"] { color: var(--tinta); text-decoration: underline; text-underline-offset: 5px; }
+.nota-linea { display: block; width: calc(100% - 31px); margin: -4px 0 14px 31px; padding: 6px 0 6px 12px; border-left: 2px solid var(--linea); text-align: left; font: italic 400 14px/1.5 var(--f-texto); color: var(--tinta-2); white-space: pre-line; }
+.nota-linea .m-ref { font-style: normal; }
 .colores .sin { background: linear-gradient(135deg, transparent 45%, currentColor 45%, currentColor 55%, transparent 55%); }
 .colores button:hover { transform: scale(1.15); }
 .acc-botones { display: flex; gap: 2px; flex-wrap: wrap; align-items: center; }

@@ -4,6 +4,7 @@
   import Ajustes from './dialogos/Ajustes.svelte';
   import Respaldo from './dialogos/Respaldo.svelte';
   import Laminas from './dialogos/Laminas.svelte';
+  import Clave from './dialogos/Clave.svelte';
   import { ui } from '../lib/ui.svelte.js';
   import { t } from '../lib/i18n.svelte.js';
   let dlg;
@@ -25,7 +26,8 @@
       {#if ui.dialogo === 'versiones'}<Versiones />
       {:else if ui.dialogo === 'ajustes'}<Ajustes />
       {:else if ui.dialogo === 'respaldo'}<Respaldo />
-      {:else if ui.dialogo === 'poster'}<Laminas />{/if}
+      {:else if ui.dialogo === 'poster'}<Laminas />
+      {:else if ui.dialogo === 'clave'}<Clave />{/if}
     </div>
   {/if}
 </dialog>
