@@ -529,7 +529,7 @@ export const PRUEBAS = [
   },
 ];
 
-// ¿Firme o viral? Afirmaciones que circulan; la respuesta y su porqué
+// ¿Facto o fake? Afirmaciones que circulan; la respuesta y su porqué
 export const PREGUNTAS = [
   { prueba: 'tacito', respuesta: 'firme', texto: { es: 'Un historiador romano que despreciaba a los cristianos escribió que Cristo fue ejecutado por Poncio Pilato.', en: 'A Roman historian who despised Christians wrote that Christ was executed by Pontius Pilate.' } },
   { prueba: 'sabana', respuesta: 'falso', texto: { es: 'La ciencia probó que la Sábana Santa es la mortaja de Jesús.', en: 'Science has proven the Shroud of Turin is Jesus’s burial cloth.' } },

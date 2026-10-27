@@ -1,5 +1,5 @@
 <script>
-  // ¿Firme o viral?: afirmaciones que circulan en redes. Eliges, y la app explica con la prueba en la mano.
+  // ¿Facto o fake?: afirmaciones que circulan en redes. Eliges, y la app explica con la prueba en la mano.
   // Sin rachas ni puntos acumulados: una ronda, un resultado y la puerta abierta al expediente.
   import Sello from './Sello.svelte';
   import { PREGUNTAS, prueba } from '../../lib/evidencias.js';

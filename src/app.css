@@ -554,7 +554,7 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.6 var(--f
 .his-fuente { color: var(--tenue); }
 .his-fuentes { margin: 34px var(--margen) 0; max-width: 80ch; }
 .filtros-vista .filtro small { margin-left: 3px; font-size: 10px; color: var(--decorado); }
-/* ¿Firme o viral? */
+/* ¿Facto o fake? */
 .quiz { max-width: 860px; margin: 6px var(--margen) 0; padding: 34px 0 10px; border-top: 1px solid var(--tinta); }
 .quiz-cabeza { display: flex; align-items: center; gap: 18px; font: 600 9.5px var(--f-ui); letter-spacing: 0.14em; text-transform: uppercase; color: var(--tenue); }
 .quiz-barra { flex: 1; height: 2px; background: var(--linea); position: relative; }

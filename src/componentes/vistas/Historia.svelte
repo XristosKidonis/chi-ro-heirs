@@ -1,6 +1,6 @@
 <script>
   // Historia: un expediente abierto sobre Jesús y Juan el Bautista. Lo que dicen los historiadores, las piedras
-  // y los manuscritos, con lo que prueban y lo que no. Se juega (¿Firme o viral?) y se recorre en el tiempo.
+  // y los manuscritos, con lo que prueban y lo que no. Se juega (¿Facto o fake?) y se recorre en el tiempo.
   import { tick } from 'svelte';
   import Prueba from '../historia/Prueba.svelte';
   import Sello from '../historia/Sello.svelte';

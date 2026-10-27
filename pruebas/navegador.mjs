@@ -322,7 +322,7 @@ await paso('ambiente: música dentro de la app, sonidos, apagado al Amén y Spot
   await pag.waitForFunction(() => /^Juan\s*3/.test(document.querySelector('.cap-titulo')?.textContent || ''));
 });
 
-await paso('Historia: expediente, ¿firme o viral?, línea del tiempo y lado a lado desde el lector', async () => {
+await paso('Historia: expediente, ¿facto o fake?, línea del tiempo y lado a lado desde el lector', async () => {
   await pag.click('.cab-link:has-text("Historia")');
   await pag.waitForSelector('.his-prueba');
   if ((await pag.locator('.his-prueba').count()) !== 24) throw new Error('faltan pruebas de Jesús');
@@ -331,8 +331,8 @@ await paso('Historia: expediente, ¿firme o viral?, línea del tiempo y lado a l
   if (!/Poncio Pilato/.test(cita) || !(await pag.locator('#prueba-tacito .contraste').count())) throw new Error('ficha de Tácito: ' + cita);
   await pag.click('.filtro:has-text("Juan el Bautista")');
   if ((await pag.locator('.his-prueba').count()) !== 7) throw new Error('faltan pruebas de Juan');
-  // ¿Firme o viral?: una ronda completa
-  await pag.click('.filtro:has-text("¿Firme o viral?")');
+  // ¿Facto o fake?: una ronda completa
+  await pag.click('.filtro:has-text("¿Facto o fake?")');
   for (let i = 0; i < 14; i++) {
     await pag.click('.quiz-op >> nth=0');
     await pag.waitForSelector('.quiz-veredicto');
