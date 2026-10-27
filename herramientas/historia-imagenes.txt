@@ -1,0 +1,42 @@
+# Búsquedas en Wikimedia Commons para ilustrar la sección Historia.
+# clave | búsqueda   (el flujo «Traer grabados» trae hasta 4 candidatos de cada una, con su licencia)
+banner-jesus | Ciseri Ecce Homo
+banner-juan | Leonardo da Vinci Saint John the Baptist Louvre
+banner-juan-2 | Titian Saint John the Baptist
+tacito | Codex Mediceus Tacitus Annales
+tacito-2 | Tacitus Annals manuscript Laurentian
+josefo | Flavius Josephus engraving Whiston
+josefo-2 | Josephus Antiquities manuscript
+plinio | Pliny the Younger statue Como cathedral
+suetonio | Suetonius De vita Caesarum manuscript
+luciano | Lucian of Samosata engraving
+talmud | Bomberg Talmud Venice 1520
+credo | Papyrus 46 Chester Beatty
+galatas | Rembrandt Two Old Men Disputing Peter Paul
+evangelios | Lindisfarne Gospels evangelist portrait
+evangelios-2 | Book of Kells evangelists
+p52 | Rylands Library Papyrus P52 recto
+manuscritos | Codex Sinaiticus page Gospel
+pilato | Pilate stone Caesarea inscription
+pilato-2 | Ciseri Ecce Homo Pilate
+caifas | Caiaphas ossuary
+caifas-2 | Giotto Christ before Caiaphas
+yehohanan | Tissot crucifixion nails
+siloe | Pool of Siloam American Colony
+siloe-2 | Tissot blind man washes pool of Siloam
+betesda | Tissot pool of Bethesda
+galion | Gallio inscription Delphi
+nazaret | Nazareth American Colony photograph
+nazaret-2 | Nazareth Bonfils photograph
+megido | Megiddo mosaic Akeptous
+isaias | Great Isaiah Scroll
+santiago | James ossuary
+sabana | Secondo Pia Shroud of Turin 1898 negative
+juan-muerte | Caravaggio Beheading of Saint John the Baptist Valletta
+juan-muerte-2 | Tissot daughter of Herodias dancing
+origenes | Origen engraving
+discipulos | Tissot John the Baptist preaching
+maqueronte | Machaerus Mukawir fortress
+betania | Verrocchio Baptism of Christ Uffizi
+qumran | Qumran caves cave 4
+reliquias | Sveti Ivan island Sozopol

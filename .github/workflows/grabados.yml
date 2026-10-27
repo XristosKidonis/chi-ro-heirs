@@ -5,12 +5,36 @@ name: Traer grabados
 # para elegir y preparar las portadillas. Se ejecuta a mano.
 on:
   workflow_dispatch:
+    inputs:
+      que:
+        description: 'Qué traer: grabados (Doré) o historia (candidatos para la sección Historia)'
+        default: grabados
 
 permissions:
   contents: write
 
 jobs:
+  historia:
+    if: inputs.que == 'historia'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Commons (candidatos para la sección Historia, con su licencia)
+        run: python3 herramientas/traer_imagenes_historia.py
+
+      - name: Publicar en la rama historia-fuente
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout --orphan historia-fuente
+          git rm -rfq --cached .
+          git add fuente-historia
+          git commit -qm "Candidatos de imágenes para Historia (Wikimedia Commons)"
+          git push -f origin historia-fuente
+
   traer:
+    if: inputs.que != 'historia'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
