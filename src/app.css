@@ -152,7 +152,7 @@ img { display: block; max-width: 100%; }
 .filtros-vista { display: flex; align-items: center; gap: clamp(15px, 2.2vw, 33px); flex-wrap: wrap; }
 .filtro { padding: 12px 0; font: 400 13px var(--f-ui); color: var(--tenue); text-align: left; }
 .filtro:hover { color: var(--tinta); }
-.filtro[aria-pressed="true"] { color: var(--tinta); font-weight: 600; }
+.filtro[aria-pressed="true"], .filtro[aria-selected="true"] { color: var(--tinta); font-weight: 600; }
 .buscar-vista { display: flex; gap: 8px; align-items: center; border-bottom: 1px solid #c3c3c0; padding: 8px 0; }
 .buscar-vista span { font-size: 19px; color: var(--tenue); }
 .buscar-vista input { width: 160px; border: 0; background: transparent; font-size: 13px; outline: none; }

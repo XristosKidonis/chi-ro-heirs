@@ -37,7 +37,7 @@
   <div class="herramientas">
     <div class="filtros-vista" role="tablist" aria-label={t('vista.historia')}>
       {#each PESTANAS as id (id)}
-        <button class="filtro" role="tab" aria-selected={ui.historia.pestana === id} aria-pressed={ui.historia.pestana === id}
+        <button class="filtro" role="tab" aria-selected={ui.historia.pestana === id}
           onclick={() => { ui.historia.pestana = id; ui.historia.abierta = null; }}>
           {t(`his.tab.${id}`)}{#if id === 'jesus' || id === 'juan'} <small>{String(pruebasDe(id).length).padStart(2, '0')}</small>{/if}
         </button>
