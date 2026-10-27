@@ -11,6 +11,8 @@
   import { t } from '../lib/i18n.svelte.js';
 
   const pos = $derived(usuario.ajustes.pos);
+  // quien todavía no ha leído nada (ni se ha movido de Génesis 1) recibe una sugerencia: empezar por Juan
+  const primeraVez = $derived(!Object.keys(usuario.leidos).length && pos.libro === 1 && pos.cap === 1);
   let miniatura = $state('');
 
   onMount(() => { cargarVersoDelDia(); });
@@ -48,7 +50,11 @@
         <span class="inicio-num" aria-hidden="true">03</span><span>{t('ini.archivo')}</span><span class="inicio-flecha" aria-hidden="true">↗</span>
       </button>
     </nav>
-    <p class="inicio-ultima">{t('ini.ultima')} <button onclick={() => irA(pos.libro, pos.cap)}>{nombreRef(pos.libro, pos.cap)}</button></p>
+    {#if primeraVez}
+      <p class="inicio-ultima inicio-empezar">{t('ini.empezar')} <button onclick={() => irA(43, 1)}>{t('ini.juan')} ↗</button><small>{t('ini.juanPor')}</small></p>
+    {:else}
+      <p class="inicio-ultima">{t('ini.ultima')} <button onclick={() => irA(pos.libro, pos.cap)}>{nombreRef(pos.libro, pos.cap)}</button></p>
+    {/if}
   </div>
 
   {#if miniatura}

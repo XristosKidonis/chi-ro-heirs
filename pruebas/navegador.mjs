@@ -63,6 +63,8 @@ await paso('inicio con la marca nítida, tres entradas y biblioteca de 66 libros
   if (estilo[0] !== 'none' || estilo[1] !== 'none' || !/CHI—RO\s*HEIRS/.test(estilo[2])) throw new Error(estilo.join(' | '));
   if ((await pag.locator('.inicio-entrada').count()) !== 3) throw new Error('el inicio no tiene tres entradas');
   if (await pag.locator('.inicio img:not(.inicio-cultura img)').count()) throw new Error('foto en el inicio');
+  const sugerencia = await pag.locator('.inicio-empezar button').textContent();
+  if (!/Juan/.test(sugerencia)) throw new Error('sin la sugerencia de empezar por Juan: ' + sugerencia);
   await pag.click('.inicio-entrada >> nth=1');
   await pag.waitForSelector('.cubierta');
   if ((await pag.locator('.cubierta').count()) !== 66) throw new Error('faltan libros');
