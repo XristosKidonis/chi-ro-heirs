@@ -8,6 +8,7 @@ export const ui = $state({
   historia: { pestana: 'jesus', abierta: null }, // sección Historia: pestaña y prueba abierta
   evidencias: [],       // pruebas que muestra el diálogo «lado a lado» del lector
   evidenciaVerso: null, // { libro, cap, v } desde donde se abrió
+  visor: null,          // imagen de Historia abierta a pantalla completa
   navAbierta: false,    // selector de libros y capítulos del lector
   buscadorAbierto: false, // búsqueda global (Ctrl/Cmd K)
   coleccion: null,      // colección de láminas abierta: null (índice) | 'tipografia' | 'color' | 'imagen'

@@ -2,6 +2,8 @@
   // Desde el lector: el pasaje bíblico y la fuente histórica, lado a lado, con lo que establece y lo que no.
   import Sello from '../historia/Sello.svelte';
   import Contraste from '../historia/Contraste.svelte';
+  import Figura from '../historia/Figura.svelte';
+  import { imagenesDe } from '../../lib/imagenesHistoria.js';
   import { prueba, numero, parsearVerso } from '../../lib/evidencias.js';
   import { pasaje, versionEstudio } from '../../lib/biblia.js';
   import { ui, abrirVista } from '../../lib/ui.svelte.js';
@@ -13,6 +15,8 @@
   const L = (x) => x?.[idioma()] ?? '';
   const pruebas = $derived((ui.evidencias || []).map(prueba).filter(Boolean));
   let textos = $state({});
+  let completo = $state({}); // pasajes largos: se muestran recortados hasta pedir el resto
+  const largo = (p) => (textos[p.id] || '').length > 520;
 
   // el pasaje de cada prueba que contiene el versículo tocado (o el primero que cita)
   function pasajeDe(p) {
@@ -50,11 +54,15 @@
       <Sello grado={p.grado} />
     </div>
     <h3 class="ev-titulo">{L(p.titulo)}</h3>
+    {#if imagenesDe(p.id).length}
+      <div class="ev-imagenes">{#each imagenesDe(p.id) as im (im.nombre)}<Figura img={im} />{/each}</div>
+    {/if}
     {#if p.contraste}<Contraste {p} />{/if}
     <div class="ev-lado">
       <div class="ev-col">
         <span class="ev-et">{t('his.laBiblia')} · {nombreRef(r.libro, r.cap, r.v, r.hasta)} · {usuario.ajustes.version}</span>
-        <p class="ev-texto">{textos[p.id] ?? '…'}</p>
+        <p class="ev-texto" class:recortado={largo(p) && !completo[p.id]}>{textos[p.id] ?? '…'}</p>
+        {#if largo(p) && !completo[p.id]}<button class="his-ref ev-mas" onclick={() => (completo = { ...completo, [p.id]: true })}>{t('his.pasajeCompleto')}</button>{/if}
       </div>
       <div class="ev-col">
         <span class="ev-et">{L(p.autor)} · {L(p.obra)} · {L(p.fecha)}</span>

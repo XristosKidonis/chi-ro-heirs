@@ -9,6 +9,7 @@
   import Archivo from './componentes/vistas/Archivo.svelte';
   import Galeria from './componentes/vistas/Galeria.svelte';
   import Historia from './componentes/vistas/Historia.svelte';
+  import Visor from './componentes/historia/Visor.svelte';
   import Lector from './componentes/Lector.svelte';
   import Estudio from './componentes/Estudio.svelte';
   import Acciones from './componentes/Acciones.svelte';
@@ -67,7 +68,7 @@
     const escribiendo = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable;
     if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); ui.buscadorAbierto = true; return; }
     if (e.key === 'Escape') {
-      if (ui.dialogo || ui.buscadorAbierto) return; // los diálogos se cierran solos
+      if (ui.dialogo || ui.buscadorAbierto || ui.visor) return; // los diálogos se cierran solos
       if (usuario.ajustes.calma && ui.vista === 'lector') ajustar('calma', false);
       else if (ui.seleccion.length) ui.seleccion = [];
       else if (ui.navAbierta) ui.navAbierta = false;
@@ -138,6 +139,7 @@
   {/if}
   <Buscador />
   <Dialogo />
+  <Visor />
   {#if ui.aviso}<div class="aviso" class:error={ui.aviso.error} role="status">{ui.aviso.texto}</div>{/if}
   {#if usuario.error}<div class="aviso error" role="alert">{t('app.noGuardar', { e: usuario.error })}</div>{/if}
   {/key}

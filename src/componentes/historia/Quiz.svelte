@@ -2,6 +2,8 @@
   // ¿Facto o fake?: afirmaciones que circulan en redes. Eliges, y la app explica con la prueba en la mano.
   // Sin rachas ni puntos acumulados: una ronda, un resultado y la puerta abierta al expediente.
   import Sello from './Sello.svelte';
+  import Figura from './Figura.svelte';
+  import { imagenesDe } from '../../lib/imagenesHistoria.js';
   import { PREGUNTAS, prueba } from '../../lib/evidencias.js';
   import { t, idioma } from '../../lib/i18n.svelte.js';
 
@@ -53,12 +55,15 @@
       {/each}
     </div>
     {#if elegida}
-      <div class="quiz-veredicto" aria-live="polite">
+      <div class="quiz-veredicto" class:con-imagen={imagenesDe(p.id).length} aria-live="polite">
+        {#if imagenesDe(p.id).length}<Figura img={imagenesDe(p.id)[0]} />{/if}
+        <div>
         <p class="quiz-resultado">{bien ? t('his.bien') : t('his.casi', { r: t(`his.op.${q.respuesta}`) })}</p>
         <p class="quiz-porque">{porque}</p>
         <div class="quiz-acciones">
           <button class="boton" onclick={siguiente}>{i + 1 < orden.length ? t('his.siguiente') : t('his.verResultado')}</button>
           <button class="boton secundario" onclick={() => verPrueba(p)}>{t('his.verPrueba')} <Sello grado={p.grado} chico /></button>
+        </div>
         </div>
       </div>
     {/if}

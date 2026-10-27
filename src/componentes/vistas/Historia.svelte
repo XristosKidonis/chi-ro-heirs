@@ -6,6 +6,8 @@
   import Sello from '../historia/Sello.svelte';
   import Quiz from '../historia/Quiz.svelte';
   import LineaTiempo from '../historia/LineaTiempo.svelte';
+  import Figura from '../historia/Figura.svelte';
+  import { CABECERA, imagen } from '../../lib/imagenesHistoria.js';
   import { GRADOS, GRUPOS, pruebasDe } from '../../lib/evidencias.js';
   import { ui } from '../../lib/ui.svelte.js';
   import { t } from '../../lib/i18n.svelte.js';
@@ -46,7 +48,12 @@
   </div>
 
   {#if ui.historia.pestana === 'jesus' || ui.historia.pestana === 'juan'}
-    <p class="his-intro his-intro-figura">{t(`his.intro.${figura}`)}</p>
+    <div class="his-portada portada-{figura}">
+      <p class="his-intro his-intro-figura">{t(`his.intro.${figura}`)}</p>
+      <div class="his-tira">
+        {#each CABECERA[figura].map(imagen) as im (im.nombre)}<Figura img={im} pie={false} />{/each}
+      </div>
+    </div>
     {#each GRUPOS[figura] as g (g)}
       {@const lista = pruebasDe(figura).filter((p) => p.grupo === g)}
       {#if lista.length}

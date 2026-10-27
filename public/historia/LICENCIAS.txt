@@ -1,0 +1,41 @@
+Imágenes de la sección Historia (public/historia/)
+
+Pinturas, grabados, manuscritos y fotografías antiguas de dominio público, y fotografías con licencia
+Creative Commons de algunos objetos. Elegidas a mano entre candidatos de Wikimedia Commons; los grabados
+de Gustave Doré vienen de Project Gutenberg (#8710). En la app, cada imagen muestra su crédito.
+
+tacito.webp — Tácito, Anales: el folio con el pasaje de «Christus» (Códice Mediceo II). Copista anónimo · Biblioteca Medicea Laurenziana, Florencia, siglo XI. Dominio público. https://commons.wikimedia.org/wiki/File:Florence,_Biblioteca_Medicea_Laurenziana_Ms_Codex_Laurentianus_Mediceus_68_II_fol._38r_Tacitus,_Annales,_xv_44.3%E2%80%938_Mention_of_Christians.jpg
+tacito-detalle.webp — «chrestianos»: la «e» original corregida a «i». Códice Mediceo II, fol. 38r, siglo XI. Dominio público. https://commons.wikimedia.org/wiki/File:Florence,_Biblioteca_Medicea_Laurenziana_Ms_Codex_Laurentianus_Mediceus_68_II_fol._38r_Tacitus,_Annales,_xv_44.3%E2%80%938_%22Chr%C4%B1_%C5%BFt%C4%B1ano%C5%BF%22_highlighted.jpg
+josefo-retrato.webp — Flavio Josefo, retrato imaginario. Grabado de la edición de William Whiston, 1737. Dominio público. https://commons.wikimedia.org/wiki/File:Josephus.jpg
+josefo-manuscrito.webp — Antigüedades judías, manuscrito iluminado (la muerte de Aristóbulo). Maestro del Josefo de Soane · Sir John Soane’s Museum, c. 1478-1480. Dominio público. https://commons.wikimedia.org/wiki/File:Antiquit%C3%A9s_judaiques_et_la_guerre_des_juifs_de_Flavius_Josephus_-_Soane_Museum_Ms1_f11_(Meurtre_d%27Aristobule).jpg
+plinio.webp — Plinio el Joven en la fachada de la catedral de Como. Foto: Howwi, 1498 (estatua) · 2012 (foto). CC BY-SA 3.0. https://commons.wikimedia.org/wiki/File:Pliny_the_Younger_-_Como_-_Duomo_-_4.jpg
+suetonio.webp — Suetonio, Vidas de los doce césares, manuscrito. Bibliothèque nationale de France, siglo XV. Dominio público. https://commons.wikimedia.org/wiki/File:1.%C2%B0_C._Suetonius_Tranquillus_de_vita_et_moribus_duodecim_Caesarum._%E2%80%94_2.%C2%B0_Aelius_Spartianus_de_vita_Adriani,_Imperatoris._%E2%80%94_3.%C2%B0_Vita_Aelii_Veri_-_eodem_authore._%E2%80%94_4.%C2%B0_Jul._Capitolinus_de_vita..._-_btv1b10036705j_(186_of_278).jpg
+luciano.webp — Luciano de Samósata. Grabado antiguo, siglo XVIII. Dominio público. https://commons.wikimedia.org/wiki/File:Lucian_of_Samosata_(cropped).png
+talmud.webp — Talmud de Babilonia, edición de Daniel Bomberg. British Library · Foto: Brigade Piron, Venecia, 1520-1523 · foto 2023. CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:British_Library._Bomberg_Talmud,_Alexander_the_Great%27s_meeting_with_Simon_the_Richteous.jpg
+p46.webp — Papiro 46: las cartas de Pablo. Chester Beatty Library, Dublín, c. 200. Dominio público. https://commons.wikimedia.org/wiki/File:P46.jpg
+saulo.webp — La conversión de Saulo. Gustave Doré, La Grande Bible de Tours, 1866. Dominio público. https://www.gutenberg.org/ebooks/8710
+kells.webp — Los cuatro evangelistas, Libro de Kells (fol. 27v). Trinity College, Dublín, c. 800. Dominio público. https://commons.wikimedia.org/wiki/File:KellsFol027v4Evang.jpg
+p52.webp — Papiro P52 (Juan 18), anverso. John Rylands Library, Mánchester, siglo II. Dominio público. https://commons.wikimedia.org/wiki/File:P52_recto.jpg
+sinaitico.webp — Códice Sinaítico: Mateo 6. British Library, c. 350. Dominio público. https://commons.wikimedia.org/wiki/File:Codex_Sinaiticus_Matthew_6,4-32.JPG
+isaias.webp — El gran rollo de Isaías: capítulo 53. Museo de Israel · Foto: Ardon Bar Hama, c. 125 a. C.. Dominio público. https://commons.wikimedia.org/wiki/File:Great_Isaiah_Scroll_Ch53.jpg
+pilato-piedra.webp — La piedra de Pilato. Foto: Carole Raddato, c. 26-36 d. C. · foto 2014. CC BY-SA 2.0. https://commons.wikimedia.org/wiki/File:Dedicatory_inscription_found_reused_in_the_staircase_of_the_theatre_of_Caesarea,_the_first_and_only_mention_of_Pontius_Pilates%27_name_ever_unearthed,_26-36_AD,_Israel_Museum,_Jerusalem_(15655925251).jpg
+ecce-homo.webp — Ecce Homo. Wenzel Coebergher · Musée des Augustins, Toulouse, c. 1605. Dominio público. https://commons.wikimedia.org/wiki/File:Augustins_-Ecce_homo_-_Wenzel_Coebergher.jpg
+caifas-osario.webp — El osario de Caifás. Museo de Israel · Foto: deror_avi, siglo I · foto 2012. CC BY-SA 3.0. https://commons.wikimedia.org/wiki/File:Ossuary_of_the_high_priest_Joseph_Caiaphas_P1180839.JPG
+caifas-giotto.webp — Cristo ante Caifás. Giotto · Capilla de los Scrovegni, Padua, c. 1305. Dominio público. https://commons.wikimedia.org/wiki/File:Giotto_-_Scrovegni_-_-32-_-_Christ_before_Caiaphas.jpg
+sepultura.webp — El entierro de Cristo. Gustave Doré, La Grande Bible de Tours, 1866. Dominio público. https://www.gutenberg.org/ebooks/8710
+siloe-foto.webp — El estanque de Siloé. American Colony, Jerusalén, 1934-1939. Dominio público. https://commons.wikimedia.org/wiki/File:Pool_of_Siloam_between_1934_and_1939._matpc.04245._left.jpg
+siloe-tissot.webp — El ciego se lava en el estanque de Siloé. James Tissot · Brooklyn Museum, 1886-1894. Dominio público. https://commons.wikimedia.org/wiki/File:Brooklyn_Museum_-_The_Blind_Man_Washes_in_the_Pool_of_Siloam_(Le_aveugle-n%C3%A9_se_lave_%C3%A0_la_piscine_de_Silo%C3%AB)_-_James_Tissot.jpg
+betesda.webp — El estanque de Betesda. James Tissot · Brooklyn Museum, 1886-1894. Dominio público. https://commons.wikimedia.org/wiki/File:Brooklyn_Museum_-_The_Piscina_Probatica_or_Pool_of_Bethesda_(La_piscine_probatique_ou_de_Bethesda)_-_James_Tissot_-_overall.jpg
+galion.webp — La inscripción de Galión. Museo de Delfos · Foto: Gérard, c. 52 d. C. · foto 2018. CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Delphes_Gallion.jpg
+nazaret.webp — Nazaret. Félix Bonfils, c. 1870-1890. Dominio público. https://commons.wikimedia.org/wiki/File:Nazareth_photographed_by_Felix_Bonfils.jpg
+megido.webp — La inscripción de Akeptous, Meguido. Foto: Vesafis Tzferris, c. 230 d. C. · foto 2006. CC BY-SA 4.0. https://commons.wikimedia.org/wiki/File:Akeptous_Inscription_2.jpg
+santiago.webp — El osario de Santiago. Foto: Paradiso, foto 2005. Atribución. https://commons.wikimedia.org/wiki/File:JamesOssuary-1-.jpg
+sabana.webp — La Sábana Santa en el negativo de Secondo Pia. Secondo Pia, 1898. Dominio público. https://commons.wikimedia.org/wiki/File:Secundo_Pia_Turinske_platno_1898.jpg
+caravaggio.webp — La degollación de san Juan Bautista. Caravaggio · Concatedral de San Juan, La Valeta, 1608. Dominio público. https://commons.wikimedia.org/wiki/File:The_Beheading_of_Saint_John-Caravaggio_(1608).jpg
+herodias.webp — La hija de Herodías baila. James Tissot · Brooklyn Museum, 1886-1894. Dominio público. https://commons.wikimedia.org/wiki/File:Brooklyn_Museum_-_The_Daughter_of_Herodias_Dancing_(H%C3%A9rodiade_dansant)_-_James_Tissot_-_overall.jpg
+origenes.webp — Orígenes enseña a sus alumnos. Jan Luyken, c. 1700. Dominio público. https://commons.wikimedia.org/wiki/File:OrigenStudentsLuyken.jpg
+efeso.webp — Pablo en Éfeso. Gustave Doré, La Grande Bible de Tours, 1866. Dominio público. https://www.gutenberg.org/ebooks/8710
+bautismo.webp — El bautismo de Cristo. Andrea del Verrocchio y Leonardo da Vinci · Uffizi, Florencia, c. 1475. Dominio público. https://commons.wikimedia.org/wiki/File:Andrea_del_Verrocchio,_Leonardo_da_Vinci_-_Baptism_of_Christ_-_Uffizi.jpg
+qumran.webp — Las cuevas de Qumrán. Foto: James Emery, 2007. CC BY 2.0. https://commons.wikimedia.org/wiki/File:Qumran_caves_1504_(509724995).jpg
+sozopol.webp — La isla de San Iván, Sozópol. Foto: Mrs Robinson, 2007. CC BY 2.5. https://commons.wikimedia.org/wiki/File:SvetiIvan.jpg
+tiziano.webp — San Juan Bautista. Tiziano · Gallerie dell’Accademia, Venecia, c. 1540. Dominio público. https://commons.wikimedia.org/wiki/File:Accademia_-_St_John_the_Baptist_by_Titian_Cat314.jpg

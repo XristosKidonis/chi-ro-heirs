@@ -3,6 +3,7 @@
   // Arriba, un panorama horizontal (pantallas anchas); abajo, la lista vertical que se lee en cualquier pantalla,
   // y una comparación honesta con Alejandro Magno.
   import Sello from './Sello.svelte';
+  import { imagenesDe } from '../../lib/imagenesHistoria.js';
   import { PRUEBAS, numero, distancia } from '../../lib/evidencias.js';
   import { t, idioma } from '../../lib/i18n.svelte.js';
 
@@ -65,6 +66,7 @@
     {#each lista as e (e.p?.id ?? e.texto)}
       <li class:hecho={e.hecho} class:banda={e.banda}>
         <span class="tl-ano">{e.banda ? '65-100' : e.anio}</span>
+        {#if e.p && imagenesDe(e.p.id).length}<img class="tl-mini" src={imagenesDe(e.p.id)[0].src} alt="" loading="lazy" />{:else}<span class="tl-mini vacia"></span>{/if}
         {#if e.p}
           <button class="tl-item" onclick={() => verPrueba(e.p)}>
             <span class="tl-que">{L(e.p.titulo)}</span>

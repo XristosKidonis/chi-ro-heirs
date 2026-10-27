@@ -270,7 +270,7 @@ export const PRUEBAS = [
     id: 'pilato', figura: 'jesus', grupo: 'piedras', grado: 'firme', anio: 30,
     titulo: { es: 'La piedra de Pilato', en: 'The Pilate stone' },
     autor: { es: 'Cesarea Marítima (Israel), hallada en 1961', en: 'Caesarea Maritima (Israel), found 1961' },
-    obra: { es: 'Museo de Israel, Jerusalén', en: 'Israel Museum, Jerusalem' }, fecha: { es: 'c. 26-36 d. C.', en: 'c. AD 26-36' },
+    obra: { es: 'Inscripción en piedra caliza; hoy en el Museo de Israel', en: 'Limestone inscription; now in the Israel Museum' }, fecha: { es: 'c. 26-36 d. C.', en: 'c. AD 26-36' },
     cita: { es: '«… Tiberieum / [Pon]cio Pilato / [pre]fecto de Jude[a]»', en: '“… Tiberieum / [Pon]tius Pilate / [pre]fect of Jude[a]”' },
     establece: {
       es: 'Poncio Pilato existió y gobernó Judea. Un detalle fino: la piedra le da su título exacto, «prefecto», que es el que tenían los gobernadores de Judea antes del año 41.',
@@ -284,7 +284,7 @@ export const PRUEBAS = [
     id: 'caifas', figura: 'jesus', grupo: 'piedras', grado: 'probable', anio: 36,
     titulo: { es: 'El osario de Caifás', en: 'The Caiaphas ossuary' },
     autor: { es: 'Jerusalén, hallado en 1990', en: 'Jerusalem, found 1990' },
-    obra: { es: 'Museo de Israel, Jerusalén', en: 'Israel Museum, Jerusalem' }, fecha: { es: 'siglo I', en: '1st century' },
+    obra: { es: 'Caja de huesos de piedra tallada; hoy en el Museo de Israel', en: 'Carved stone bone box; now in the Israel Museum' }, fecha: { es: 'siglo I', en: '1st century' },
     cita: { es: '«Yehosef bar Qayafa» —José, hijo de Caifás—, grabado en arameo.', en: '“Yehosef bar Qayafa” — Joseph, son of Caiaphas — carved in Aramaic.' },
     establece: {
       es: 'Una familia de rango sacerdotal llamada Caifás vivía en Jerusalén en la época de los evangelios. Josefo llama al sumo sacerdote de esos años «José, llamado Caifás».',
@@ -311,7 +311,7 @@ export const PRUEBAS = [
     id: 'siloe', figura: 'jesus', grupo: 'piedras', grado: 'firme', anio: 30,
     titulo: { es: 'El estanque de Siloé', en: 'The Pool of Siloam' },
     autor: { es: 'Jerusalén, hallado en 2004', en: 'Jerusalem, found 2004' },
-    obra: { es: 'Ciudad de David', en: 'City of David' }, fecha: { es: 'siglo I', en: '1st century' },
+    obra: { es: 'Un gran estanque con escalones de piedra', en: 'A large pool with stone steps' }, fecha: { es: 'siglo I', en: '1st century' },
     cita: { es: 'Unos obreros que reparaban una tubería encontraron los escalones de piedra de un gran estanque de la época de Jesús.', en: 'Workers repairing a pipe uncovered the stone steps of a large pool from the time of Jesus.' },
     establece: {
       es: 'El estanque donde Juan 9 sitúa la curación del ciego existió en el siglo I. El autor del evangelio conocía bien la Jerusalén anterior a su destrucción en el año 70.',
@@ -324,7 +324,7 @@ export const PRUEBAS = [
     id: 'betesda', figura: 'jesus', grupo: 'piedras', grado: 'probable', anio: 30,
     titulo: { es: 'El estanque de Betesda', en: 'The Pool of Bethesda' },
     autor: { es: 'Jerusalén, junto a Santa Ana', en: 'Jerusalem, beside St Anne’s' },
-    obra: { es: 'Excavaciones de los siglos XIX y XX', en: '19th- and 20th-century excavations' }, fecha: { es: 'siglo I y antes', en: '1st century and earlier' },
+    obra: { es: 'Dos piscinas con un muro en medio', en: 'Two pools with a wall between them' }, fecha: { es: 'siglo I y antes', en: '1st century and earlier' },
     cita: { es: 'Juan 5:2 habla de un estanque «con cinco pórticos». Se encontraron dos piscinas separadas por un muro central.', en: 'John 5:2 speaks of a pool “with five porches”. Two pools separated by a central wall were found.' },
     establece: {
       es: 'El estanque existió donde el evangelio lo pone. Dos piscinas con un muro en medio permiten cuatro lados y un pórtico central: cinco.',

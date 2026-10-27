@@ -329,6 +329,15 @@ await paso('Historia: expediente, ¿facto o fake?, línea del tiempo y lado a la
   await pag.click('#prueba-tacito .his-fila');
   const cita = await pag.textContent('#prueba-tacito .his-cita');
   if (!/Poncio Pilato/.test(cita) || !(await pag.locator('#prueba-tacito .contraste').count())) throw new Error('ficha de Tácito: ' + cita);
+  // imágenes: miniaturas en el índice y visor a pantalla completa con crédito
+  const minis = await pag.locator('.his-mini img').count();
+  if (minis < 20) throw new Error(`solo ${minis} miniaturas`);
+  await pag.click('#prueba-tacito .his-fig-img >> nth=0');
+  await pag.waitForSelector('dialog.visor[open] img');
+  const credito = await pag.textContent('dialog.visor .visor-pie');
+  if (!/Dominio público/.test(credito)) throw new Error('crédito: ' + credito);
+  await pag.keyboard.press('Escape');
+  await pag.waitForSelector('dialog.visor[open]', { state: 'detached' });
   await pag.click('.filtro:has-text("Juan el Bautista")');
   if ((await pag.locator('.his-prueba').count()) !== 7) throw new Error('faltan pruebas de Juan');
   // ¿Facto o fake?: una ronda completa
