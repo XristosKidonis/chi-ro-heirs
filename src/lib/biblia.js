@@ -4,21 +4,36 @@ import { capituloNLT } from './nlt.js';
 import { normalizar, desclave, parsearRango } from './libros.js';
 
 export const EN_LINEA = [
-  { id: 'NTV', nombre: 'Nueva Traducción Viviente', idioma: 'es', enLinea: true,
-    licencia: 'Texto bíblico © 2010 Tyndale House Foundation. Vía la API oficial api.nlt.to, para uso personal no comercial.' },
-  { id: 'NLT', nombre: 'New Living Translation', idioma: 'en', enLinea: true,
-    licencia: 'Holy Bible, New Living Translation © 1996, 2004, 2015 Tyndale House Foundation. Via api.nlt.to, non-commercial use.' },
+  { id: 'NTV', nombre: 'Nueva Traducción Viviente', idioma: 'es', enLinea: true, tipo: 'dinamica', anio: '2010',
+    licencia: 'Texto bíblico © 2010 Tyndale House Foundation. Vía la API oficial api.nlt.to, para uso personal no comercial.',
+    descripcion: 'Español actual, traducida por ideas completas: clara y cálida sin dejar de ser una traducción. Se lee en línea.',
+    descripcion_en: 'Modern Spanish, translated idea by idea: clear and warm while still a translation. Read online.' },
+  { id: 'NLT', nombre: 'New Living Translation', idioma: 'en', enLinea: true, tipo: 'dinamica', anio: '2015',
+    licencia: 'Holy Bible, New Living Translation © 1996, 2004, 2015 Tyndale House Foundation. Via api.nlt.to, non-commercial use.',
+    descripcion: 'Inglés actual, traducida por ideas completas. La versión inglesa de la NTV. Se lee en línea.',
+    descripcion_en: 'Modern English, translated idea by idea. The English sibling of the NTV. Read online.' },
 ];
+
+// De la más apegada a la letra a la más libre
+export const TIPOS = ['literal', 'formal', 'equilibrada', 'dinamica', 'sencilla', 'parafrasis'];
 
 let locales = [];
 
 export async function cargarVersiones() {
   const db = await bdBiblias();
-  locales = await db.select('SELECT id, nombre, idioma, licencia FROM versiones ORDER BY orden');
+  locales = await db.select('SELECT id, nombre, idioma, licencia, tipo, anio, descripcion, descripcion_en FROM versiones ORDER BY orden');
   return lista();
 }
 
-export const lista = () => [...EN_LINEA, ...locales];
+// Orden de lectura: primero las locales de cada idioma; la NTV y la NLT van tras la primera de su idioma
+export const lista = () => {
+  const out = [...locales];
+  for (const v of EN_LINEA) {
+    const i = out.findIndex((x) => x.idioma === v.idioma);
+    out.splice(i < 0 ? out.length : i + 1, 0, v);
+  }
+  return out;
+};
 export const info = (id) => lista().find((v) => v.id === id);
 
 // Versión local que se usa para buscar y estudiar cuando la versión actual solo está en línea.

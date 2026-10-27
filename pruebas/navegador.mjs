@@ -163,9 +163,18 @@ await paso('referencias cruzadas de Jn 3:16', async () => {
   console.log('      referencias:', n);
 });
 
-await paso('comparar en todas las versiones', async () => {
+await paso('comparar: las del idioma, de literal a paráfrasis, y luego todas', async () => {
   await pag.click('.pestanas-estudio [role="tab"]:has-text("Comparar")');
-  await pag.waitForFunction(() => [...document.querySelectorAll('.comparar-item .ref-texto')].every((p) => p.textContent !== 'Cargando…') && document.querySelectorAll('.comparar-item').length === 6);
+  const listas = (n) => pag.waitForFunction((n) => [...document.querySelectorAll('.comparar-item .ref-texto')].every((p) => p.textContent !== 'Cargando…') && document.querySelectorAll('.comparar-item').length === n, n);
+  await listas(6);
+  const tipos = await pag.locator('.comparar-item .comp-tipo').allTextContents();
+  if (tipos[0] !== 'Formal' || tipos.at(-1) !== 'Sencilla') throw new Error(`orden: ${tipos.join(', ')}`);
+  await pag.click('.comp-todas');
+  await listas(17);
+  const vacios = await pag.locator('.comparar-item .ref-texto:text-is("—")').count();
+  if (vacios) throw new Error(`${vacios} versiones sin texto`);
+  await pag.click('.comp-todas');
+  await listas(6);
 });
 await pag.screenshot({ path: `${OUT}/05-comparar.png` });
 
@@ -329,6 +338,22 @@ await pag.screenshot({ path: `${OUT}/12-ingles.png` });
 await pag.click('.cab-accion[aria-label="Settings"]');
 await pag.selectOption('#aj-idioma', 'es');
 await pag.click('.dlg-cabeza .ico');
+
+await paso('versiones: espectro, descripciones y licencias', async () => {
+  await pag.click('.cab-accion[aria-label="Ajustes"]');
+  await pag.click('button:has-text("Versiones y clave de Tyndale")');
+  await pag.waitForSelector('.espectro li');
+  const tipos = await pag.locator('.espectro li').count();
+  const filas = await pag.locator('.version-fila').count();
+  const sinDesc = await pag.locator('.version-fila:not(:has(.vn-desc))').count();
+  const literales = await pag.locator('.espectro li:first-child .esp-ids').textContent();
+  if (tipos !== 6 || filas !== 17 || sinDesc || !/YLT/.test(literales)) throw new Error(`${tipos} tipos, ${filas} versiones, ${sinDesc} sin descripción, literales: ${literales}`);
+  await pag.click('.version-fila:has-text("PDT ·") button');
+  await pag.waitForFunction(() => /PDT/.test(document.querySelector('.cap-sobre')?.textContent || '')
+    && /CC BY-SA/.test(document.querySelector('.licencia')?.textContent || '') && document.querySelectorAll('.pagina .v').length > 5);
+  await pag.selectOption('.lb-version:not(.lb-paralela) select', 'RV1909');
+});
+await pag.screenshot({ path: `${OUT}/12b-versiones.png` });
 
 await paso('lector oscuro y vuelta a claro', async () => {
   await pag.click('.lb-control[aria-label="Lector claro u oscuro"]');

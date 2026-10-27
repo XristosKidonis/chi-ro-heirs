@@ -516,6 +516,23 @@ textarea.campo { min-height: 110px; resize: vertical; font: 400 16px/1.6 var(--f
 .version-fila { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-top: 1px solid var(--linea); flex-wrap: wrap; }
 .version-fila .vn { flex: 1 1 260px; min-width: 0; font: 400 17px var(--f-display); letter-spacing: -0.02em; }
 .version-fila .vn small { display: block; font: 400 11.5px/1.45 var(--f-ui); letter-spacing: 0; color: var(--tenue); margin-top: 2px; }
+.version-fila .vn-meta { display: block; margin-top: 4px; font: 400 11px var(--f-ui); letter-spacing: 0.04em; color: var(--tenue); }
+.version-fila .vn-meta b { font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; font-size: 9.5px; color: var(--tinta-2); }
+.version-fila .vn-desc { display: block; margin-top: 6px; font: 400 13.5px/1.5 var(--f-ui); letter-spacing: 0; color: var(--tinta-2); max-width: 62ch; }
+.dlg h3 .cuenta { font: inherit; color: var(--decorado); margin-left: 4px; }
+.espectro { list-style: none; margin: 14px 0 6px; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--tinta); }
+.espectro li { padding: 10px 10px 12px 0; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.espectro li + li { padding-left: 10px; border-left: 1px solid var(--linea); }
+.esp-tipo { font: 600 9.5px var(--f-ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tinta); }
+.esp-def { font: 400 11.5px/1.35 var(--f-ui); color: var(--tenue); }
+.esp-ids { font: 500 11px/1.5 var(--f-ui); letter-spacing: 0.04em; color: var(--tinta-2); overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  .espectro { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .espectro li:nth-child(odd) { padding-left: 0; border-left: 0; }
+  .espectro li:nth-child(n + 3) { border-top: 1px solid var(--linea); }
+}
+.comp-tipo { font: 600 8.5px var(--f-ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tenue); margin-left: 6px; }
+.comp-todas { margin-top: 14px; }
 .insignia { font: 600 9px var(--f-ui); letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 7px; border: 1px solid var(--linea); color: var(--tinta-2); white-space: nowrap; }
 .insignia.linea { border-color: var(--tinta); color: var(--tinta); }
 .ajuste { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 13px 0; border-top: 1px solid var(--linea); flex-wrap: wrap; }

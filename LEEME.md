@@ -1,6 +1,6 @@
 # Chi-Ro Heirs
 
-Lector bíblico personal, ligero y local. Tiene la NTV y la NLT desde la API oficial de Tyndale, versiones de dominio público que funcionan sin conexión, subrayado, notas enlazadas, estudio de palabras, referencias cruzadas, memorización y pósteres de versículos.
+Lector bíblico personal, ligero y local. Tiene la NTV y la NLT desde la API oficial de Tyndale, 15 versiones libres (dominio público o Creative Commons) que funcionan sin conexión, subrayado, notas enlazadas, estudio de palabras, referencias cruzadas, memorización y pósteres de versículos.
 
 > *«Y si hijos, también herederos; herederos de Dios y coherederos con Cristo».* Romanos 8:17
 
@@ -30,7 +30,7 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 | Función | Detalle |
 |---|---|
 | Inicio | La marca CHI—RO y tres entradas: Continuar leyendo, Biblioteca (los 66 libros como cubiertas tipográficas, con filtro y búsqueda) y Mi archivo (guardados, cintas, subrayados y notas en un índice) |
-| Versiones | **NTV** y **NLT** en línea (API oficial de Tyndale). **RV1909, RV1865, BSB, KJV** dentro de la app, sin conexión |
+| Versiones | **NTV** y **NLT** en línea (API oficial de Tyndale). Sin conexión, dentro de la app: en español **RV1909, PDT, VBL, BES, RV1865**; en inglés **BSB, WEB, FBV, BBE, LSV, KJV, ASV, YLT, Darby, Ginebra 1599**. Cada una con su tipo de traducción (de literal a paráfrasis), año y descripción |
 | Portadillas | Opcional (Ajustes → Grabados): cada libro abre con un grabado de Gustave Doré a toda página. Puedes poner tu propia imagen; se guarda solo en tu equipo |
 | Lectura | Lector claro (y oscuro a pedido), modo Calma sin barras, tamaño A−/A+, modo lector sin números, texto corrido, Literata o Atkinson Hyperlegible, vista paralela |
 | Subrayado | 5 colores de marcador, anclados a la referencia: lo que subrayas en la NTV aparece también en la RV1909 |
@@ -108,7 +108,9 @@ Cada fila guarda la fecha de cambio y una marca de borrado, ya preparada para la
 
 - **NTV:** Texto bíblico tomado de la Santa Biblia, Nueva Traducción Viviente, © Tyndale House Foundation, 2010. Usado con permiso de Tyndale House Publishers, Inc., vía api.nlt.to, para uso personal no comercial.
 - **NLT:** Holy Bible, New Living Translation, © 1996, 2004, 2015 by Tyndale House Foundation. Vía api.nlt.to.
-- **RV1909, RV1865, KJV:** dominio público, vía [scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases).
+- **RV1909, RV1865, KJV, ASV, YLT, Darby, BBE:** dominio público, vía [scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases).
+- **PDT** (© 2020 Asociación Bíblica Latinoamericana, CC BY-SA 4.0), **VBL** (© 2018-2020 Jonathan Gallagher y Shelly Barrios de Ávila, CC BY-SA 4.0), **BES** (© 2018-2019 AudioBiblia.org / Irma Flores, CC BY 4.0) y **WEB** (dominio público): de [eBible.org](https://ebible.org), en formato USFX vía [seven1m/open-bibles](https://github.com/seven1m/open-bibles).
+- **FBV** (© 2018 Jonathan Gallagher, CC BY-SA 4.0), **LSV** (© 2020 Covenant Press, CC BY-SA 4.0) y **Ginebra 1599** (dominio público): de eBible.org, vía [BibleNLP/ebible](https://github.com/BibleNLP/ebible) y [wldeh/bible-api](https://github.com/wldeh/bible-api). Único cambio al texto: se quitan las notas al pie y las marcas de formato.
 - **BSB:** Berean Standard Bible, dedicada al dominio público (CC0).
 - **Referencias cruzadas:** [OpenBible.info](https://www.openbible.info/labs/cross-references/), CC BY.
 - **Léxico Strong:** [Open Scriptures](https://github.com/openscriptures/strongs), CC BY-SA.
