@@ -371,6 +371,7 @@ const ES = {
   'nlt.clave': 'La clave de la API de Tyndale no es válida. Revísala en Versiones.',
   'nlt.estado': 'La API de Tyndale respondió {s}. Si usas la clave de prueba, puede que alcanzaste el límite diario (500 consultas); registra tu clave gratuita en api.nlt.to.',
   'nlt.vacio': 'La API de Tyndale no devolvió texto para {ref}.',
+  'nlt.sinVersos': 'respondió {n} caracteres, pero sin versículos reconocibles', 'nlt.cuerpoVacio': 'la respuesta llegó vacía',
   'voz.sin': 'Este equipo no tiene voces de lectura disponibles.',
 };
 
@@ -728,6 +729,7 @@ const EN = {
   'nlt.clave': 'The Tyndale API key is not valid. Check it in Versions.',
   'nlt.estado': 'The Tyndale API answered {s}. If you use the test key you may have reached the daily limit (500 requests); register your free key at api.nlt.to.',
   'nlt.vacio': 'The Tyndale API returned no text for {ref}.',
+  'nlt.sinVersos': 'it answered {n} characters, but with no recognizable verses', 'nlt.cuerpoVacio': 'the response was empty',
   'voz.sin': 'This device has no reading voices available.',
 };
 
