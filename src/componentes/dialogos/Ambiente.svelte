@@ -2,7 +2,8 @@
   // Ambiente: música y sonidos que suenan dentro de la app (sin cuentas ni internet) y, aparte,
   // Spotify, que se abre afuera: tu playlist o una búsqueda.
   import { amb, preferencias, MUSICAS, CAPAS, TEMPORIZADORES, reproducir, alternar, elegirMusica, volumenMusica,
-    volumenCapa, temporizador, enlaceSpotify, playlistValida } from '../../lib/ambiente.svelte.js';
+    volumenCapa, temporizador, enlaceSpotify, playlistValida, siguiente, anterior, elegirPista } from '../../lib/ambiente.svelte.js';
+  import { LISTAS } from '../../lib/musica.js';
   import { usuario, ajustar } from '../../lib/usuario.svelte.js';
   import { avisar } from '../../lib/ui.svelte.js';
   import { abrirEnNavegador } from '../../lib/archivos.js';
@@ -16,12 +17,14 @@
     en: ['christian instrumental piano', 'calm worship', 'lofi worship', 'instrumental hymns'],
   };
   const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  const L = (x) => (typeof x === 'string' ? x : x?.[idioma()] ?? '');
   const estado = $derived(
     amb.cargando ? t('amb.cargando')
       : !amb.sonando ? t('amb.silencio')
-      : amb.himno ? amb.himno[idioma()]
       : p.musica ? t(`amb.m.${p.musica}`) : t('amb.soloSonidos'),
   );
+  // la pista que se muestra: la que suena, o la última de la lista elegida
+  const pista = $derived(p.musica && amb.lista === p.musica ? amb.pista : null);
 
   function musica(cual) {
     elegirMusica(cual);
@@ -45,6 +48,19 @@
   <span class="amb-estado" aria-live="polite">{estado}{#if amb.restante} · {mmss(amb.restante)}{/if}</span>
 </div>
 
+{#if pista}
+  <div class="amb-ahora" aria-live="polite">
+    <span class="etiqueta-ui">{amb.sonando ? t('amb.ahora') : t('amb.enPausa')}</span>
+    <p class="amb-pista">{L(pista.titulo)}</p>
+    <p class="amb-autor">{L(pista.autor)} · {L(pista.interprete)}</p>
+    <p class="amb-lic">{pista.licencia === 'PD' ? t('amb.dominioPublico') : pista.licencia} · <button class="his-ref" onclick={() => abrirEnNavegador(pista.fuente)}>{t('amb.fuente')} ↗</button></p>
+    <div class="amb-pasos">
+      <button class="boton secundario" onclick={anterior} aria-label={t('amb.anterior')}>← {t('amb.anterior')}</button>
+      <button class="boton secundario" onclick={siguiente} aria-label={t('amb.siguiente')}>{t('amb.siguiente')} →</button>
+    </div>
+  </div>
+{/if}
+
 <h3>{t('amb.musica')} <small class="cuenta">{t('amb.dentro')}</small></h3>
 <div class="amb-musicas" role="radiogroup" aria-label={t('amb.musica')}>
   {#each [...MUSICAS, null] as m (m ?? 'nada')}
@@ -54,6 +70,17 @@
     </button>
   {/each}
 </div>
+{#if p.musica}
+  <ol class="amb-lista" aria-label={t('amb.pistas')}>
+    {#each LISTAS[p.musica] as x, i (x.id)}
+      <li><button class:actual={amb.lista === p.musica && amb.indice === i} aria-current={amb.lista === p.musica && amb.indice === i ? 'true' : undefined} onclick={() => elegirPista(p.musica, i)}>
+        <span class="amb-l-num">{String(i + 1).padStart(2, '0')}</span>
+        <span class="amb-l-tit">{L(x.titulo)}</span>
+        <span class="amb-l-aut">{L(x.autor)}</span>
+      </button></li>
+    {/each}
+  </ol>
+{/if}
 <label class="ajuste"><span class="lbl">{t('amb.volumen')}</span>
   <input type="range" min="0" max="1" step="0.05" value={p.volumen} oninput={(e) => volumenMusica(Number(e.currentTarget.value))} /></label>
 

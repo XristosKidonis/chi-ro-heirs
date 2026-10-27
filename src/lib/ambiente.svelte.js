@@ -1,29 +1,31 @@
 // Ambiente: música y sonidos para leer, todo dentro de la app y sin internet.
-// - Música: «Quietud» (piano generativo, nunca suena igual), «Himnos» (melodías de dominio público al piano)
-//   y «Aurora» (acordes largos sintetizados). El piano es el Salamander Grand Piano (CC BY 3.0).
+// - Música: grabaciones reales de dominio público o con licencia libre (piano, himnos, coral y cuerdas),
+//   ver musica.js. Suena con un elemento <audio> y se funde al empezar, al cambiar de pista y al pausar.
 // - Sonidos: lluvia, fuego, viento y olas, generados con Web Audio (no son grabaciones).
 // La música baja sola cuando la app lee en voz alta y puede apagarse con un temporizador o al terminar el capítulo.
 import { usuario, ajustar } from './usuario.svelte.js';
 import { voz } from './voz.svelte.js';
-import { HIMNOS } from './himnos.js';
+import { LISTAS, archivoPista } from './musica.js';
 
-export const MUSICAS = ['quietud', 'himnos', 'aurora'];
+export const MUSICAS = Object.keys(LISTAS);
 export const CAPAS = ['lluvia', 'fuego', 'viento', 'olas'];
 export const TEMPORIZADORES = [0, 10, 20, 30, 'amen'];
 
-const INICIAL = { musica: 'quietud', volumen: 0.7, capas: { lluvia: 0, fuego: 0, viento: 0, olas: 0 }, temporizador: 0 };
-export const preferencias = () => ({ ...INICIAL, ...(usuario.ajustes.ambiente || {}), capas: { ...INICIAL.capas, ...(usuario.ajustes.ambiente?.capas || {}) } });
+const INICIAL = { musica: 'piano', volumen: 0.7, capas: { lluvia: 0, fuego: 0, viento: 0, olas: 0 }, temporizador: 0 };
+export const preferencias = () => {
+  const a = usuario.ajustes.ambiente || {};
+  // las músicas generadas de antes (quietud, aurora) pasan al piano grabado
+  const musica = a.musica === null || a.musica in LISTAS ? a.musica : a.musica === undefined ? INICIAL.musica : 'piano';
+  return { ...INICIAL, ...a, musica, capas: { ...INICIAL.capas, ...(a.capas || {}) } };
+};
 const guardar = (cambio) => ajustar('ambiente', { ...preferencias(), ...cambio });
 
-export const amb = $state({ sonando: false, cargando: false, himno: '', restante: 0 });
+// pista: la que suena (o la última); lista: la lista de esa pista; indice: su lugar en la lista
+export const amb = $state({ sonando: false, cargando: false, pista: null, lista: null, indice: 0, restante: 0 });
 
 let ctx = null;
-let salida;     // volumen general (fundidos)
-let musicaBus;  // música (baja con la voz)
+let salida;     // volumen general de los sonidos (fundidos)
 let capasBus;
-let reverb;
-let piano = null; // [{midi, buffer}]
-let musica = null; // { parar() }
 const capas = {};  // nombre -> { gain, parar() }
 let reloj = null;
 
@@ -34,27 +36,9 @@ function contexto() {
   salida = ctx.createGain();
   salida.gain.value = 0;
   salida.connect(ctx.destination);
-  musicaBus = ctx.createGain();
   capasBus = ctx.createGain();
-  reverb = ctx.createConvolver();
-  reverb.buffer = respuestaSala(3.8);
-  const humedo = ctx.createGain();
-  humedo.gain.value = 0.55;
-  musicaBus.connect(salida);
-  musicaBus.connect(reverb).connect(humedo).connect(salida);
   capasBus.connect(salida);
   return ctx;
-}
-
-// Reverberación: ruido que decae, en estéreo (una sala grande y cálida)
-function respuestaSala(segundos) {
-  const n = Math.floor(ctx.sampleRate * segundos);
-  const b = ctx.createBuffer(2, n, ctx.sampleRate);
-  for (let c = 0; c < 2; c++) {
-    const d = b.getChannelData(c);
-    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3.2);
-  }
-  return b;
 }
 
 function ruido(tipo, segundos = 6) {
@@ -100,136 +84,110 @@ function lfo(frecuencia, cantidad, destino) {
   return o;
 }
 
-// ---------- piano (Salamander) ----------
-const MUESTRAS = [2, 3, 4, 5, 6].flatMap((o) => [['C', 0], ['Ds', 3], ['Fs', 6], ['A', 9]].map(([n, s]) => ({ archivo: `${n}${o}`, midi: 12 * (o + 1) + s })));
+// ---------- música grabada ----------
+// Un solo <audio>. El volumen final = volumen elegido × (baja con la voz) × fundido de pista × fundido general.
+let audio = null;
+let blob = null;       // URL del archivo en memoria (en la app de escritorio se pide con fetch y se toca desde un blob)
+let pedido = 0;        // para descartar cargas viejas si se cambia rápido de pista
+const nivel = { pista: 1, general: 0 };
+const SILENCIO = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
 
-async function cargarPiano() {
-  if (piano) return piano;
-  const base = `${import.meta.env.BASE_URL}sonidos/piano/`;
-  piano = await Promise.all(MUESTRAS.map(async (m) => {
-    const r = await fetch(`${base}${m.archivo}.mp3`);
-    return { midi: m.midi, buffer: await ctx.decodeAudioData(await r.arrayBuffer()) };
-  }));
-  return piano;
+function elemento() {
+  if (audio) return audio;
+  audio = new Audio();
+  audio.preload = 'auto';
+  audio.addEventListener('ended', () => { if (audio.src !== SILENCIO && amb.sonando) siguiente(); });
+  return audio;
 }
 
-function nota(midi, cuando, fuerza = 0.4, duracion = 3) {
-  let m = piano[0];
-  for (const x of piano) if (Math.abs(x.midi - midi) < Math.abs(m.midi - midi)) m = x;
-  const s = ctx.createBufferSource();
-  s.buffer = m.buffer;
-  s.playbackRate.value = Math.pow(2, (midi - m.midi) / 12);
-  const g = ctx.createGain();
-  g.gain.setValueAtTime(fuerza, cuando);
-  g.gain.setTargetAtTime(0, cuando + duracion, 0.9);
-  s.connect(g).connect(musicaBus);
-  s.start(cuando);
-  s.stop(cuando + duracion + 6);
+function aplicarVolumenMusica() {
+  if (!audio) return;
+  const p = preferencias();
+  const v = p.volumen * (voz.activa ? 0.25 : 1) * nivel.pista * nivel.general; // la música baja mientras la app lee
+  audio.volume = Math.max(0, Math.min(1, v));
 }
 
-// Programador: cada 200 ms agenda lo que toca en el próximo segundo y medio
-function programador(agendar) {
-  let hasta = ctx.currentTime + 0.1;
-  const id = setInterval(() => {
-    const limite = ctx.currentTime + 1.5;
-    while (hasta < limite) hasta = agendar(hasta);
-  }, 200);
-  return () => clearInterval(id);
-}
-
-// «Quietud»: varias frases cortas que se repiten con periodos distintos y nunca coinciden igual
-// (la técnica de «Music for Airports»). Re mayor pentatónica, muy suave.
-function quietud() {
-  const frases = [
-    { periodo: 17.8, notas: [[0, 62], [1.2, 66]] },
-    { periodo: 21.3, notas: [[0, 69]] },
-    { periodo: 24.9, notas: [[0, 57], [0.9, 64]] },
-    { periodo: 29.7, notas: [[0, 71], [1.6, 69]] },
-    { periodo: 31.1, notas: [[0, 50]] },
-    { periodo: 37.3, notas: [[0, 74], [2.1, 73]] },
-    { periodo: 41.9, notas: [[0, 45], [0.7, 52]] },
-  ];
-  const t0 = ctx.currentTime + 0.3;
-  const proximas = frases.map((f, i) => t0 + i * 2.7);
-  return programador((desde) => {
-    frases.forEach((f, i) => {
-      if (proximas[i] < desde + 0.2) {
-        for (const [d, m] of f.notas) nota(m, proximas[i] + d, m < 55 ? 0.22 : 0.3, 4.5);
-        proximas[i] += f.periodo;
-      }
-    });
-    return desde + 0.2;
+// Lleva nivel[cual] a «hasta» en «ms» milisegundos
+const fundidos = {};
+function fundir(cual, hasta, ms) {
+  clearInterval(fundidos[cual]);
+  const desde = nivel[cual];
+  const t0 = performance.now();
+  return new Promise((listo) => {
+    if (ms <= 0) { nivel[cual] = hasta; aplicarVolumenMusica(); listo(); return; }
+    fundidos[cual] = setInterval(() => {
+      const k = Math.min(1, (performance.now() - t0) / ms);
+      nivel[cual] = desde + (hasta - desde) * (k * k * (3 - 2 * k));
+      aplicarVolumenMusica();
+      if (k >= 1) { clearInterval(fundidos[cual]); listo(); }
+    }, 40);
   });
 }
 
-// «Himnos»: melodía con su armonía sencilla, lenta y suave; uno tras otro, en bucle
-function himnos() {
-  let i = Math.floor(Math.random() * HIMNOS.length);
-  let t = ctx.currentTime + 0.5;
-  let cola = [];
-  const preparar = () => {
-    const h = HIMNOS[i % HIMNOS.length];
-    amb.himno = h.titulo;
-    cola = h.eventos.map((e) => ({ ...e, cuando: t + e.t * h.segundosPorTiempo }));
-    t += h.total * h.segundosPorTiempo + 5;
-    i++;
-  };
-  preparar();
-  const parar = programador((desde) => {
-    const limite = desde + 0.5;
-    while (cola.length && cola[0].cuando < limite) {
-      const e = cola.shift();
-      nota(e.midi, e.cuando, e.fuerza, e.duracion);
-    }
-    if (!cola.length && t - desde < 6) preparar();
-    return limite;
-  });
-  return () => { parar(); amb.himno = ''; };
+async function tocarPista(lista, indice) {
+  const pistas = LISTAS[lista];
+  const i = ((indice % pistas.length) + pistas.length) % pistas.length;
+  const n = ++pedido;
+  const a = elemento();
+  if (!a.paused && a.src !== SILENCIO) await fundir('pista', 0, 700);
+  if (n !== pedido) return;
+  a.pause();
+  amb.lista = lista;
+  amb.indice = i;
+  amb.pista = pistas[i];
+  amb.cargando = true;
+  try {
+    const r = await fetch(archivoPista(pistas[i]));
+    if (!r.ok) throw new Error(r.status);
+    const url = URL.createObjectURL(await r.blob());
+    if (n !== pedido) { URL.revokeObjectURL(url); return; }
+    if (blob) URL.revokeObjectURL(blob);
+    blob = url;
+    a.src = url;
+    nivel.pista = 0;
+    aplicarVolumenMusica();
+    if (amb.sonando) await a.play();
+    fundir('pista', 1, 1200);
+  } catch (e) {
+    console.warn('ambiente: no se pudo tocar', pistas[i].id, e);
+  } finally {
+    if (n === pedido) amb.cargando = false;
+  }
 }
 
-// «Aurora»: acordes largos de cuatro voces que se funden (Re mayor 9, Si menor 7, Sol mayor 7, La sus)
-function aurora() {
-  const acordes = [[50, 57, 64, 66, 69], [47, 54, 62, 64, 69], [43, 50, 59, 62, 66], [45, 52, 57, 62, 64]];
-  const voces = [];
-  const lp = filtro('lowpass', 900, 0.5);
-  const oscLp = lfo(0.05, 350, lp.frequency);
-  lp.connect(musicaBus);
-  let k = 0;
-  const cambiar = (cuando) => {
-    for (const v of voces.splice(0)) {
-      v.g.gain.setTargetAtTime(0, cuando, 2.5);
-      v.o.forEach((o) => o.stop(cuando + 12));
-    }
-    for (const m of acordes[k % acordes.length]) {
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0, cuando);
-      g.gain.setTargetAtTime(0.045, cuando, 2.5);
-      const f = 440 * Math.pow(2, (m - 69) / 12);
-      const o = [-6, 0, 7].map((cents) => {
-        const x = ctx.createOscillator();
-        x.type = cents ? 'sawtooth' : 'triangle';
-        x.frequency.value = f;
-        x.detune.value = cents;
-        x.connect(g);
-        x.start(cuando);
-        return x;
-      });
-      g.connect(lp);
-      voces.push({ g, o });
-    }
-    k++;
-  };
-  let proximo = ctx.currentTime + 0.2;
-  const parar = programador((desde) => {
-    if (proximo < desde + 0.2) { cambiar(proximo); proximo += 16; }
-    return desde + 0.2;
-  });
-  return () => {
-    parar();
-    const ahora = ctx.currentTime;
-    for (const v of voces) { v.g.gain.setTargetAtTime(0, ahora, 0.6); v.o.forEach((o) => o.stop(ahora + 4)); }
-    oscLp.stop(ahora + 4);
-  };
+function pararMusica() {
+  pedido++;
+  amb.cargando = false;
+  if (!audio) return;
+  fundir('pista', 0, 700).then(() => { if (!amb.sonando || !preferencias().musica) audio.pause(); });
+}
+
+async function ponerMusica(cual) {
+  if (!cual) { pararMusica(); return; }
+  if (!amb.sonando) return;
+  // si esa lista ya estaba sonando, sigue donde iba; si no, empieza en una pista al azar
+  if (amb.lista === cual && audio?.src && audio.src !== SILENCIO) {
+    if (audio.paused) { await audio.play().catch(() => {}); fundir('pista', 1, 1000); }
+    return;
+  }
+  await tocarPista(cual, Math.floor(Math.random() * LISTAS[cual].length));
+}
+
+export function siguiente() {
+  const lista = amb.lista || preferencias().musica;
+  if (lista) tocarPista(lista, amb.indice + 1);
+}
+export function anterior() {
+  const lista = amb.lista || preferencias().musica;
+  if (!lista) return;
+  // como en cualquier reproductor: si ya avanzó un poco, vuelve al principio de la misma
+  if (audio && audio.currentTime > 6) { audio.currentTime = 0; return; }
+  tocarPista(lista, amb.indice - 1);
+}
+export function elegirPista(lista, indice) {
+  guardar({ musica: lista });
+  if (!amb.sonando) { amb.lista = lista; amb.indice = indice; reproducir(indice); return; }
+  tocarPista(lista, indice);
 }
 
 // ---------- sonidos ----------
@@ -314,25 +272,6 @@ function aplicarCapas() {
   }
 }
 
-function aplicarVolumenMusica() {
-  if (!ctx) return;
-  const p = preferencias();
-  const vol = p.volumen * (voz.activa ? 0.25 : 1); // la música baja mientras la app lee en voz alta
-  musicaBus.gain.setTargetAtTime(vol, ctx.currentTime, 0.4);
-}
-
-async function ponerMusica(cual) {
-  musica?.();
-  musica = null;
-  if (!cual || !amb.sonando) return;
-  if (cual !== 'aurora') {
-    amb.cargando = true;
-    try { await cargarPiano(); } finally { amb.cargando = false; }
-    if (!amb.sonando || preferencias().musica !== cual) return;
-  }
-  musica = cual === 'quietud' ? quietud() : cual === 'himnos' ? himnos() : aurora();
-}
-
 // ---------- temporizador ----------
 function programarFin() {
   clearInterval(reloj);
@@ -348,16 +287,21 @@ function programarFin() {
 }
 
 // ---------- API ----------
-export async function reproducir() {
+// reproducir() se llama desde un toque: ahí mismo se «desbloquea» el <audio> (Safari y WebKit exigen un gesto)
+export async function reproducir(indice) {
   contexto();
-  await ctx.resume();
+  const a = elemento();
+  if (!a.src) { a.src = SILENCIO; a.play().catch(() => {}); }
   amb.sonando = true;
+  await ctx.resume();
   salida.gain.cancelScheduledValues(ctx.currentTime);
   salida.gain.setTargetAtTime(1, ctx.currentTime, 0.8);
-  aplicarVolumenMusica();
+  fundir('general', 1, 1500);
   aplicarCapas();
   programarFin();
-  await ponerMusica(preferencias().musica);
+  const cual = preferencias().musica;
+  if (cual && indice != null) await tocarPista(cual, indice);
+  else await ponerMusica(cual);
 }
 
 // Se apaga con un fundido de unos segundos, no de golpe
@@ -367,12 +311,8 @@ export function pausar() {
   clearInterval(reloj);
   amb.restante = 0;
   salida.gain.setTargetAtTime(0, ctx.currentTime, 1.2);
-  setTimeout(() => {
-    if (amb.sonando) return;
-    musica?.();
-    musica = null;
-    aplicarCapas();
-  }, 5000);
+  fundir('general', 0, 3500).then(() => { if (!amb.sonando) audio?.pause(); });
+  setTimeout(() => { if (!amb.sonando) aplicarCapas(); }, 5000);
 }
 
 export const alternar = () => (amb.sonando ? pausar() : reproducir());

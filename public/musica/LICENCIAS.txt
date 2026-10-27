@@ -1,0 +1,127 @@
+Música del Ambiente de Chi-Ro Heirs
+
+Grabaciones tomadas de Wikimedia Commons. Se recortaron los silencios de los extremos, se igualó el volumen
+(-19 LUFS), se agregó un fundido corto al principio y al final y se pasaron a MP3 de 96 kbps.
+Ninguna otra modificación. Cada archivo conserva su licencia original:
+
+Piano
+
+  aria-goldberg.mp3
+    Aria de las Variaciones Goldberg — J. S. Bach
+    Interpretación: Kimiko Ishizaka
+    Licencia: CC0 1.0 (dominio público)
+    Fuente: https://commons.wikimedia.org/wiki/File:Kimiko_Ishizaka_-_01_-_Aria.ogg
+
+  gymnopedie-1.mp3
+    Gymnopédie n.º 1 — Erik Satie
+    Interpretación: Robin Alciatore
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg
+
+  preludio-do-mayor.mp3
+    Preludio en do mayor (El clave bien temperado) — J. S. Bach
+    Interpretación: Kimiko Ishizaka
+    Licencia: CC0 1.0 (dominio público)
+    Fuente: https://commons.wikimedia.org/wiki/File:Kimiko_Ishizaka_-_Bach_-_Well-Tempered_Clavier,_Book_1_-_01_Prelude_No._1_in_C_major,_BWV_846.ogg
+
+  traumerei.mp3
+    Ensueño (Escenas de niños) — Robert Schumann
+    Interpretación: Musopen
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Robert_Schumann_-_scenes_from_childhood,_op._15_-_vii._dreaming.ogg
+
+  gnossienne-1.mp3
+    Gnossienne n.º 1 — Erik Satie
+    Interpretación: La Pianista
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Satie_-_Gnossienne_1.ogg
+
+  nocturno-op9-2.mp3
+    Nocturno op. 9 n.º 2 — Frédéric Chopin
+    Interpretación: Frank Levy
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Nocturne_in_E_flat_major,_Op._9_no._2.mp3
+
+  aria-da-capo.mp3
+    Aria da capo (Variaciones Goldberg) — J. S. Bach
+    Interpretación: Kimiko Ishizaka
+    Licencia: CC0 1.0 (dominio público)
+    Fuente: https://commons.wikimedia.org/wiki/File:Kimiko_Ishizaka_-_32_-_Aria_da_Capo_Fine.ogg
+
+Himnos
+
+  sublime-gracia.mp3
+    Sublime gracia — John Newton
+    Interpretación: Banda de la Infantería de Marina de EE. UU.
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Amazing_Grace_US_Marine_Band.ogg
+
+  santo-santo-santo.mp3
+    Santo, santo, santo — John B. Dykes
+    Interpretación: Richard M. S. Irwin
+    Licencia: Creative Commons Atribución-CompartirIgual 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
+    Fuente: https://commons.wikimedia.org/wiki/File:HWW_Holy_holy_holy_is_the_Lord-Processional.ogg
+
+  mas-cerca.mp3
+    Más cerca, oh Dios, de ti — Lowell Mason
+    Interpretación: Banda de la Fuerza Aérea de EE. UU.
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Nearer_My_God_to_Thee_-_Concert_Band_-_United_States_Air_Force_Band.mp3
+
+  se-tu-mi-vision.mp3
+    Sé tú mi visión — Tradicional irlandés
+    Interpretación: Walmartshopper
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Be_thou_my_vision_acoustic_by_walmartshopper.ogg
+
+  castillo-fuerte.mp3
+    Castillo fuerte es nuestro Dios — Martín Lutero
+    Interpretación: Wolfgang Kindl
+    Licencia: CC0 1.0 (dominio público)
+    Fuente: https://commons.wikimedia.org/wiki/File:(Wolfgang_Kindl)_EG_362_Ein_feste_Burg_ist_unser_Gott_(zweite_Version).mp3
+
+  noche-de-paz.mp3
+    Noche de paz — Franz X. Gruber
+    Interpretación: Singing Sergeants, Fuerza Aérea de EE. UU.
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Silent_Night_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3
+
+Coral y cuerdas
+
+  jesus-alegria.mp3
+    Jesús, alegría de los hombres — J. S. Bach
+    Interpretación: Orchestra Gli Armonici
+    Licencia: CC0 1.0 (dominio público)
+    Fuente: https://commons.wikimedia.org/wiki/File:Bach,_BWV_147,_10._Jesus_bleibet_meine_Freude.ogg
+
+  aire-bach.mp3
+    Aire (Suite n.º 3) — J. S. Bach
+    Interpretación: Cuerdas de la Fuerza Aérea de EE. UU.
+    Licencia: Dominio público
+    Fuente: https://commons.wikimedia.org/wiki/File:Air_-_Air_Force_Strings_-_United_States_Air_Force_Band.mp3
+
+  rorate-caeli.mp3
+    Rorate caeli (canto gregoriano) — Gregoriano
+    Interpretación: Inritter
+    Licencia: Creative Commons Atribución-CompartirIgual 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
+    Fuente: https://commons.wikimedia.org/wiki/File:Rorate_Caeli_~_Gregorian_Chant.ogg
+
+  ombra-mai-fu.mp3
+    Ombra mai fu (Largo) — G. F. Händel
+    Interpretación: Lea Desandre, Les Arts Florissants
+    Licencia: Creative Commons Atribución 3.0 — https://creativecommons.org/licenses/by/3.0/
+    Fuente: https://commons.wikimedia.org/wiki/File:Les_Arts_Florissants_-_Handel%27s_Serse,_HWV_40_-_Ombra_mai_fu.ogg
+
+  canon-pachelbel.mp3
+    Canon en re (guitarra) — Johann Pachelbel
+    Interpretación: Aitua
+    Licencia: Creative Commons Atribución-CompartirIgual 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
+    Fuente: https://commons.wikimedia.org/wiki/File:Pachelbel_-_Canon_in_D_major,_P._37_(Guitar).ogg
+
+  miserere.mp3
+    Miserere mei, Deus (Salmo 51) — Gregorio Allegri
+    Interpretación: Ensamble Escénico Vocal
+    Licencia: Creative Commons Atribución 3.0 — https://creativecommons.org/licenses/by/3.0/
+    Fuente: https://commons.wikimedia.org/wiki/File:Allegri_-_Miserere_Mei,_Deus_-_Ensamble_Esc%C3%A9nico_Vocal_(audio).ogg
+
+La lluvia, la chimenea, el viento y las olas no son grabaciones: se generan en la app con Web Audio.

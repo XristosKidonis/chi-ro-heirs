@@ -288,17 +288,26 @@ await paso('modo margen: notas y clave a la altura de su versículo; en pantalla
 await pag.screenshot({ path: `${OUT}/13b-margen.png` });
 await pag.click('.lb-margen');
 
-await paso('ambiente: música dentro de la app, sonidos, apagado al Amén y Spotify afuera', async () => {
+await paso('ambiente: música grabada dentro de la app, sonidos, apagado al Amén y Spotify afuera', async () => {
+  const pistasPedidas = [];
+  pag.on('response', (r) => { if (/\/musica\/.+\.mp3$/.test(r.url()) && r.ok()) pistasPedidas.push(r.url().split('/').pop()); });
   await pag.evaluate(() => { window.__abiertos = []; window.open = (u) => { window.__abiertos.push(u); return null; }; });
   await ir(pag, 'sal 23');
   await pag.waitForFunction(() => /Salmos/.test(document.querySelector('.cap-titulo')?.textContent || ''));
   await pag.click('.lb-ambiente');
   await pag.waitForSelector('.amb-musica');
   if ((await pag.locator('.amb-musica').count()) !== 4) throw new Error('faltan músicas');
-  await pag.click('.amb-musica:has-text("Quietud")');
-  await pag.waitForFunction(() => document.querySelector('.amb-estado')?.textContent.startsWith('Quietud'), null, { timeout: 20000 });
-  await pag.click('.amb-musica:has-text("Himnos al piano")');
-  await pag.waitForFunction(() => /Sublime gracia|Doxología|Noche de paz|Himno de la alegría/.test(document.querySelector('.amb-estado')?.textContent || ''), null, { timeout: 20000 });
+  // música grabada: elige la lista, suena una pista con su crédito, se puede pasar a la siguiente o elegir una
+  await pag.click('.amb-musica:has-text("Piano")');
+  await pag.waitForFunction(() => { const a = document.querySelector('.amb-pista'); return a && a.textContent.length > 3; }, null, { timeout: 20000 });
+  const primera = await pag.textContent('.amb-pista');
+  await pag.click('.amb-pasos button:has-text("Siguiente")');
+  await pag.waitForFunction((p) => document.querySelector('.amb-pista')?.textContent !== p, primera, { timeout: 20000 });
+  await pag.click('.amb-musica:has-text("Himnos")');
+  await pag.click('.amb-lista button:has-text("Sublime gracia")');
+  await pag.waitForFunction(() => /Sublime gracia/.test(document.querySelector('.amb-pista')?.textContent || '') && /Infantería de Marina/.test(document.querySelector('.amb-autor')?.textContent || ''), null, { timeout: 20000 });
+  if (!/Sublime gracia/.test(await pag.textContent('.amb-lista .actual'))) throw new Error('la lista no marca la pista que suena');
+  if (pistasPedidas.length < 3) throw new Error('no se pidieron los MP3: ' + pistasPedidas.join(', '));
   await pag.locator('input[data-capa="lluvia"]').evaluate((el) => { el.value = '0.6'; el.dispatchEvent(new Event('input', { bubbles: true })); });
   await pag.click('.amb-tiempos .filtro:has-text("Al terminar el capítulo")');
   // Spotify: un enlace inválido avisa; uno válido aparece como «Abrir mi playlist»; las búsquedas se abren afuera
