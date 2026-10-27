@@ -1,5 +1,5 @@
 <script>
-  // Inicio: la pausa entre abrir la app y abrir un libro. La marca CHI—RO grande y tres entradas.
+  // Inicio: la pausa entre abrir la app y abrir un libro. La marca CHI—RO grande y las cinco entradas.
   // Sin fotos, sin cifras, sin rachas. Un único detalle cultural: una lámina mínima en el margen.
   import { onMount } from 'svelte';
   import Marca from './Marca.svelte';
@@ -29,6 +29,15 @@
     return () => { vivo = false; };
   });
 
+  // las cinco puertas de la app, en el mismo orden que la cabecera
+  const ENTRADAS = [
+    ['ini.continuar', () => irA(pos.libro, pos.cap)],
+    ['ini.biblioteca', () => abrirVista('biblioteca')],
+    ['ini.archivo', () => abrirVista('archivo')],
+    ['ini.laminas', () => abrirVista('laminas')],
+    ['ini.historia', () => abrirVista('historia')],
+  ];
+
   function verLaminas() {
     abrirVista('laminas');
     ui.coleccion = 'tipografia';
@@ -40,15 +49,11 @@
     <div class="inicio-edicion" aria-hidden="true">{t('ini.edicion')}</div>
     <Marca grande />
     <nav class="inicio-entradas" aria-label={t('ini.entrar')}>
-      <button class="inicio-entrada" onclick={() => irA(pos.libro, pos.cap)}>
-        <span class="inicio-num" aria-hidden="true">01</span><span>{t('ini.continuar')}</span><span class="inicio-flecha" aria-hidden="true">↗</span>
-      </button>
-      <button class="inicio-entrada" onclick={() => abrirVista('biblioteca')}>
-        <span class="inicio-num" aria-hidden="true">02</span><span>{t('ini.biblioteca')}</span><span class="inicio-flecha" aria-hidden="true">↗</span>
-      </button>
-      <button class="inicio-entrada" onclick={() => abrirVista('archivo')}>
-        <span class="inicio-num" aria-hidden="true">03</span><span>{t('ini.archivo')}</span><span class="inicio-flecha" aria-hidden="true">↗</span>
-      </button>
+      {#each ENTRADAS as [clave, ir], i (clave)}
+        <button class="inicio-entrada" onclick={ir}>
+          <span class="inicio-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><span>{t(clave)}</span><span class="inicio-flecha" aria-hidden="true">↗</span>
+        </button>
+      {/each}
     </nav>
     {#if primeraVez}
       <p class="inicio-ultima inicio-empezar">{t('ini.empezar')} <button onclick={() => irA(43, 1)}>{t('ini.juan')} ↗</button><small>{t('ini.juanPor')}</small></p>

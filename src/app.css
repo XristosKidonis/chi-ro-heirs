@@ -118,10 +118,10 @@ img { display: block; max-width: 100%; }
 .inicio { position: relative; min-height: 100%; height: 100%; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 70px 24px 110px; }
 .inicio-centro { position: relative; display: flex; flex-direction: column; align-items: center; width: min(700px, 100%); }
 .inicio-edicion { position: absolute; top: -56px; font: 500 9px/1.5 var(--f-ui); letter-spacing: 0.175em; color: var(--decorado); white-space: pre; }
-.inicio .marca-grande { margin-bottom: clamp(60px, 9vh, 103px); }
-.inicio-entradas { width: min(460px, 100%); display: flex; flex-direction: column; gap: 18px; }
+.inicio .marca-grande { margin-bottom: clamp(40px, 7vh, 90px); }
+.inicio-entradas { width: min(460px, 100%); display: flex; flex-direction: column; gap: clamp(4px, 1.1vh, 12px); }
 .inicio-entrada { display: grid; grid-template-columns: 26px minmax(0, 1fr) 22px; gap: 14px; align-items: baseline; width: 100%; text-align: left; padding: 6px 2px;
-  font: 400 clamp(26px, 3.5vw, 40px)/1.3 var(--f-display); letter-spacing: -0.048em; transition: color 0.18s, transform 0.23s; }
+  font: 400 clamp(26px, min(3.3vw, 4.6vh), 38px)/1.3 var(--f-display); letter-spacing: -0.048em; transition: color 0.18s, transform 0.23s; }
 .inicio-entrada:hover { color: #8b8b8b; transform: translateX(4px); }
 .inicio-num { align-self: center; font: 500 10px/1.3 var(--f-ui); letter-spacing: 0.06em; color: var(--decorado); font-variant-numeric: tabular-nums; }
 .inicio-entrada:hover .inicio-num { color: #595955; }
@@ -891,8 +891,8 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
   .inicio { padding: 60px 24px 120px; }
   .inicio-edicion { top: -52px; font-size: 8px; letter-spacing: 0.09em; }
   .inicio .marca-grande { margin-bottom: 65px; }
-  .inicio-entradas { max-width: 345px; gap: 13px; }
-  .inicio-entrada { grid-template-columns: 17px 1fr 18px; gap: 9px; font-size: 30px; }
+  .inicio-entradas { max-width: 345px; gap: 6px; }
+  .inicio-entrada { grid-template-columns: 17px 1fr 18px; gap: 9px; font-size: 27px; }
   .inicio-num { font-size: 9px; }
   .inicio-ultima { max-width: 345px; font-size: 11px; margin-top: 31px; }
   .inicio-cultura { bottom: 105px; right: 22px; gap: 0; }

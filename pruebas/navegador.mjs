@@ -57,11 +57,11 @@ async function abrirEstudio(p) {
 }
 const titulo = (p) => p.textContent('.cap-titulo');
 await pag.goto(DIRECCION);
-await paso('inicio con la marca nítida, tres entradas y biblioteca de 66 libros', async () => {
+await paso('inicio con la marca nítida, cinco entradas y biblioteca de 66 libros', async () => {
   await pag.waitForSelector('.inicio .marca-grande');
   const estilo = await pag.evaluate(() => { const c = getComputedStyle(document.querySelector('.marca-grande > span')); return [c.filter, c.textShadow, document.querySelector('.marca-grande').textContent]; });
   if (estilo[0] !== 'none' || estilo[1] !== 'none' || !/CHI—RO\s*HEIRS/.test(estilo[2])) throw new Error(estilo.join(' | '));
-  if ((await pag.locator('.inicio-entrada').count()) !== 3) throw new Error('el inicio no tiene tres entradas');
+  if ((await pag.locator('.inicio-entrada').count()) !== 5) throw new Error('el inicio no tiene cinco entradas');
   if (await pag.locator('.inicio img:not(.inicio-cultura img)').count()) throw new Error('foto en el inicio');
   const sugerencia = await pag.locator('.inicio-empezar button').textContent();
   if (!/Juan/.test(sugerencia)) throw new Error('sin la sugerencia de empezar por Juan: ' + sugerencia);

@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       que:
-        description: 'Qué traer: grabados (Doré) o historia (candidatos para la sección Historia)'
+        description: 'Qué traer: grabados (Doré), historia (imágenes para Historia) o musica (grabaciones para el Ambiente)'
         default: grabados
 
 permissions:
@@ -33,8 +33,27 @@ jobs:
           git commit -qm "Candidatos de imágenes para Historia (Wikimedia Commons)"
           git push -f origin historia-fuente
 
+  musica:
+    if: inputs.que == 'musica'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Commons (grabaciones para el Ambiente, con su licencia)
+        run: python3 herramientas/traer_musica.py
+
+      - name: Publicar en la rama musica-fuente
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout --orphan musica-fuente
+          git rm -rfq --cached .
+          git add fuente-musica
+          git commit -qm "Candidatos de música para el Ambiente (Wikimedia Commons)"
+          git push -f origin musica-fuente
+
   traer:
-    if: inputs.que != 'historia'
+    if: inputs.que != 'historia' && inputs.que != 'musica'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,27 @@
+# Búsquedas de grabaciones en Wikimedia Commons para el Ambiente (solo audio, con su licencia).
+# clave | búsqueda   (el flujo «Traer grabados», opción musica, trae hasta 4 candidatos de cada una)
+goldberg-aria | Kimiko Ishizaka Goldberg Variations Aria
+bach-preludio | Kimiko Ishizaka Well-Tempered Clavier Prelude 1 C major
+bach-jesu | Jesu Joy of Man's Desiring
+bach-aire | Air on the G String Bach
+satie-gymnopedie | Satie Gymnopédie No. 1
+satie-gnossienne | Satie Gnossienne No. 1
+debussy-clair | Debussy Clair de lune
+chopin-nocturno | Chopin Nocturne Op. 9 No. 2 Musopen
+schumann-ensueno | Schumann Träumerei
+beethoven-claro | Beethoven Moonlight Sonata first movement Musopen
+himno-gracia | Amazing Grace United States Marine Band
+himno-gracia-2 | Amazing Grace hymn instrumental
+himno-bien | It Is Well With My Soul hymn
+himno-vision | Be Thou My Vision hymn
+himno-santo | Holy Holy Holy hymn
+himno-quedate | Abide with Me hymn
+himno-cerca | Nearer My God to Thee
+himno-fuente | Come Thou Fount of Every Blessing
+himno-doxologia | Old Hundredth Doxology
+himno-noche | Silent Night instrumental
+himno-castillo | A Mighty Fortress Is Our God
+coral-gregoriano | Gregorian chant
+coral-miserere | Allegri Miserere
+cuerdas-largo | Handel Largo Ombra mai fu
+cuerdas-pachelbel | Pachelbel Canon in D
