@@ -571,9 +571,32 @@ await paso('modo Calma: solo el texto, Esc para salir', async () => {
   await pag.waitForSelector('.cabecera');
 });
 
-await paso('los datos sobreviven a recargar', async () => {
+await paso('los datos sobreviven a recargar, y la base bíblica no se vuelve a bajar', async () => {
+  const bajadas = [];
+  const contar = (r) => { if (/\/biblias\.db(\?|$)/.test(r.url())) bajadas.push(r.url()); };
+  pag.on('request', contar);
   await pag.reload();
   await entrar(pag);
+  pag.off('request', contar);
+  // WebKit de Playwright corre en modo efímero (como la navegación privada de Safari): la copia «se guarda»
+  // en memoria y desaparece al recargar. La app recién lo nota en ese primer recargo (2 bajadas), lo recuerda
+  // y desde el siguiente baja la base una sola vez. En una sesión persistente de WebKit (Safari normal, o la
+  // web en la pantalla de inicio) la copia sí queda: se comprobó aparte (1 bajada; al recargar y al reabrir
+  // el navegador, 0).
+  const efimero = (process.env.MOTOR || 'chromium') === 'webkit';
+  if (bajadas.length > (efimero ? 2 : 0)) throw new Error('la base se bajó de más al recargar: ' + bajadas.join(' '));
+  if (efimero) {
+    bajadas.length = 0;
+    pag.on('request', contar);
+    await pag.reload();
+    await entrar(pag);
+    pag.off('request', contar);
+    if (bajadas.length !== 1) throw new Error(`en modo privado, al recargar otra vez se bajó ${bajadas.length} veces (debía ser 1)`);
+  }
+  if (!efimero) {
+    const guardadas = await pag.evaluate(async () => (await (await caches.open('chiro-biblias')).keys()).map((k) => k.url));
+    if (guardadas.length !== 1 || !/biblias\.db\?v=[0-9a-f]{16}$/.test(guardadas[0])) throw new Error('copia guardada: ' + guardadas.join(' '));
+  }
   const m = await pag.getAttribute('.texto [data-v="16"] .t', 'data-m');
   const notas = await pag.locator('.texto [data-v="16"] .marca-nota').count();
   if (m !== 'rojo' || !notas) throw new Error(`m=${m} notas=${notas}`);

@@ -1000,6 +1000,8 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
   /* la ✕ va arriba a la derecha, en la línea de la referencia (que le guarda el lugar), para que no se
      caiga sola a otra línea ni pise los colores o «Más» */
   .acc-cita { min-height: 34px; padding-right: 40px; }
+  /* «Estudiar» sin la palabra entre comillas (ya está marcada en el texto): así «Más» no se cae a otra línea */
+  .acc-palabra i { display: none; }
   .acc-botones .acc-cerrar { position: absolute; top: 6px; right: 6px; padding: 8px; }
   .buscador { margin-top: 8vh; }
   .buscador-caja { padding: 20px; }

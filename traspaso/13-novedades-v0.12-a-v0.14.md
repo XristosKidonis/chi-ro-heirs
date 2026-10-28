@@ -236,10 +236,25 @@ El dueño pidió pensar «qué botones deberían estar realmente abajo y cuáles
 - **El pedido:** el dueño preguntó si la app funciona en iOS. No hay app para iPhone: hace falta una cuenta de Apple Developer (99 USD al año) y pasar por TestFlight o la App Store. La alternativa es la versión web en Safari → «Agregar a pantalla de inicio».
 - **El cambio:** con su aprobación se pasó `diseno/white-industrial` a **`main`** como avance directo (36 commits, sin conflictos). Desde entonces `web.yml` publica la web con todo lo nuevo; antes, la web mostraba el diseño viejo.
 - **Antes de publicar:** se compiló la web en local (`WEB=1 npx vite build`, 241 MB, de los cuales `biblias.db` son 167 MB). Se probó servida en `/chi-ro-heirs/` (`vite preview` **con** `WEB=1`; sin esa variable sirve en `/` y nada carga): 34 de 34 en Chromium y WebKit.
-- **Pendiente en iPhone:**
-  - La web no guarda la base de forma explícita: depende de la caché del navegador, y Safari podría volver a bajar los 167 MB.
-  - Al abrirla, la base ocupa unos 330 MB de memoria por un momento (el archivo más su copia en WebAssembly). En un iPhone viejo podría cerrarse.
-  - **Mejora posible:** guardarla con la Cache API o en OPFS, y no copiarla dos veces.
+- **Pendiente en iPhone (resuelto el mismo día, abajo):** la web dependía de la caché del navegador para la base y la tenía dos veces en memoria al abrir (unos 340 MB).
+
+### La base queda guardada en la web (28 de octubre)
+
+- **Huella de la base:** `vite.config.js` publica `biblias.version`, los primeros 16 caracteres del SHA-256 de `biblias.db`. En desarrollo la sirve el mismo middleware, que además manda `Content-Length` para `/biblias.db`.
+- **Guardado** (`respuestaBiblias()` en `src/lib/bd.js`):
+  - Guarda la base en la Cache API (`chiro-biblias`), con la clave `biblias.db?v=<huella>`, y borra las versiones viejas.
+  - Pide `navigator.storage.persist()`.
+  - Busca con `ignoreVary`, porque el servidor manda `Vary`.
+  - Solo la vuelve a bajar si la huella cambió.
+  - Sin Cache API, o sin huella, la baja como antes.
+- **Memoria** (`copiarAlSqlite()`): copia la base por partes, directo a la memoria de SQLite (`wasm.alloc` y `heap8u().set`), sin tener el archivo y su copia a la vez. Pico de unos 170 MB en vez de 340.
+- **Copia dañada:** si la copia guardada no sirve, por ejemplo porque se cortó al guardarse, se borra y se baja de nuevo, una sola vez. Hay un aviso en la consola.
+- **Navegación privada:** ahí «guardar» no deja nada. La app lo nota en el primer recargo (ese recargo baja la base dos veces) y lo recuerda en `localStorage` (`chiro-biblias-sin-copia`, vence a los 7 días): desde ahí la baja una sola vez.
+- **Comprobado:**
+  - WebKit persistente, como Safari normal o la web en la pantalla de inicio: 1 bajada; al recargar 0; al cerrar y reabrir el navegador 0.
+  - Una copia dañada a propósito se recupera.
+  - La suite (34 pasos) lo verifica en Chromium y, en WebKit efímero, el comportamiento del modo privado.
+- **«Más» en el iPhone:** en celular, «Estudiar» ya no muestra la palabra entre comillas (sigue marcada en el texto), así «Más» no se cae a una tercera línea.
 
 ## Pendientes sin verificar en el mundo real
 
