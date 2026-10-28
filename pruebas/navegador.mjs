@@ -313,7 +313,9 @@ await paso('ambiente: música grabada dentro de la app, sonidos, apagado al Amé
   await pag.click('.amb-lista button:has-text("Sublime gracia")');
   await pag.waitForFunction(() => /Sublime gracia/.test(document.querySelector('.amb-pista')?.textContent || '') && /Infantería de Marina/.test(document.querySelector('.amb-autor')?.textContent || ''), null, { timeout: 20000 });
   if (!/Sublime gracia/.test(await pag.textContent('.amb-lista .actual'))) throw new Error('la lista no marca la pista que suena');
-  if (pistasPedidas.length < 3) throw new Error('no se pidieron los MP3: ' + pistasPedidas.join(', '));
+  // el título aparece al instante; el MP3 llega un poco después
+  for (let k = 0; k < 40 && !pistasPedidas.includes('sublime-gracia.mp3'); k++) await pag.waitForTimeout(250);
+  if (pistasPedidas.length < 3 || !pistasPedidas.includes('sublime-gracia.mp3')) throw new Error('no se pidieron los MP3: ' + pistasPedidas.join(', '));
   await pag.locator('input[data-capa="lluvia"]').evaluate((el) => { el.value = '0.6'; el.dispatchEvent(new Event('input', { bubbles: true })); });
   await pag.click('.amb-tiempos .filtro:has-text("Al terminar el capítulo")');
   // Spotify: un enlace inválido avisa; uno válido aparece como «Abrir mi playlist»; las búsquedas se abren afuera
