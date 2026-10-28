@@ -110,20 +110,24 @@ function aplicarVolumenMusica() {
   audio.volume = Math.max(0, Math.min(1, v));
 }
 
-// Lleva nivel[cual] a «hasta» en «ms» milisegundos
-const fundidos = {};
+// Lleva nivel[cual] a «hasta» en «ms» milisegundos.
+// Un fundido nuevo corta al anterior y lo da por terminado: si no, quien esperaba al anterior se quedaba
+// esperando para siempre (tocar «Siguiente» mientras arrancaba una pista dejaba el Ambiente en «Cargando…»).
+const fundidos = {}; // cual -> { reloj, listo }
 function fundir(cual, hasta, ms) {
-  clearInterval(fundidos[cual]);
+  const previo = fundidos[cual];
+  if (previo) { clearInterval(previo.reloj); previo.listo(); }
   const desde = nivel[cual];
   const t0 = performance.now();
   return new Promise((listo) => {
-    if (ms <= 0) { nivel[cual] = hasta; aplicarVolumenMusica(); listo(); return; }
-    fundidos[cual] = setInterval(() => {
+    if (ms <= 0) { fundidos[cual] = null; nivel[cual] = hasta; aplicarVolumenMusica(); listo(); return; }
+    const este = { listo, reloj: setInterval(() => {
       const k = Math.min(1, (performance.now() - t0) / ms);
       nivel[cual] = desde + (hasta - desde) * (k * k * (3 - 2 * k));
       aplicarVolumenMusica();
-      if (k >= 1) { clearInterval(fundidos[cual]); listo(); }
-    }, 40);
+      if (k >= 1) { clearInterval(este.reloj); if (fundidos[cual] === este) fundidos[cual] = null; listo(); }
+    }, 40) };
+    fundidos[cual] = este;
   });
 }
 
@@ -150,6 +154,7 @@ async function tocarPista(lista, indice) {
     nivel.pista = 0;
     aplicarVolumenMusica();
     if (amb.sonando) await a.play();
+    if (n !== pedido) return; // mientras arrancaba se pidió otra pista: no pisar su fundido
     fundir('pista', 1, 1200);
   } catch (e) {
     console.warn('ambiente: no se pudo tocar', pistas[i].id, e);

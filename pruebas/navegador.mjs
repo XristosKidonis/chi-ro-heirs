@@ -34,6 +34,19 @@ function falsaNLT(ref, version) {
 const errores = [];
 const navegador = await pw[process.env.MOTOR || 'chromium'].launch();
 const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
+// La música del Ambiente tarda 0,4 s en arrancar, como con la máquina ocupada: así la prueba toca «Siguiente»
+// justo mientras arranca, que antes dejaba el reproductor trabado en «Cargando…»
+await ctx.addInitScript(() => {
+  const play = HTMLMediaElement.prototype.play;
+  window.__arrancando = 0;
+  HTMLMediaElement.prototype.play = function () {
+    if (!String(this.src).startsWith('blob:')) return play.call(this);
+    window.__arrancando++;
+    // como uno real: pasa a «sonando» al instante y la promesa tarda (el resultado se maneja ya, no a los 0,4 s)
+    const demora = () => new Promise((listo) => setTimeout(() => { window.__arrancando--; listo(); }, 400));
+    return play.call(this).then(async (v) => { await demora(); return v; }, async (e) => { await demora(); throw e; });
+  };
+});
 const pag = await ctx.newPage();
 pag.on('pageerror', (e) => errores.push('pageerror: ' + e.message));
 pag.on('console', (m) => { if (m.type() === 'error') errores.push('console: ' + m.text()); });
@@ -333,6 +346,7 @@ await paso('ambiente: música grabada dentro de la app, sonidos, apagado al Amé
   await pag.click('.amb-musica:has-text("Piano")');
   await pag.waitForFunction(() => { const a = document.querySelector('.amb-pista'); return a && a.textContent.length > 3; }, null, { timeout: 20000 });
   const primera = await pag.textContent('.amb-pista');
+  await pag.waitForFunction(() => window.__arrancando > 0, null, { timeout: 20000 }); // «Siguiente» mientras arranca
   await pag.click('.amb-pasos button:has-text("Siguiente")');
   await pag.waitForFunction((p) => document.querySelector('.amb-pista')?.textContent !== p, primera, { timeout: 20000 });
   await pag.click('.amb-musica:has-text("Himnos")');

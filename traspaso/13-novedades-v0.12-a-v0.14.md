@@ -16,7 +16,8 @@ No todas las versiones se compilaron. Las que no tienen release quedaron incluid
 | v0.13.1 | `c0b2458` | Sí | Parser de la NTV/NLT arreglado; láminas con el versículo entero por defecto |
 | v0.13.2 | `e30ed95` | No (va dentro de la v0.14.0) | La NTV reintenta sola; botón «Reintentar»; paralela visible aunque falle |
 | v0.14.0 | `ae048b7` | Sí | Voz con tres motores: equipo, natural con IA (Piper) y Biblia narrada (Bible.is) |
-| v0.14.1 | `ab02069` | Sí (**la última**, con `latest.json` firmado) | Actualizador automático |
+| v0.14.1 | `ab02069` | Sí (con `latest.json` firmado) | Actualizador automático |
+| v0.14.2 | (ver Releases) | Sí | NTV sin versículos perdidos (pegados, unidos y omitidos), Biblia narrada en `4.dbt.io`, nada se choca en la interfaz (detector en Chromium y WebKit), Ambiente sin trabarse |
 
 ## v0.12.1: identidad *white industrial* en icono e instaladores
 
@@ -144,7 +145,10 @@ Primera sesión fuera de la nube, en la computadora del dueño.
   - **Playwright global:** `PLAYWRIGHT_DIR` debe apuntar a la carpeta de `npm root -g`, terminada en `\`.
   - **Disco sin dueño de archivos:** si el repositorio está en un disco que no registra dueños (por ejemplo, F:), git da «dubious ownership». Se resuelve con `safe.directory`.
   - **Para la app de escritorio** hacen falta Rust (rustup) y Visual Studio Build Tools con C++.
-  - **No correr las pruebas con `tauri dev` abierto.** Comparten el servidor de Vite y el paso del Ambiente se queda en «Cargando…»; después fallan en cadena los cuatro pasos siguientes. Con `npm run dev` solo, pasan los 32.
+  - **Ambiente trabado en «Cargando…» (corregido en la v0.14.2).** Al principio se lo atribuyó a tener `tauri dev` abierto: era un error. Volvió a pasar con la máquina ocupada (compilando Rust).
+    - **La causa real:** si se tocaba «Siguiente» mientras la pista anterior arrancaba (`play()` pendiente), el fundido de entrada de esa pista cortaba el fundido de salida que esperaba «Siguiente», y su promesa nunca se cumplía.
+    - **El arreglo** (`fundir()` en `ambiente.svelte.js`): un fundido nuevo da por terminado al anterior, y una pista reemplazada mientras arrancaba ya no lanza su fundido.
+    - **La prueba** demora `play()` 0,4 s y toca «Siguiente» en ese momento. Con el código anterior se traba siempre; con el arreglo, nunca.
 
 ## Después de la v0.14.1: versículos que faltaban y controles que se chocaban (28 de octubre)
 
