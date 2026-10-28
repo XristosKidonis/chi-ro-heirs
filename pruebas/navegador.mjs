@@ -350,7 +350,7 @@ await paso('ambiente: música grabada dentro de la app, sonidos, apagado al Amé
 
 await paso('voz narrada (Bible.is simulado): clave, Biblias en audio y lectura que sigue el texto', async () => {
   const pedidos = [];
-  await pag.route('https://4.dbp4.org/**', (r) => {
+  await pag.route('https://4.dbt.io/**', (r) => {
     const u = new URL(r.request().url());
     pedidos.push(u.pathname);
     const j = (d) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(d) });

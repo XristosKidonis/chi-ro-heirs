@@ -108,7 +108,10 @@ El dueño eligió «Las dos» opciones que se le mostraron (voz con IA y Biblia 
 
 ### Biblia narrada (Bible.is)
 
-- Usa la **API Bible Brain v4** de Faith Comes By Hearing, en `https://4.dbp4.org/api`.
+- Usa la **API Bible Brain v4** de Faith Comes By Hearing, en `https://4.dbt.io/api`.
+  - Hasta la v0.14.1 apuntaba a `4.dbp4.org`, un dominio que **no existe**. Con eso la Biblia narrada no podía funcionar nunca.
+  - Se corrigió el 28 de octubre en `src/lib/narrada.js`, en el permiso HTTP (`src-tauri/capabilities/default.json`) y en la prueba.
+  - Las rutas, los parámetros y los campos que lee la app se compararon con la especificación oficial (`https://4.dbt.io/open-api-4.json`).
 - Cada usuario pega **su propia clave gratuita**. La página para pedirla está en `PAGINA_CLAVE`.
 - Lista las Biblias en audio del idioma y, al leer, pide el audio del capítulo y sus marcas de tiempo. Así el texto marca el versículo que suena.
 - Si la Biblia elegida no cubre el testamento, avisa (`narrada.noCubre`).
@@ -149,6 +152,6 @@ Primera sesión fuera de la nube, en la computadora del dueño.
 |---|---|
 | Actualizador de punta a punta | Hace falta publicar una v0.14.2 para actualizar desde la v0.14.1 |
 | ~~Apocalipsis 22 en la NTV real, sin versículos pegados~~ | Verificado el 28 de octubre con la API real: el arreglo de la v0.13.1 no alcanzaba y se corrigió de nuevo (ver la v0.13.1). Falta que llegue a una versión publicada |
-| Bible Brain con una clave real | Solo se probó simulado. Puede que la URL base (`https://4.dbp4.org/api`) o el formato de respuesta necesiten ajustes |
-| Descarga real de las voces (Hugging Face y jsDelivr) en la app de escritorio, y que el audio arranque bien en Mac (WebKit) | No se probó fuera del navegador de pruebas |
-| «error sending request» al pedir la NTV en Windows | Pasó una vez; vigilar si se repite |
+| Bible Brain con una clave real | La URL base estaba mal (`4.dbp4.org` no existe) y se corrigió a `4.dbt.io`. Responde 401 con una clave falsa, como se espera. Falta probar con una clave real: la lista de Biblias, el audio y las marcas de tiempo |
+| Descarga real de las voces (Hugging Face y jsDelivr) en la app de escritorio, y que el audio arranque bien en Mac (WebKit) | **Probado el 28 de octubre en Chromium con el código de la app:** la voz Ald (México) más el motor bajaron de verdad (unos 82 MB en 10 s), quedaron en IndexedDB y sintetizaron un versículo en 2,6 s. earshot lo reconoce como voz hablada, sin saturación. Hugging Face y jsDelivr aceptan CORS desde `http://tauri.localhost` (Windows), `tauri://localhost` (Mac), la web y `localhost:1420`. **Falta:** probarlo dentro de la app instalada y en Mac |
+| «error sending request» al pedir la NTV en Windows | Es el mensaje del plugin HTTP de Tauri cuando el pedido no llega (DNS, TLS o red). Desde la v0.13.2 se reintenta 3 veces. Vigilar si se repite |
