@@ -7,6 +7,7 @@
   import { clave } from '../lib/libros.js';
   import { COLORES, etiquetaColor, significado } from '../lib/clave.js';
   import { t } from '../lib/i18n.svelte.js';
+  import { voz, leer, pausarLectura } from '../lib/voz.svelte.js';
 
   let mas = $state(false);
   // «Más» se cierra al cambiar de versículo, para que la barra vuelva a ser chica
@@ -71,6 +72,8 @@
       <div class="acc-botones">
         <button class="acc-guardar" aria-pressed={guardada} onclick={() => accion('guardar')}>{guardada ? t('acc.quitarGuardado') : t('acc.guardar')}</button>
         <button onclick={() => accion('notas')}>{t('acc.nota')}</button>
+        <!-- «Escuchar» lee desde el versículo elegido; mientras suena, pausa (y el play sigue donde quedó) -->
+        <button class="acc-escuchar" aria-pressed={voz.activa} onclick={() => (voz.activa ? pausarLectura() : leer({ desdeSeleccion: true }))} title={t('acc.escucharAyuda')}>{voz.activa ? t('acc.pausar') : t('acc.escuchar')}</button>
         <button class="acc-palabra" onclick={() => accion('estudiar')} title={ui.palabra ? t('acc.estudiarTocada', { p: ui.palabra.texto }) : t('acc.estudiarVerso')}>{t('acc.estudiarCorto')}{#if ui.palabra} <i>«{ui.palabra.texto}»</i>{/if}</button>
         <button onclick={() => accion('poster')}>{t('acc.poster')}</button>
         <button class="acc-mas" aria-expanded={mas} onclick={() => (mas = !mas)}>{t('aj.otros')} {mas ? '−' : '+'}</button>

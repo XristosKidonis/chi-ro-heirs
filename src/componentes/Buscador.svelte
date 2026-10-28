@@ -63,14 +63,18 @@
     else if (e.key === 'Enter') { e.preventDefault(); elegir(opciones[activa]); }
   }
 
+  // El aviso de «cerrado» llega un instante después de cerrar, y Chrome a veces junta dos en uno. Por eso
+  // la marca no depende de él: Esc la apaga directamente (oncancel) y este aviso solo devuelve el foco.
+  // Si llega cuando ya se volvió a abrir (Ctrl K enseguida de elegir un resultado), es viejo y se ignora.
   function cerrado() {
+    if (dlg.open) return;
     ui.buscadorAbierto = false;
     if (antes && document.contains(antes)) antes.focus?.();
   }
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-<dialog class="buscador" bind:this={dlg} onclose={cerrado} aria-label={t('bus.titulo')}
+<dialog class="buscador" bind:this={dlg} onclose={cerrado} oncancel={(e) => { e.preventDefault(); ui.buscadorAbierto = false; }} aria-label={t('bus.titulo')}
   onclick={(e) => { if (e.target === dlg) ui.buscadorAbierto = false; }}>
   <div class="buscador-caja">
     <div class="buscador-cabeza"><span>{t('bus.titulo')}</span><button onclick={() => (ui.buscadorAbierto = false)} aria-label={t('bus.cerrar')}>×</button></div>

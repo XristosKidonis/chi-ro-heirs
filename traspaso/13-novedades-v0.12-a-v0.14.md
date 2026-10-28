@@ -191,6 +191,24 @@ Se barrieron con la API real 126 capítulos de la NTV (dos por libro), con el c�
 - Encontró que, sin Web Audio, el Ambiente se rompía entero. Ahora la música grabada suena igual y solo faltan los sonidos generados.
 - «voz narrada (Bible.is simulado)» falló una vez en Chromium y pasó en las dos repeticiones: es intermitente, por tiempos de la simulación.
 
+## Después de la v0.14.2: voz y diálogos (28 de octubre)
+
+El dueño probó la v0.14.2 instalada: le gustaron las voces naturales argentina (Daniela) y española (Dave). No encontraba cómo darle play desde un versículo, y al pausar y seguir volvía a empezar.
+
+- **«Escuchar» en la barra de selección** (`Acciones.svelte`): lee desde el versículo elegido. Mientras suena dice «Pausar».
+- **Pausa con memoria** (`pausarLectura()` y `voz.pausa` en `voz.svelte.js`):
+  - Al pausar se guarda el versículo que sonaba, y el play siguiente sigue desde ahí (lo relee desde su inicio).
+  - Si se eligió otro versículo, empieza en el elegido; si se cambió de capítulo, desde el principio. Quitar la selección no cuenta como elegir otro.
+  - El parlante de arriba dice «Seguir leyendo desde el versículo N».
+  - La pausa no se guarda al cerrar la app.
+- **Dos lecturas a la vez (voz del sistema):** `speechSynthesis.cancel()` avisa con un error un instante después. Si ya había empezado otra lectura, la vieja lo tomaba como «sigo». Ahora cada lectura tiene su propio interruptor (`vivo`). La prueba simula el aviso tardío; sin el interruptor, el versículo 5 suena dos veces.
+- **Buscador y diálogos que no abrían o se cerraban solos** (`Buscador.svelte`, `Dialogo.svelte`):
+  - El aviso `close` del `<dialog>` llega un instante después, y Chrome a veces junta dos en uno.
+  - Por eso Ctrl K a veces no abría: 4 de 20 veces tras Esc, y 4 de 10 si se tocaba justo después de elegir un resultado.
+  - Ahora Esc apaga el diálogo directamente (`oncancel`), y un aviso de cierre que llega con el diálogo ya reabierto se ignora.
+  - Esta era la causa del fallo «intermitente» de la prueba de voz narrada.
+- **Pruebas:** 34 pasos (uno nuevo de voz; el de Ctrl K repite la reapertura rápida). 34 de 34 en tres corridas de Chromium y una de WebKit. Detector sin choques.
+
 ## Pendientes sin verificar en el mundo real
 
 | Pendiente | Por qué falta |

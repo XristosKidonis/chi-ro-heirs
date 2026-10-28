@@ -129,7 +129,59 @@ await paso('NTV: versículos unidos («18–19») y omitidos se ven y la búsque
   if (await pag.locator('.texto .v.sel').count()) throw new Error('quedó elegido un versículo omitido');
 });
 
+await paso('voz: «Escuchar» desde la selección, la pausa recuerda el versículo y no quedan dos lecturas', async () => {
+  // voz del sistema simulada: cada versículo «suena» 300 ms; cancel() avisa con un error («interrupted») como
+  // Chrome y WebView2, pero tarde (0,4 s): para entonces ya empezó otra lectura, que no puede duplicarse
+  await pag.evaluate(() => {
+    window.__dichos = [];
+    let actual = null;
+    // el WebKit de Playwright en Windows no trae voz del sistema (una Mac real sí): se crea la simulada
+    if (!('speechSynthesis' in window)) {
+      window.speechSynthesis = { getVoices: () => [], addEventListener() {} };
+      window.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; } };
+    }
+    speechSynthesis.speak = (u) => { actual = u; window.__dichos.push(u.text); setTimeout(() => { if (actual === u) { actual = null; u.onend?.(); } }, 300); };
+    speechSynthesis.cancel = () => { const u = actual; actual = null; if (u) setTimeout(() => u.onerror?.({ error: 'interrupted' }), 400); };
+  });
+  await ir(pag, 'jn 1:2');
+  await pag.waitForSelector('.texto .v[data-v="2"].sel', { timeout: 20000 });
+  await pag.click('.acc-escuchar');
+  await pag.waitForSelector('.texto .v[data-v="4"].leyendo', { timeout: 5000 });
+  // pausa con el parlante de arriba: recuerda el versículo que sonaba
+  await pag.click('.lb-voz');
+  const titulo = await pag.getAttribute('.lb-voz', 'title');
+  const enPausa = Number(titulo.match(/\d+/)?.[0]);
+  if (!(enPausa >= 4)) throw new Error('sin memoria de la pausa: ' + titulo);
+  // seguir: arranca en ese versículo (no en el 2) y hay una sola lectura
+  await pag.evaluate(() => { window.__dichos = []; });
+  await pag.click('.lb-voz');
+  await pag.waitForTimeout(800);
+  const dichos = await pag.evaluate(() => window.__dichos);
+  if (!dichos[0]?.includes(`:${enPausa}.`)) throw new Error(`siguió en «${dichos[0]}», no en el ${enPausa}`);
+  if (new Set(dichos).size !== dichos.length) throw new Error('dos lecturas a la vez: ' + dichos.join(' | '));
+  // elegir otro versículo y «Escuchar» empieza ahí
+  await pag.click('.lb-voz');
+  await pag.click('.texto .v[data-v="12"] .t');
+  await pag.evaluate(() => { window.__dichos = []; });
+  await pag.click('.acc-escuchar');
+  await pag.waitForTimeout(150);
+  if (!(await pag.evaluate(() => window.__dichos[0]))?.includes(':12.')) throw new Error('«Escuchar» no empezó en el elegido');
+  await pag.click('.acc-escuchar'); // pausar
+  await pag.keyboard.press('Escape');
+});
+
 await paso('ir a Jn 3:16 con la búsqueda (Ctrl K)', async () => {
+  // Ctrl K enseguida de elegir un resultado abre igual (antes, el aviso viejo de «cerrado» lo volvía a cerrar)
+  for (let i = 0; i < 4; i++) {
+    await pag.keyboard.press('Control+k');
+    await pag.waitForSelector('.buscador[open] input');
+    await pag.fill('.buscador input', `jn ${i + 1}`);
+    await pag.press('.buscador input', 'Enter');
+    await pag.keyboard.press('Control+k');
+    await pag.waitForSelector('.buscador[open] input', { timeout: 2000 });
+    await pag.keyboard.press('Escape');
+    await pag.waitForSelector('.buscador[open]', { state: 'detached' });
+  }
   await ir(pag, 'jn 3:16');
   await pag.waitForFunction(() => document.querySelector('.cap-titulo em')?.textContent === '3');
   const t = await pag.textContent('.texto [data-v="16"] .t');
@@ -406,10 +458,10 @@ await paso('voz narrada (Bible.is simulado): clave, Biblias en audio y lectura q
   await pag.waitForSelector('#aj-audio-es option:has-text("Reina Valera 1960")', { state: 'attached' });
   await pag.keyboard.press('Escape');
   await pag.locator('.texto [data-v="16"] .num').click();
-  await pag.click('.lb-control[title="Leer en voz alta"]');
+  await pag.click('.lb-voz');
   await pag.waitForFunction(() => Number(document.querySelector('.v.leyendo')?.dataset.v) >= 16, null, { timeout: 15000 });
   if (!pedidos.some((x) => x.endsWith('/SPNRVRN2DA/JHN/3'))) throw new Error('no pidió Juan 3 del Nuevo Testamento: ' + pedidos.join(' '));
-  await pag.click('.lb-control[title="Detener lectura"]');
+  await pag.click('.lb-voz'); // pausa
   // vuelve a la voz del equipo para el resto de las pruebas
   await pag.click('.cab-accion[title="Ajustes"]');
   await pag.click('.voz-motores .amb-musica:has-text("Voz del equipo")');

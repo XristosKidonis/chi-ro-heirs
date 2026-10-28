@@ -7,7 +7,7 @@
   import { lista } from '../lib/biblia.js';
   import { LIBROS, nombreLibro } from '../lib/libros.js';
   import { t } from '../lib/i18n.svelte.js';
-  import { voz, leer, detener } from '../lib/voz.svelte.js';
+  import { voz, leer, pausarLectura, puedeSeguir } from '../lib/voz.svelte.js';
   import { amb } from '../lib/ambiente.svelte.js';
 
   const pos = $derived(usuario.ajustes.pos);
@@ -19,6 +19,9 @@
   ]);
   const oscuro = $derived(usuario.ajustes.tema === 'cuero');
   const cintaPuesta = $derived(usuario.cintas.some((c) => c.libro === pos.libro && c.cap === pos.cap));
+
+  // el parlante dice si va a pausar, seguir donde quedó o empezar
+  const ayudaVoz = $derived(voz.activa ? t('barra.detener') : puedeSeguir() ? t('barra.seguir', { v: voz.pausa.v }) : t('barra.leer'));
 
   const tamano = (d) => ajustar('tamano', Math.max(15, Math.min(32, usuario.ajustes.tamano + d)));
 </script>
@@ -54,8 +57,8 @@
     <button class="lb-control lb-tam" onclick={() => tamano(-1)} aria-label={t('lec.menos')} title={t('lec.menos')}>A−</button>
     <button class="lb-control lb-tam" onclick={() => tamano(1)} aria-label={t('lec.mas')} title={t('lec.mas')}>A+</button>
     <button class="lb-control lb-icono lb-tema" onclick={() => ajustar('tema', oscuro ? 'papel' : 'cuero')} aria-pressed={oscuro} aria-label={t('lec.tema')} title={t('lec.tema')}><Icono n="tema" /></button>
-    <button class="lb-control lb-icono" class:activo={voz.activa} onclick={() => (voz.activa ? detener() : leer())}
-      aria-label={voz.activa ? t('barra.detener') : t('barra.leer')} title={voz.activa ? t('barra.detener') : t('barra.leer')}><Icono n={voz.activa ? 'pausa' : 'voz'} /></button>
+    <button class="lb-control lb-icono lb-voz" class:activo={voz.activa} onclick={() => (voz.activa ? pausarLectura() : leer())}
+      aria-label={ayudaVoz} title={ayudaVoz}><Icono n={voz.activa ? 'pausa' : 'voz'} /></button>
     <button class="lb-control lb-icono lb-ambiente" class:activo={amb.sonando} onclick={() => (ui.dialogo = 'ambiente')}
       aria-label={t('amb.abrir')} title={t('amb.abrir')}><Icono n="musica" /></button>
     <button class="lb-control lb-icono marcador" class:puesto={cintaPuesta} aria-pressed={cintaPuesta}

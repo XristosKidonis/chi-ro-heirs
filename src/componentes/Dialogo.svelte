@@ -18,7 +18,11 @@
   });
 </script>
 
-<dialog class="dlg" class:dlg-ancho={ui.dialogo === 'poster' || ui.dialogo === 'evidencia'} bind:this={dlg} onclose={() => { ui.dialogo = null; ui.lamina = null; }} aria-labelledby="dlg-titulo">
+<!-- Esc apaga el diálogo directamente (oncancel); el aviso de «cerrado» llega un instante después y se ignora
+     si para entonces ya se abrió otro, para no cerrarlo (como en el buscador) -->
+<dialog class="dlg" class:dlg-ancho={ui.dialogo === 'poster' || ui.dialogo === 'evidencia'} bind:this={dlg}
+  onclose={() => { if (dlg.open) return; ui.dialogo = null; ui.lamina = null; }}
+  oncancel={(e) => { e.preventDefault(); ui.dialogo = null; ui.lamina = null; }} aria-labelledby="dlg-titulo">
   {#if ui.dialogo}
     <div class="dlg-cabeza">
       <h2 id="dlg-titulo">{t(`dlg.${ui.dialogo}`)}</h2>
