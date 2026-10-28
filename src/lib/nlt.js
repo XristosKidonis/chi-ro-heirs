@@ -118,12 +118,19 @@ async function versiculosDelCapitulo(libro, cap) {
 
 async function pedirPasaje(version, ref, clave) {
   const url = `${BASE}?ref=${encodeURIComponent(ref)}&version=${version}&key=${encodeURIComponent(clave || 'TEST')}`;
+  // un corte de red pasajero no debe dejar el capítulo en blanco: se reintenta dos veces antes de rendirse
   let r;
-  try {
-    r = await pedir(url);
-  } catch (e) {
-    throw new Error(t('nlt.sinConexion', { v: version, e: e?.message || e }));
+  let fallo;
+  for (const espera of [0, 700, 2000]) {
+    if (espera) await new Promise((listo) => setTimeout(listo, espera));
+    try {
+      r = await pedir(url);
+      break;
+    } catch (e) {
+      fallo = e;
+    }
   }
+  if (!r) throw new Error(t('nlt.sinConexion', { v: version, e: fallo?.message || fallo }));
   if (!r.ok) {
     throw new Error(r.status === 401 || r.status === 403 ? t('nlt.clave') : t('nlt.estado', { s: r.status }));
   }

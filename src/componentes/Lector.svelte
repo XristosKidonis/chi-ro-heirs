@@ -2,7 +2,7 @@
   import { tick, untrack } from 'svelte';
   import Frontis from './Frontis.svelte';
   import LectorBarra from './LectorBarra.svelte';
-  import { ui, irA, abrirPestana, avisar } from '../lib/ui.svelte.js';
+  import { ui, irA, abrirPestana, avisar, recargarCapitulo } from '../lib/ui.svelte.js';
   import { usuario, ajustar, marcarLeido, indiceRetroenlaces } from '../lib/usuario.svelte.js';
   import { info, versionEstudio } from '../lib/biblia.js';
   import { LIBROS, clave, nombreRef, nombreLibro, capituloSiguiente } from '../lib/libros.js';
@@ -143,6 +143,13 @@
     return () => obs.disconnect();
   });
 
+  // si la NTV/NLT falló por falta de internet, vuelve a intentarlo sola cuando vuelve la conexión
+  $effect(() => {
+    const volver = () => { if (ui.cap.error && ver?.enLinea) recargarCapitulo(); };
+    window.addEventListener('online', volver);
+    return () => window.removeEventListener('online', volver);
+  });
+
   function palabraEn(e) {
     let nodo;
     let off;
@@ -274,7 +281,10 @@
           <p class="cartel">{t('lector.sinTexto')} <em>{t('lector.porAhora')}</em></p>
           <p class="ayuda">{ui.cap.error}</p>
           {#if ver?.enLinea}
-            <button class="boton" onclick={() => ajustar('version', versionEstudio(ver.id))}>{t('lector.leerEn', { v: versionEstudio(ver.id) })}</button>
+            <div class="fila-botones">
+              <button class="boton" onclick={recargarCapitulo} disabled={ui.cap.cargando}>{ui.cap.cargando ? t('lector.reintentando') : t('lector.reintentar')}</button>
+              <button class="boton secundario" onclick={() => ajustar('version', versionEstudio(ver.id))}>{t('lector.leerEn', { v: versionEstudio(ver.id) })}</button>
+            </div>
           {/if}
         </div>
       {:else}
