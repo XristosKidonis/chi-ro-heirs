@@ -1,5 +1,11 @@
 # 9. Pendientes y preguntas abiertas
 
+> **Al 28 de octubre de 2026 (v0.14.1):** buena parte de las secciones A y B quedó resuelta con el diseño *white industrial* (documento 11). Además:
+> - El **audio** de la sección C ya tiene la Biblia narrada (Bible.is) y una voz natural con IA.
+> - Las **actualizaciones automáticas** ya existen (documento 13).
+>
+> Lo que falta comprobar en el mundo real está en la sección E.
+
 ## A. Decisiones que esperan al dueño ⏳
 
 | # | Pregunta | Opciones ya mostradas | Recomendación del agente anterior |
@@ -26,7 +32,7 @@
 ## C. Fases funcionales pendientes (orden acordado)
 
 1. **Sincronización con iCloud.** Diseño previsto: un archivo de cambios por dispositivo en la carpeta de iCloud, sin servidor. `usuario.db` ya guarda `actualizado` y `borrado` en cada fila.
-2. **Audio** (Bible Brain u otra fuente; seguramente no hay audio de la NTV).
+2. ~~**Audio** (Bible Brain u otra fuente; seguramente no hay audio de la NTV).~~ Hecho en la v0.14.0: Biblia narrada por Bible Brain, con la clave del usuario, y voz natural con IA (Piper). Falta probarlo con una clave real (sección E).
 3. **Celular** (Tauri 2 compila para iOS y Android; la interfaz ya es responsive, con anchos de 390 px probados).
 4. **IA delimitada**, al final: búsqueda por significado local y preguntas con citas verificadas contra la base, con 12 reglas (en `anexos/RESEARCH.md`). El dueño quiere que sea lo último.
 
@@ -34,7 +40,7 @@
 
 - Notas al pie y párrafos reales de la NTV (hoy se procesan versículo por versículo).
 - Exportar notas a Markdown.
-- Actualizaciones automáticas de la app.
+- ~~Actualizaciones automáticas de la app.~~ Hecho en la v0.14.1 (firmadas, con `latest.json` en GitHub Releases).
 - Firmar la app (Apple cobra 99 USD al año; es opcional).
 - Bajar el peso del DMG (los grabados van dos veces en el binario universal).
 - Pedir permiso escrito a Tyndale para guardar la NTV sin conexión.
@@ -46,3 +52,13 @@
 - Planes de lectura sobre la cuadrícula de cobertura; «Hace un año escribiste…».
 - Mapas, línea de tiempo y comentarios clásicos de dominio público (Matthew Henry y otros).
 - Página web del proyecto y banner de GitHub.
+
+## E. Sin verificar en el mundo real (v0.14.1)
+
+| Pendiente | Cómo cerrarlo |
+|---|---|
+| Actualizador de punta a punta | Publicar una v0.14.2 (con la aprobación del dueño) y actualizar desde una v0.14.1 instalada |
+| Apocalipsis 22 en la NTV real, sin versículos pegados | Abrirlo con la NTV real; el arreglo de la v0.13.1 solo se probó simulado |
+| Bible Brain con una clave real | Probar con una clave gratuita. Puede que la URL base (`https://4.dbp4.org/api`) o el formato de respuesta necesiten ajustes |
+| Descarga de las voces Piper (Hugging Face y jsDelivr) dentro de la app de escritorio, y que el audio arranque bien en Mac (WebKit) | Probar en la app instalada, en Windows y en Mac |
+| «error sending request» al pedir la NTV en Windows (pasó una vez) | Vigilar si se repite; si pasa, anotar cuándo y con qué red |

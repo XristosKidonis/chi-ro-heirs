@@ -1,0 +1,147 @@
+# 13. Novedades de la v0.12.1 a la v0.14.1 (27 y 28 de octubre de 2026)
+
+Qué se construyó después de la v0.12.0, versión por versión, con los archivos de cada función. Cada punto se revisó contra el código de la rama `diseno/white-industrial` (commit `8ad00d7`).
+
+- El criterio del dueño en esta etapa está en [`12-criterio-reciente.md`](12-criterio-reciente.md).
+- El diseño vigente está en [`11-integracion-white-industrial.md`](11-integracion-white-industrial.md).
+
+## Versiones y releases
+
+No todas las versiones se compilaron. Las que no tienen release quedaron incluidas en la siguiente.
+
+| Versión | Commit | Release en GitHub | Qué trajo |
+|---|---|---|---|
+| v0.12.1 | `715f3c8` | No (va dentro de la v0.13.0) | Icono, logotipo e instaladores *white industrial*; sellos «Facto» |
+| v0.13.0 | `c824e07` | Sí | Música grabada en el Ambiente; inicio con 5 entradas; palabra marcada al pasar el mouse; «Clave» sin círculo; trozo grande de las láminas visible y elegible |
+| v0.13.1 | `c0b2458` | Sí | Parser de la NTV/NLT arreglado; láminas con el versículo entero por defecto |
+| v0.13.2 | `e30ed95` | No (va dentro de la v0.14.0) | La NTV reintenta sola; botón «Reintentar»; paralela visible aunque falle |
+| v0.14.0 | `ae048b7` | Sí | Voz con tres motores: equipo, natural con IA (Piper) y Biblia narrada (Bible.is) |
+| v0.14.1 | `ab02069` | Sí (**la última**, con `latest.json` firmado) | Actualizador automático |
+
+## v0.12.1: identidad *white industrial* en icono e instaladores
+
+- **Icono de la app:** `CHI` / `—RO` apilado, tinta sobre blanco cálido.
+  - Sale de `marca/png/icono-1024.png`, que dibuja `herramientas/marca.mjs`.
+  - Todos los tamaños de `src-tauri/icons/` se regeneran con `npx tauri icon marca/png/icono-1024.png`.
+- **Logotipos PNG:** horizontal y apilado, en tinta y en hueso, en `marca/png/`. Ver `marca/LEEME.md`.
+- **Instaladores:** las imágenes del DMG (Mac) y del NSIS/MSI (Windows) en `src-tauri/instalador/`, dibujadas con `node herramientas/instalador.mjs`.
+- Se **retiraron** el crismón ΧΡ del icono y el logotipo «Aura» de los instaladores. El dueño los había rechazado.
+- **Sellos de Historia:** dicen «Facto / Probable / Se discute / Fake»; en inglés, «Fact / Likely / Debated / Cap».
+  - Están en `src/lib/i18n.svelte.js` (claves `his.grado.*`).
+  - El instalador también dejó de decir «firme».
+
+## v0.13.0: música grabada de verdad y ajustes del lector
+
+### Ambiente con música real
+
+- **Qué cambió:** el Ambiente ya no genera sonido con un motor. Ahora toca **19 grabaciones reales** de Wikimedia Commons, en tres listas:
+  1. **Piano** (7): Bach, Satie, Schumann y Chopin.
+  2. **Himnos** (6): Sublime gracia, Santo santo santo, Más cerca oh Dios de ti, y otros.
+  3. **Coral y cuerdas** (6): Bach, gregoriano, Händel, Pachelbel y Allegri.
+- **Licencias:** dominio público, CC0, CC BY 3.0 y CC BY-SA 4.0. Cada pista muestra su crédito en la app.
+- **Archivos:**
+
+| Qué | Dónde |
+|---|---|
+| Lista de pistas (título es/en, autor, intérprete, licencia, enlace a Commons) | `src/lib/musica.js` |
+| Motor del Ambiente (reproducción, anterior/siguiente, volumen, temporizador, bajar con la voz) | `src/lib/ambiente.svelte.js` |
+| Interfaz del Ambiente | `src/componentes/dialogos/Ambiente.svelte` |
+| Los MP3 | `public/musica/<id>.mp3` |
+| Créditos completos | `public/musica/LICENCIAS.txt` |
+| Herramienta que busca, recorta y nivela las pistas | `herramientas/traer_musica.py` |
+
+- **Se eliminaron** la música generada, `src/lib/himnos.js` y las muestras de `public/sonidos/piano/`.
+- Los **sonidos** (lluvia, chimenea, viento, olas) se siguen generando en la app.
+
+### Otros cambios de la v0.13.0
+
+- **Inicio con 5 entradas:** Continuar leyendo, Biblioteca, Mi archivo, Láminas e Historia (`src/componentes/Inicio.svelte`).
+  - El dueño notó que el menú tenía 3 entradas y adentro había más secciones.
+- **Palabra bajo el mouse:** se marca con la CSS Highlight API (`palabra-encima`). La que se toca queda marcada (`palabra-elegida`) y es la que usa «Estudiar». Está en `src/componentes/Lector.svelte`.
+  - Antes la sugerencia de «Estudiar» parecía arbitraria.
+- **Botón «Clave»:** ya no hereda el círculo de los botones de color.
+- **Láminas:** en los acabados de letra enorme se ve qué trozo va en grande y se puede elegir otro con un toque. Está en `src/componentes/dialogos/Laminas.svelte` y `src/lib/laminas.js`.
+
+## v0.13.1: la NTV ya no pega versículos
+
+- **El error:** en la NTV/NLT, cuando un párrafo (`<p>`) empezaba en un versículo y terminaba en otro, el navegador no cerraba el `<verse_export>`. Los siguientes quedaban anidados dentro del primero, y ese primero se quedaba con el texto de todos. Por ejemplo, Apocalipsis 22:1 traía del 1 al 5.
+- **El arreglo** (`src/lib/nlt.js`, función `porVerseExport`): se recorre el documento en orden y cada texto va al `<verse_export>` más cercano que lo contiene, nunca al de afuera.
+- **La prueba** simula párrafos que cruzan versículos, como la API real (`pruebas/navegador.mjs`, función `falsaNLT`).
+- **Láminas:** por defecto llevan el **versículo entero**, con la letra del tamaño que quepa. Los trozos para letra enorme quedan como opción y nunca terminan en «de», «la» o «y».
+  - Si el texto supera las 60 palabras (`ENTERO_MAX`, varios versículos), se propone un trozo.
+
+## v0.13.2: la NTV aguanta cortes de conexión
+
+- **Reintentos:** cada pedido a api.nlt.to se intenta **3 veces**: al momento, a los 0,7 s y a los 2 s (`pedirPasaje` en `src/lib/nlt.js`).
+- **Si igual falla:** el lector muestra el error con un botón **«Reintentar»**.
+  - Además, recarga solo el capítulo cuando vuelve internet (evento `online`, en `src/componentes/Lector.svelte`).
+- **Paralela:**
+  - Si falla la versión principal, se sigue leyendo la paralela.
+  - Si falla la paralela, el aviso sale arriba con su propio «Reintentar» (`lector.paralelaNo`).
+  - Antes desaparecía sin explicar por qué.
+
+## v0.14.0: voz con tres motores
+
+El dueño eligió «Las dos» opciones que se le mostraron (voz con IA y Biblia narrada), además de la voz del equipo. Se eligen en **Ajustes → Voz** (`src/componentes/dialogos/VozAjustes.svelte`). El ajuste es `motorVoz`, con los valores `sistema`, `natural` o `narrada`. El que lee está en `src/lib/voz.svelte.js`.
+
+| Motor | Qué es | Archivo |
+|---|---|---|
+| **Voces del equipo** (`sistema`) | `speechSynthesis` del sistema, con selector de voz; las naturales primero | `src/lib/voz.svelte.js` |
+| **Voz natural con IA** (`natural`) | Piper, en el propio equipo y sin internet después de bajarla | `src/lib/vozNeural.js` |
+| **Biblia narrada** (`narrada`) | Audio grabado por personas, de Bible.is | `src/lib/narrada.js` |
+
+### Voz natural con IA (Piper)
+
+- **Voces:** 8 de `rhasspy/piper-voices` (Hugging Face), **solo las de licencia libre**: Apache 2.0, Unlicense, CC0, CC BY-SA 4.0 y dominio público. Se dejaron fuera las «no comerciales».
+  - En español: Claude y Ald (México), Daniela (Argentina) y Dave (España).
+  - En inglés: Kristin, John y Linda (EE. UU.) y Cori (Reino Unido).
+- Cada modelo pesa entre 63 y 114 MB. **Se descarga una vez** y queda en IndexedDB (base `chiro-voces`).
+- **Pronunciación:** eSpeak NG (vía piper-phonemize), con licencia **GPL**. Por eso **no va en el instalador**: se descarga aparte desde jsDelivr (`@diffusionstudio/piper-wasm@1.0.0`).
+- **Inferencia:** ONNX Runtime Web 1.30.0 (MIT), que **sí** va incluido en la app.
+- **Herramienta:** `herramientas/traer_voces.py` y la opción `voces` del workflow «Traer grabados» traen fichas y modelos de prueba a la rama `voces-fuente`.
+
+### Biblia narrada (Bible.is)
+
+- Usa la **API Bible Brain v4** de Faith Comes By Hearing, en `https://4.dbp4.org/api`.
+- Cada usuario pega **su propia clave gratuita**. La página para pedirla está en `PAGINA_CLAVE`.
+- Lista las Biblias en audio del idioma y, al leer, pide el audio del capítulo y sus marcas de tiempo. Así el texto marca el versículo que suena.
+- Si la Biblia elegida no cubre el testamento, avisa (`narrada.noCubre`).
+
+## v0.14.1: actualizador automático
+
+- **Plugins:** `tauri-plugin-updater` 2.13.3 y `tauri-plugin-process` 2.4.0, con versión fija en `src-tauri/Cargo.toml`. En JavaScript son `@tauri-apps/plugin-updater` y `@tauri-apps/plugin-process`.
+- **Cómo funciona** (`src/lib/actualizar.svelte.js`):
+  1. Al abrir la app, 4 segundos después, busca `latest.json` en `https://github.com/XristosKidonis/chi-ro-heirs/releases/latest/download/latest.json`.
+  2. Si hay una versión nueva, avisa abajo a la izquierda (`src/componentes/Actualizacion.svelte`).
+  3. Con «Actualizar y reiniciar» descarga, verifica la firma, instala y reinicia.
+  - **Nunca instala sin un toque.** Sin internet, al abrir no molesta.
+- **En Ajustes → Actualizaciones** se puede buscar a mano o desactivar la búsqueda al abrir (ajuste `actualizarSolo`).
+- **Firma:**
+  - La clave pública está en `src-tauri/tauri.conf.json` (`plugins.updater.pubkey`).
+  - La privada y su contraseña están en los secretos del repositorio `TAURI_SIGNING_PRIVATE_KEY` y `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. El dueño tiene copia. **Ningún agente la necesita ni debe pedirla.**
+  - El workflow `.github/workflows/compilar.yml` se detiene con un aviso si faltan los secretos. Genera `latest.json` (`includeUpdaterJson`) y prefiere el instalador NSIS en Windows.
+- **Release v0.14.1:** publicada con `latest.json`, `.dmg`, `-setup.exe`, `.msi`, `.app.tar.gz` y sus `.sig`.
+- **Prueba de punta a punta:** solo se puede hacer cuando exista una versión posterior (v0.14.2) para actualizar desde la v0.14.1.
+
+## Entorno local (Windows, 28 de octubre de 2026)
+
+Primera sesión fuera de la nube, en la computadora del dueño.
+
+- **Resultados:**
+  - `npm ci`, `npm run datos` (`datos/biblias.db` de 174,6 MB) y las **32 pruebas** en verde.
+  - `npx tauri dev` compiló (unos 4 min 30 s la primera vez) y abrió la ventana. El dueño confirmó que se ve bien.
+- **Detalles de Windows:**
+  - **Vite escucha en `localhost`** (IPv6), no en `127.0.0.1`. Las pruebas se corren con `DIRECCION=http://localhost:1420/`.
+  - **Playwright global:** `PLAYWRIGHT_DIR` debe apuntar a la carpeta de `npm root -g`, terminada en `\`.
+  - **Disco sin dueño de archivos:** si el repositorio está en un disco que no registra dueños (por ejemplo, F:), git da «dubious ownership». Se resuelve con `safe.directory`.
+  - **Para la app de escritorio** hacen falta Rust (rustup) y Visual Studio Build Tools con C++.
+
+## Pendientes sin verificar en el mundo real
+
+| Pendiente | Por qué falta |
+|---|---|
+| Actualizador de punta a punta | Hace falta publicar una v0.14.2 para actualizar desde la v0.14.1 |
+| Apocalipsis 22 en la NTV real, sin versículos pegados | La sesión anterior no tenía acceso a api.nlt.to; el arreglo se probó con respuestas simuladas |
+| Bible Brain con una clave real | Solo se probó simulado. Puede que la URL base (`https://4.dbp4.org/api`) o el formato de respuesta necesiten ajustes |
+| Descarga real de las voces (Hugging Face y jsDelivr) en la app de escritorio, y que el audio arranque bien en Mac (WebKit) | No se probó fuera del navegador de pruebas |
+| «error sending request» al pedir la NTV en Windows | Pasó una vez; vigilar si se repite |

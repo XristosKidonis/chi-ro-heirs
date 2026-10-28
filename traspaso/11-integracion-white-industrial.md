@@ -1,8 +1,13 @@
 # 11. Integración del diseño «white industrial» (27 de octubre de 2026)
 
 > **Estado:** integrado en la rama `diseno/white-industrial`.
-> - **No** está fusionado en `main`.
-> - **No** se publicó en la web ni se generaron instaladores: falta la aprobación final del dueño.
+> - **No** está fusionado en `main`, ni publicado en la web.
+> - Al escribir este documento tampoco había instaladores.
+>
+> **Al 28 de octubre de 2026:** desde la v0.10.0 los instaladores se compilan desde esta rama; la última release es la **v0.14.1**. Lo que cambió después está en el documento 13:
+> - el inicio tiene **cinco** entradas (v0.13.0);
+> - el icono y los instaladores ya usan la estética *white industrial* (v0.12.1);
+> - las pruebas son **32**.
 >
 > **Origen:** la entrega de diseño del agente del dueño, `CHI-RO-HEIRS-ENTREGA-FINAL`, que contiene un prototipo HTML, especificaciones y capturas aprobadas.
 > - La entrega **no** se copió al repositorio: ni sus imágenes, ni el ZIP histórico, ni el prototipo.
@@ -137,13 +142,16 @@ npm run tauri dev                 # app de escritorio (requiere Rust)
 ## Pendiente o fuera de alcance
 
 - **Aprobación del dueño** para fusionar en `main`. Eso publica la web automáticamente.
-- **Aprobación para compilar instaladores.** Conviene usar **v0.10.0**, porque v0.9.0 fue una versión revertida.
+- ~~**Aprobación para compilar instaladores.** Conviene usar **v0.10.0**, porque v0.9.0 fue una versión revertida.~~ Se compiló la v0.10.0 y siguientes; la última es la v0.14.1.
 - **`npm run tauri dev/build` no se ejecutó en este entorno.**
   - El código Rust no cambió y la interfaz es la misma que se probó en la web.
   - Igual hay que abrirla en Mac y Windows reales.
+  - Ya se hizo en Windows: el dueño usa los instaladores, y el 28 de octubre `npx tauri dev` abrió bien en su equipo. **Mac sigue pendiente.**
 - **La NTV real no se puede probar desde aquí**: la API de Tyndale está bloqueada en este entorno; las pruebas la simulan.
-- **Instalador e ícono** siguen con el logotipo Aura y el ΧΡ. La entrega dice que el cambio requiere una evaluación aparte; no se usaron los modelos del estudio 09.
-- **Guía de marca** (página en claude.ai) y `marca/LEEME.md`: describen la marca anterior.
+- ~~**Instalador e ícono** siguen con el logotipo Aura y el ΧΡ.~~ Cambiados en la v0.12.1 a `CHI` / `—RO` nítido (ver `marca/LEEME.md` y el documento 13).
+- **Guía de marca** (página en claude.ai): describe la marca anterior.
+  - `marca/LEEME.md` ya está al día.
+  - En el `LEEME.md` raíz, la línea de «Marca» todavía dice «estilo Aura».
 - **Revisión manual pendiente:**
   - zoom al 200 %;
   - lector de pantalla (VoiceOver, NVDA).

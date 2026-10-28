@@ -1,10 +1,16 @@
 # 8. Arquitectura técnica
 
+> **Actualizado a la v0.14.1 (28 de octubre de 2026)** en el stack, el tamaño de la base y las pruebas.
+> - La **estructura de carpetas** de abajo es la de la v0.8.
+> - Los componentes del diseño *white industrial* están en el documento 11.
+> - Los archivos nuevos de la v0.12.1 a la v0.14.1 (música, voz, Biblia narrada y actualizador) están en el documento 13.
+
 ## Stack
 
 | Capa | Tecnología | Versión |
 |---|---|---|
-| App de escritorio | **Tauri 2** (Rust), con los plugins sql, fs, dialog, http y opener | 2.12 |
+| App de escritorio | **Tauri 2** (Rust), con los plugins sql, fs, dialog, http, opener, **updater** (2.13.3) y **process** (2.4.0) | 2.12 |
+| Voz natural | **ONNX Runtime Web** (MIT), incluido en la app; eSpeak NG (GPL) se descarga aparte | 1.30.0 |
 | Interfaz | **Svelte 5** (runes: `$state`, `$derived`, `$effect`) | 5.57 |
 | Empaquetador | **Vite** | 8.3 |
 | Datos | **SQLite** con FTS5: nativo en Tauri; `@sqlite.org/sqlite-wasm` en el navegador | 3.54 |
@@ -13,7 +19,7 @@
 
 - **Identificador de la app:** `com.chiroheirs.lector`.
 - **Nombre:** «Chi-Ro Heirs».
-- **Versión en `package.json` y `tauri.conf.json`:** 0.8.0.
+- **Versión en `package.json`, `tauri.conf.json`, `Cargo.toml` y `Cargo.lock`:** 0.14.1. Al publicar se suben las cuatro.
 
 ## Estructura de carpetas
 
@@ -67,11 +73,11 @@ pruebas/navegador.mjs      prueba funcional de 21 pasos
 
 ## Datos
 
-### `biblias.db` (solo lectura, unos 88 MB; se genera con `npm run datos`)
+### `biblias.db` (solo lectura, unos 175 MB desde la v0.11.0; se genera con `npm run datos`)
 
 | Tabla | Contenido |
 |---|---|
-| `versiones` | RV1909, RV1865, BSB y KJV (dominio público o CC0) |
+| `versiones` | 15 versiones sin conexión desde la v0.11.0. En español: RV1909, PDT, VBL, BES y RV1865. En inglés: BSB, WEB, FBV, BBE, LSV, KJV, ASV, YLT, Darby y Ginebra 1599 (dominio público o Creative Commons; ver `LEEME.md`) |
 | `versiculos` + `versiculos_fts` | Texto con índice FTS5 sin acentos |
 | `refs` | Unas 159 000 referencias cruzadas de OpenBible (≥3 votos, máximo 12 por versículo) |
 | `strong` | Léxico Strong (Open Scriptures) |
@@ -123,7 +129,15 @@ node pruebas/navegador.mjs <carpeta-capturas>
 DIRECCION=http://127.0.0.1:4173/ node pruebas/navegador.mjs <carpeta>   # contra la versión compilada
 ```
 
-Son 21 pasos, todos en verde con el código actual:
+> **Hoy son 32 pasos**, todos en verde en la v0.14.1, y no debe haber errores de consola. Lo nuevo:
+> - Mi archivo, clave de colores y modo margen;
+> - Ambiente con música grabada;
+> - voz narrada (simulada), Historia, Láminas por colecciones y modo Calma;
+> - interfaz en inglés, versiones con sus licencias y móvil a 390 y 320 px.
+>
+> En Windows, Vite escucha en `localhost` y no en `127.0.0.1`: hay que correrlas con `DIRECCION=http://localhost:1420/`. La lista de abajo es la original de 21 pasos.
+
+Los 21 pasos originales eran:
 
 - portada y menú (66 lomos);
 - portadilla de Génesis con NTV simulada;
@@ -162,3 +176,6 @@ Las capturas de `imagenes/C-…` (`C12`–`C23`) salen de esta prueba. **La API 
 - La NTV real no se pudo probar desde el entorno del agente: el formato de la API se programó según la documentación y se probó con respuestas simuladas. Además, puede que la API de Tyndale no acepte pedidos desde la web (CORS); en ese caso, en la versión web la NTV no carga y hay que usar la RV1909.
 - El agente no pudo abrir la URL de GitHub Pages (su red la bloqueaba); se probó la misma compilación en local.
 - Los instaladores no se vieron en un Mac ni en un Windows reales; las imágenes del DMG y del NSIS se simularon.
+  - Desde la v0.10 el dueño instala y prueba la app en **Windows**.
+  - El 28 de octubre de 2026 `npx tauri dev` se compiló y abrió en su Windows (documento 13).
+  - **Mac sigue sin probarse.**

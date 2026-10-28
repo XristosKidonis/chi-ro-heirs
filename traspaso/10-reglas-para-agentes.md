@@ -29,9 +29,18 @@
 
 ## Reglas técnicas y de repositorio
 
-- **Repositorio:** `XristosKidonis/chi-ro-heirs`, rama `main`. Los pushes a `main` publican la web automáticamente.
-- **Antes de dar algo por terminado:** correr `node pruebas/navegador.mjs <carpeta>` con `npm run dev` en marcha. Los 21 pasos deben pasar y no debe haber errores de consola.
-- **Instaladores:** solo cuando el dueño quiera una versión instalable (Actions → «Compilar instaladores»). **No reutilizar v0.9.0**: fue revertida y nunca se publicó.
+- **Repositorio:** `XristosKidonis/chi-ro-heirs`.
+  - Hoy se trabaja en la rama **`diseno/white-industrial`**.
+  - Los pushes a `main` publican la web automáticamente: **no mezclar a `main` sin la aprobación del dueño.**
+- **Antes de dar algo por terminado:** correr `node pruebas/navegador.mjs <carpeta>` con `npm run dev` en marcha. Los **32 pasos** (v0.14.1) deben pasar y no debe haber errores de consola. En Windows, usar `DIRECCION=http://localhost:1420/`.
+- **Instaladores:** cada compilación crea una **release pública**. Solo con la frase del dueño «dale, publica la vX.Y.Z». **No reutilizar v0.9.0**: fue revertida y nunca se publicó. El proceso:
+  1. Subir la versión en `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` y `src-tauri/Cargo.lock`.
+  2. Si cambia el número mayor o menor, regenerar el arte con `node herramientas/instalador.mjs`.
+  3. Correr las pruebas, hacer el commit y subirlo.
+  4. Lanzar `gh workflow run compilar.yml --ref diseno/white-industrial`.
+- **Firma de actualizaciones:** la clave privada vive solo en los secretos del repositorio. No pedirla ni guardarla en el repositorio.
+- **Dependencias nuevas:** con al menos dos semanas de publicadas.
+- **Licencias GPL:** lo que tenga licencia GPL (como eSpeak NG) no va dentro del instalador; se descarga aparte.
 - **Código:** seguir el estilo existente. Nombres y comentarios en español, Svelte 5 con runes, CSS con tokens en `src/app.css` y los textos de la interfaz en `src/lib/i18n.svelte.js`, siempre en español **e** inglés.
 - **Láminas:** cualquier efecto debe hacerse a mano en Canvas 2D (sin `ctx.filter`), porque el WebKit de Mac no lo soporta.
 - **Mensajes de commit:** en español y descriptivos, como el historial («Portada y arranque sin degradado ni ΧΡ»).

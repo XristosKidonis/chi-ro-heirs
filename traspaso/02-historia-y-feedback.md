@@ -189,4 +189,16 @@ Todo ocurrió entre el 25 y el 26 de octubre de 2026, en una sola conversación 
 | (sin versión) | `5400d2a` | Web | Menú con la tipografía de la opción C |
 | (sin versión) | `c29787a`, `879f98f` | Web | Logo con textura en chico; luego vectorial (los dos rechazados) |
 | (sin versión) | `a11104b` | Web | Logo en caligrafía (opción A) |
-| (sin versión) | `e32e21a` | Web (**estado actual**) | Portada y arranque sin degradado ni ΧΡ |
+| (sin versión) | `e32e21a` | Web | Portada y arranque sin degradado ni ΧΡ (estado al escribir los documentos 00 a 10) |
+| v0.10.0 | `d791b7f` | Sí | Diseño *white industrial* (rama `diseno/white-industrial`; ver documento 11) |
+| v0.10.1 | `e000170` | No | NTV más robusta y capítulos largos completos |
+| v0.11.0 | `e409540` | Sí | Quince versiones sin conexión con su tipo de traducción; sugerencia de empezar por Juan |
+| v0.12.0 | `7902953` | Sí | Clave de colores, modo margen, Ambiente e Historia |
+| v0.12.1 | `715f3c8` | No | Icono, logotipo e instaladores *white industrial*; sellos «Facto» (ver documento 13) |
+| v0.13.0 | `c824e07` | Sí | Música grabada en el Ambiente; inicio con 5 entradas |
+| v0.13.1 | `c0b2458` | Sí | La NTV ya no pega versículos; láminas con el versículo entero |
+| v0.13.2 | `e30ed95` | No | La NTV reintenta sola; paralela visible aunque falle |
+| v0.14.0 | `ae048b7` | Sí | Voz natural con IA (Piper) y Biblia narrada (Bible.is) |
+| v0.14.1 | `ab02069` | Sí (**última release**) | Actualizador automático |
+
+Las versiones marcadas «No» no tienen release propia: sus cambios salieron en la siguiente que sí se compiló. El detalle de la v0.12.1 a la v0.14.1 está en [`13-novedades-v0.12-a-v0.14.md`](13-novedades-v0.12-a-v0.14.md).

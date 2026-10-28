@@ -3,6 +3,14 @@
 > **Actualización del 27 de octubre de 2026:** el dueño aprobó una dirección visual nueva, «white industrial» (fondo blanco, logo CHI—RO nítido, inicio con tres entradas, biblioteca de cubiertas grises y láminas en tres colecciones).
 > - Ya está integrada en la rama `diseno/white-industrial`.
 > - Lee primero [`11-integracion-white-industrial.md`](11-integracion-white-industrial.md) y [`12-criterio-reciente.md`](12-criterio-reciente.md). **En lo visual, manda sobre los documentos 03 y 04**, que quedan como historia.
+>
+> **Actualización del 28 de octubre de 2026 (v0.14.1):** lo construido de la v0.12.1 a la v0.14.1 está en [`13-novedades-v0.12-a-v0.14.md`](13-novedades-v0.12-a-v0.14.md):
+> - música grabada en el Ambiente;
+> - arreglo del parser de la NTV, con reintentos y paralela;
+> - voz natural con IA y Biblia narrada;
+> - actualizador automático.
+>
+> Desde la v0.13.0 el inicio tiene **cinco** entradas. La última release publicada es la **v0.14.1**.
 
 > **Para quién es esto:** para otra IA o para una persona que va a seguir perfeccionando la app.
 > **Quién la escribió:** el agente que construyó la app desde cero hasta hoy (26 de octubre de 2026), a pedido del dueño del proyecto.
@@ -50,6 +58,7 @@
 | 10 | [`10-reglas-para-agentes.md`](10-reglas-para-agentes.md) | Restricciones legales, de marca y de forma de trabajar |
 | 11 | [`11-integracion-white-industrial.md`](11-integracion-white-industrial.md) | **Diseño vigente:** qué se integró, dónde quedó cada función, pruebas y pendientes |
 | 12 | [`12-criterio-reciente.md`](12-criterio-reciente.md) | **Criterio vigente del dueño** (v0.10 → v0.14.1): cómo pide y aprueba, qué quiere, qué corrigió |
+| 13 | [`13-novedades-v0.12-a-v0.14.md`](13-novedades-v0.12-a-v0.14.md) | **Qué se construyó de la v0.12.1 a la v0.14.1**, con los archivos de cada función, el entorno local y lo que falta verificar en el mundo real |
 | — | [`imagenes/INDICE-DE-IMAGENES.md`](imagenes/INDICE-DE-IMAGENES.md) | Ficha de cada imagen |
 | — | `anexos/` | Documentos originales: `RESEARCH.md` (investigación inicial, con las 12 reglas de la IA), `PLAN-inicial.md` (plan del primer día, en parte desactualizado), `LEEME-del-repositorio.md` y `LEEME-de-marca.md` |
 
@@ -59,9 +68,9 @@
 |---|---|
 | Código (público, MIT) | https://github.com/XristosKidonis/chi-ro-heirs |
 | **Versión web de prueba** (se actualiza sola con cada cambio en `main`, en 2 o 3 minutos) | https://xristoskidonis.github.io/chi-ro-heirs/ |
-| Instaladores de Mac y Windows | https://github.com/XristosKidonis/chi-ro-heirs/releases (la última publicada es **v0.8.0**; `main` ya tiene cambios posteriores, solo visibles en la web) |
+| Instaladores de Mac y Windows | https://github.com/XristosKidonis/chi-ro-heirs/releases (la última publicada es **v0.14.1**, compilada desde `diseno/white-industrial`, con actualizador automático) |
 | Guía de marca (página privada del dueño en claude.ai; **desactualizada**, ver 09) | https://claude.ai/artifact/V2rWgxXXhJef5VdWbXjq3w |
-| Commit al que corresponde esta carpeta | `e32e21a` («Portada y arranque sin degradado ni ΧΡ») en `main` |
+| Commit al que corresponde esta carpeta | Documentos 00 a 10: `e32e21a` («Portada y arranque sin degradado ni ΧΡ») en `main`. Documentos 11 a 13: rama `diseno/white-industrial`, hasta la v0.14.1 (`ab02069`) |
 
 ## Resumen en cinco líneas
 
