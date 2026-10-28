@@ -15,7 +15,7 @@ Vas a continuar el desarrollo de **Chi-Ro Heirs**, un lector bíblico de escrito
 ## 2. Lee el contexto antes de cambiar nada
 
 - `LEEME.md` (qué incluye la app, licencias, cómo compilar, actualizaciones automáticas).
-- La carpeta `traspaso/` completa, empezando por `00-LEEME-PRIMERO.md`, `03-gusto-del-usuario.md` y `10-reglas-para-agentes.md`.
+- La carpeta `traspaso/` completa, empezando por `00-LEEME-PRIMERO.md`, `11-integracion-white-industrial.md` (diseño vigente), **`12-criterio-reciente.md` (mi criterio actual: léelo con atención)**, `03-gusto-del-usuario.md` y `10-reglas-para-agentes.md`.
 - `marca/LEEME.md` (logo e identidad).
 
 ## 3. Actualiza `traspaso/` con lo que pasó desde la v0.12

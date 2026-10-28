@@ -2,7 +2,7 @@
 
 > **Actualización del 27 de octubre de 2026:** el dueño aprobó una dirección visual nueva, «white industrial» (fondo blanco, logo CHI—RO nítido, inicio con tres entradas, biblioteca de cubiertas grises y láminas en tres colecciones).
 > - Ya está integrada en la rama `diseno/white-industrial`.
-> - Lee primero [`11-integracion-white-industrial.md`](11-integracion-white-industrial.md). **En lo visual, manda sobre los documentos 03 y 04**, que quedan como historia.
+> - Lee primero [`11-integracion-white-industrial.md`](11-integracion-white-industrial.md) y [`12-criterio-reciente.md`](12-criterio-reciente.md). **En lo visual, manda sobre los documentos 03 y 04**, que quedan como historia.
 
 > **Para quién es esto:** para otra IA o para una persona que va a seguir perfeccionando la app.
 > **Quién la escribió:** el agente que construyó la app desde cero hasta hoy (26 de octubre de 2026), a pedido del dueño del proyecto.
@@ -49,6 +49,7 @@
 | 9 | [`09-pendientes-y-preguntas-abiertas.md`](09-pendientes-y-preguntas-abiertas.md) | Lo que falta decidir y lo que falta construir |
 | 10 | [`10-reglas-para-agentes.md`](10-reglas-para-agentes.md) | Restricciones legales, de marca y de forma de trabajar |
 | 11 | [`11-integracion-white-industrial.md`](11-integracion-white-industrial.md) | **Diseño vigente:** qué se integró, dónde quedó cada función, pruebas y pendientes |
+| 12 | [`12-criterio-reciente.md`](12-criterio-reciente.md) | **Criterio vigente del dueño** (v0.10 → v0.14.1): cómo pide y aprueba, qué quiere, qué corrigió |
 | — | [`imagenes/INDICE-DE-IMAGENES.md`](imagenes/INDICE-DE-IMAGENES.md) | Ficha de cada imagen |
 | — | `anexos/` | Documentos originales: `RESEARCH.md` (investigación inicial, con las 12 reglas de la IA), `PLAN-inicial.md` (plan del primer día, en parte desactualizado), `LEEME-del-repositorio.md` y `LEEME-de-marca.md` |
 
