@@ -6,13 +6,17 @@ import crypto from 'node:crypto';
 
 // En modo navegador sirve datos/biblias.db en /biblias.db (desarrollo) o la copia junto a la web (versión web).
 // En la app de escritorio la base viaja como recurso de Tauri.
-// Junto a la base va biblias.version: una huella de su contenido. La web guarda la base en el navegador y solo
-// la vuelve a bajar si la huella cambió.
+// Junto a la base va biblias.version: «huella tamaño». La web guarda la base en el navegador y solo la vuelve a
+// bajar si la huella cambió; el tamaño real le sirve para reservar la memoria justa, porque GitHub Pages manda
+// la base comprimida y su Content-Length es el del archivo comprimido, no el de los datos.
 const BASE = path.resolve('datos/biblias.db');
 let huellaGuardada = null; // { mtime, huella }: calcularla lee 170 MB, así que se recuerda mientras el archivo no cambie
 function huellaBase() {
   const mtime = fs.statSync(BASE).mtimeMs;
-  if (huellaGuardada?.mtime !== mtime) huellaGuardada = { mtime, huella: crypto.createHash('sha256').update(fs.readFileSync(BASE)).digest('hex').slice(0, 16) };
+  if (huellaGuardada?.mtime !== mtime) {
+    const datos = fs.readFileSync(BASE);
+    huellaGuardada = { mtime, huella: `${crypto.createHash('sha256').update(datos).digest('hex').slice(0, 16)} ${datos.length}` };
+  }
   return huellaGuardada.huella;
 }
 const servirBiblias = {

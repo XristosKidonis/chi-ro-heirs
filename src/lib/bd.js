@@ -30,31 +30,35 @@ async function biblias() {
     return Database.load('sqlite:biblias.db');
   }
   const sqlite3 = await sqliteWeb();
+  // «huella tamaño» (ver vite.config.js); sin ella, la base se baja y se copia como siempre
+  const [huella = '', tamano = ''] = (await fetch(`${import.meta.env.BASE_URL}biblias.version`, { cache: 'no-store' })
+    .then((x) => (x.ok ? x.text() : '')).catch(() => '')).trim().split(/\s+/);
+  const largo = Number(tamano) || 0;
   let copia;
   try {
-    copia = await copiarAlSqlite(sqlite3, await respuestaBiblias());
+    copia = await copiarAlSqlite(sqlite3, await respuestaBiblias(huella), largo);
   } catch (e) {
     // una copia guardada dañada (p. ej. se cortó mientras se guardaba) no puede dejar la app sin abrir:
     // se borra y se baja otra vez, una sola vez
     console.warn('La copia guardada de la base no sirvió; se baja de nuevo', e);
     if (typeof caches === 'undefined' || !(await caches.delete(ALMACEN))) throw e;
-    copia = await copiarAlSqlite(sqlite3, await respuestaBiblias());
+    copia = await copiarAlSqlite(sqlite3, await respuestaBiblias(huella), largo);
   }
-  const { p, largo } = copia;
+  const { p, largo: bytes } = copia;
   const db = new sqlite3.oo1.DB();
   const rc = sqlite3.capi.sqlite3_deserialize(
-    db.pointer, 'main', p, largo, largo,
+    db.pointer, 'main', p, bytes, bytes,
     sqlite3.capi.SQLITE_DESERIALIZE_FREEONCLOSE | sqlite3.capi.SQLITE_DESERIALIZE_READONLY,
   );
   db.checkRc(rc);
   return envolverWeb(db);
 }
 
-// La base de la web (~170 MB) queda guardada en el navegador (Cache API) y solo se vuelve a bajar si cambió:
-// biblias.version trae una huella de su contenido. Se pide además que el navegador no la borre por falta de
-// espacio. Sin Cache API (modo privado, http), se baja como antes.
+// La base de la web (~170 MB) queda guardada en el navegador (Cache API) y solo se vuelve a bajar si cambió
+// su huella. Se pide además que el navegador no la borre por falta de espacio. Sin Cache API (http) o sin
+// huella, se baja como antes.
 const ALMACEN = 'chiro-biblias';
-async function respuestaBiblias() {
+async function respuestaBiblias(huella) {
   const url = new URL(`${import.meta.env.BASE_URL}biblias.db`, location.href).href;
   const bajar = async () => {
     const r = await fetch(url);
@@ -67,7 +71,6 @@ async function respuestaBiblias() {
   const sinCopia = () => { try { return Date.now() - Number(localStorage.getItem(SIN_COPIA) || 0) < 7 * 864e5; } catch { return true; } };
   if (typeof caches === 'undefined' || sinCopia()) return bajar();
   try {
-    const huella = (await fetch(`${import.meta.env.BASE_URL}biblias.version`, { cache: 'no-store' }).then((x) => (x.ok ? x.text() : '')).catch(() => '')).trim();
     const almacen = await caches.open(ALMACEN);
     const clave = `${url}?v=${encodeURIComponent(huella)}`;
     // ignoreVary: el servidor manda «Vary» (Origin, Accept-Encoding) y WebKit no encontraba la copia al recargar
@@ -91,8 +94,9 @@ async function respuestaBiblias() {
 
 // Copia la base a la memoria de SQLite por partes, a medida que se lee, en vez de tenerla entera dos veces
 // (el archivo y su copia): en un iPhone eso baja el pico de memoria de ~340 a ~170 MB.
-async function copiarAlSqlite(sqlite3, r) {
-  const largo = Number(r.headers.get('content-length')) || 0;
+// largo es el tamaño real (de biblias.version). Nunca Content-Length: GitHub Pages manda la base comprimida
+// y esa cabecera es el tamaño comprimido, menor que los datos que llegan.
+async function copiarAlSqlite(sqlite3, r, largo) {
   if (!largo || !r.body?.getReader) {
     const bytes = new Uint8Array(await r.arrayBuffer());
     return { p: sqlite3.wasm.allocFromTypedArray(bytes), largo: bytes.byteLength };
