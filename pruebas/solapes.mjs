@@ -115,6 +115,8 @@ const pantallas = {
   seleccion: ['.texto .v.sel', seleccion],
   estudio: ['.estudio .pestanas-estudio', async () => { await seleccion(); if ((await pag.getAttribute('.lb-estudio', 'aria-pressed')) !== 'true') await pag.click('.lb-estudio'); }],
   ambiente: ['.amb-musica', async () => { await lector(); await pag.click('.lb-ambiente'); }],
+  'menú Aa': ['.lb-menu', async () => { await lector(); await pag.click('.lb-aa'); }],
+  'menú versión': ['.lb-menu', async () => { await lector(); await pag.click('.lb-versiones'); }],
   ajustes: ['.dlg', async () => { await lector(); await pag.click('.cab-acciones .cab-accion:last-child'); }],
   archivo: ['.cab-link.activa:visible, .nav-movil .activa:visible', () => entrar('archivo')],
   laminas: ['.cab-link.activa:visible, .nav-movil .activa:visible', () => entrar('laminas')],

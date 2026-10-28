@@ -75,6 +75,11 @@ async function ir(p, texto) {
   await p.press('.buscador input', 'Enter');
   await p.waitForSelector('.buscador[open]', { state: 'detached' }).catch(() => {});
 }
+// abre un menú de la barra del lector: 'versiones' (versión y paralela) o 'aa' (tamaño, tema, letra, margen, Calma)
+async function menu(p, cual) {
+  if ((await p.getAttribute(`.lb-${cual}`, 'aria-expanded')) !== 'true') await p.click(`.lb-${cual}`);
+  await p.waitForSelector('.lb-menu');
+}
 async function abrirEstudio(p) {
   if ((await p.getAttribute('.lb-estudio', 'aria-pressed')) !== 'true') await p.click('.lb-estudio');
   await p.waitForSelector('.estudio .pestanas-estudio');
@@ -228,7 +233,9 @@ await paso('nota con referencia y retroenlace', async () => {
 
 await paso('el subrayado aparece también en la RV1909', async () => {
   await ir(pag, 'juan 3');
-  await pag.selectOption('.lb-version:not(.lb-paralela) select', 'RV1909');
+  await menu(pag, 'versiones');
+  await pag.selectOption('.lb-menu .lb-version:not(.lb-paralela) select', 'RV1909');
+  await pag.keyboard.press('Escape');
   await pag.waitForFunction(() => /de tal manera amó/.test(document.querySelector('.texto [data-v="16"] .t')?.textContent || ''));
   const m = await pag.getAttribute('.texto [data-v="16"] .t', 'data-m');
   if (m !== 'rojo') throw new Error(m);
@@ -236,14 +243,20 @@ await paso('el subrayado aparece también en la RV1909', async () => {
 await pag.screenshot({ path: `${OUT}/03-juan3-rv1909.png` });
 
 await paso('vista paralela RV1909 + KJV', async () => {
+  await menu(pag, 'versiones');
   await pag.selectOption('.lb-paralela select', 'KJV');
+  await pag.keyboard.press('Escape');
   await pag.waitForSelector('.texto.paralelo .fila .p2');
+  // el botón de la versión dice con cuál se compara
+  if (!/RV1909\s*∥\s*KJV/.test(await pag.textContent('.lb-versiones'))) throw new Error('el botón no muestra la paralela');
   const t = await pag.textContent('.texto .fila:nth-child(16) .p2 .t').catch(() => '');
   const kjv = await pag.locator('.texto .p2[data-v="16"] .t').textContent();
   if (!/For God so loved/.test(kjv)) throw new Error(kjv);
 });
 await pag.screenshot({ path: `${OUT}/04-paralelo.png` });
+await menu(pag, 'versiones');
 await pag.selectOption('.lb-paralela select', '');
+await pag.keyboard.press('Escape');
 
 await paso('búsqueda «luz del mundo» frase exacta', async () => {
   await pag.click('.pestanas-estudio [role="tab"]:has-text("Buscar")');
@@ -367,7 +380,9 @@ await paso('clave de colores: significado, imagen y filtro en Mi archivo', async
 });
 
 await paso('modo margen: notas y clave a la altura de su versículo; en pantalla angosta, debajo', async () => {
+  await menu(pag, 'aa');
   await pag.click('.lb-margen');
+  await pag.keyboard.press('Escape');
   await pag.waitForSelector('.pagina.con-margen .margen .m-nota');
   await pag.waitForFunction(() => {
     const v = document.querySelector('.texto .v[data-v="16"]').getBoundingClientRect().top;
@@ -383,7 +398,9 @@ await paso('modo margen: notas y clave a la altura de su versículo; en pantalla
   await pag.waitForSelector('.margen .m-nota');
 });
 await pag.screenshot({ path: `${OUT}/13b-margen.png` });
+await menu(pag, 'aa');
 await pag.click('.lb-margen');
+await pag.keyboard.press('Escape');
 
 await paso('ambiente: música grabada dentro de la app, sonidos, apagado al Amén y Spotify afuera', async () => {
   const pistasPedidas = [];
@@ -546,7 +563,7 @@ await paso('Láminas: índice neutro → Color → volver al índice', async () 
 
 await paso('modo Calma: solo el texto, Esc para salir', async () => {
   await pag.click('.cab-link:has-text("Leer")');
-  await pag.waitForSelector('.lb-calma');
+  await menu(pag, 'aa');
   await pag.click('.lb-calma');
   await pag.waitForSelector('.cabecera', { state: 'detached' });
   if (await pag.locator('.lector-barra').count()) throw new Error('la barra sigue en Calma');
@@ -636,18 +653,24 @@ await paso('versiones: espectro, descripciones y licencias', async () => {
   await pag.click('.version-fila:has-text("PDT ·") button');
   await pag.waitForFunction(() => /PDT/.test(document.querySelector('.cap-sobre')?.textContent || '')
     && /CC BY-SA/.test(document.querySelector('.licencia')?.textContent || '') && document.querySelectorAll('.pagina .v').length > 5);
-  await pag.selectOption('.lb-version:not(.lb-paralela) select', 'RV1909');
+  await menu(pag, 'versiones');
+  await pag.selectOption('.lb-menu .lb-version:not(.lb-paralela) select', 'RV1909');
+  await pag.keyboard.press('Escape');
 });
 await pag.screenshot({ path: `${OUT}/12b-versiones.png` });
 
 await paso('lector oscuro y vuelta a claro', async () => {
-  await pag.click('.lb-control[aria-label="Lector claro u oscuro"]');
+  await menu(pag, 'aa');
+  await pag.click('.lb-tema:has-text("Oscuro")');
+  await pag.keyboard.press('Escape');
   await pag.waitForFunction(() => document.documentElement.dataset.theme === 'dark');
   await pag.screenshot({ path: `${OUT}/08-oscuro.png` });
   await pag.click('.cab-link:has-text("Biblioteca")');
   await pag.waitForFunction(() => document.documentElement.dataset.theme === 'light'); // el resto de la app sigue claro
   await pag.click('.cab-link:has-text("Leer")');
-  await pag.click('.lb-control[aria-label="Lector claro u oscuro"]');
+  await menu(pag, 'aa');
+  await pag.click('.lb-tema:has-text("Claro")');
+  await pag.keyboard.press('Escape');
   await pag.waitForFunction(() => document.documentElement.dataset.theme === 'light');
 });
 

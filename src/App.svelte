@@ -73,6 +73,7 @@
     if (e.key === 'Escape') {
       if (ui.dialogo || ui.buscadorAbierto || ui.visor) return; // los diálogos se cierran solos
       if (usuario.ajustes.calma && ui.vista === 'lector') ajustar('calma', false);
+      else if (ui.menuBarra) ui.menuBarra = null;
       else if (ui.seleccion.length) ui.seleccion = [];
       else if (ui.navAbierta) ui.navAbierta = false;
       else if (ui.estudioAbierto && ui.vista === 'lector') ui.estudioAbierto = false;

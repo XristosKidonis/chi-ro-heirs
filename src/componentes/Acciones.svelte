@@ -1,5 +1,6 @@
 <script>
-  // Barra de selección: aparece al tocar versículos. Primero lo esencial (subrayar, guardar, nota,
+  // Barra de selección: aparece al tocar versículos y tiene todo lo que se hace con ellos (lo del capítulo
+  // está arriba, en LectorBarra). Primero lo esencial (subrayar, escuchar desde aquí, guardar, nota,
   // estudiar, lámina); el resto queda a un toque en «Más», sin perder ninguna función.
   import Icono from './Icono.svelte';
   import { ui, abrirPestana, clavesSeleccion, etiquetaSeleccion, avisar, copiarTexto } from '../lib/ui.svelte.js';
@@ -70,10 +71,12 @@
         <button class="acc-clave" onclick={() => (ui.dialogo = 'clave')} title={t('clave.abrir')}>{t('clave.corto')}</button>
       </div>
       <div class="acc-botones">
+        <!-- «Escuchar» lee desde el versículo elegido; mientras suena, pausa (y el play sigue donde quedó) -->
+        <button class="acc-escuchar" aria-pressed={voz.activa} onclick={() => (voz.activa ? pausarLectura() : leer({ desdeSeleccion: true }))} title={t('acc.escucharAyuda')}>
+          {#if voz.activa}❚❚ {t('acc.pausar')}{:else}▶ <span class="acc-largo">{t('acc.escucharAqui')}</span><span class="acc-corto">{t('acc.escuchar')}</span>{/if}
+        </button>
         <button class="acc-guardar" aria-pressed={guardada} onclick={() => accion('guardar')}>{guardada ? t('acc.quitarGuardado') : t('acc.guardar')}</button>
         <button onclick={() => accion('notas')}>{t('acc.nota')}</button>
-        <!-- «Escuchar» lee desde el versículo elegido; mientras suena, pausa (y el play sigue donde quedó) -->
-        <button class="acc-escuchar" aria-pressed={voz.activa} onclick={() => (voz.activa ? pausarLectura() : leer({ desdeSeleccion: true }))} title={t('acc.escucharAyuda')}>{voz.activa ? t('acc.pausar') : t('acc.escuchar')}</button>
         <button class="acc-palabra" onclick={() => accion('estudiar')} title={ui.palabra ? t('acc.estudiarTocada', { p: ui.palabra.texto }) : t('acc.estudiarVerso')}>{t('acc.estudiarCorto')}{#if ui.palabra} <i>«{ui.palabra.texto}»</i>{/if}</button>
         <button onclick={() => accion('poster')}>{t('acc.poster')}</button>
         <button class="acc-mas" aria-expanded={mas} onclick={() => (mas = !mas)}>{t('aj.otros')} {mas ? '−' : '+'}</button>

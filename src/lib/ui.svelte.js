@@ -10,6 +10,7 @@ export const ui = $state({
   evidenciaVerso: null, // { libro, cap, v } desde donde se abrió
   visor: null,          // imagen de Historia abierta a pantalla completa
   navAbierta: false,    // selector de libros y capítulos del lector
+  menuBarra: null,      // menú abierto en la barra del lector: 'version' | 'aa'
   buscadorAbierto: false, // búsqueda global (Ctrl/Cmd K)
   coleccion: null,      // colección de láminas abierta: null (índice) | 'tipografia' | 'color' | 'imagen'
   estudioAbierto: false, // el estudio se abre a pedido, como un margen junto al texto
@@ -37,6 +38,7 @@ export const pos = () => usuario.ajustes.pos;
 
 // Cambia de pantalla; al salir del lector se cierran la selección y los paneles
 export function abrirVista(v) {
+  ui.menuBarra = null;
   if (v === 'laminas') ui.coleccion = null;
   if (v !== 'lector') { ui.seleccion = []; ui.navAbierta = false; }
   ui.vista = v;

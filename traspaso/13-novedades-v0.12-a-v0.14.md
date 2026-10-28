@@ -209,6 +209,28 @@ El dueño probó la v0.14.2 instalada: le gustaron las voces naturales argentina
   - Esta era la causa del fallo «intermitente» de la prueba de voz narrada.
 - **Pruebas:** 34 pasos (uno nuevo de voz; el de Ctrl K repite la reapertura rápida). 34 de 34 en tres corridas de Chromium y una de WebKit. Detector sin choques.
 
+## Orden de los botones: opción B (28 de octubre) ✅ APROBADO
+
+El dueño pidió pensar «qué botones deberían estar realmente abajo y cuáles arriba». Se le mostraron maquetas sobre la app real: A, cambio mínimo; B, recomendada. **Eligió la B.**
+
+- **Criterio:** arriba, lo del **capítulo** y cómo se lee; abajo, lo que se hace con los **versículos** que tocaste.
+- **Arriba** (`LectorBarra.svelte`):
+  - ← Biblioteca · capítulo ▾
+  - **Versión ▾**: menú con «Versión» y «Comparar con» (la paralela). El botón muestra «NTV ∥ NLT» cuando hay paralela.
+  - **Aa ▾**: tamaño, tema claro/oscuro, letra (Literata/Atkinson), notas al margen y modo Calma.
+  - **▶ Escuchar**: el texto cambia a «Pausar» o «Seguir» según el estado.
+  - Ambiente · cinta · **Estudio**.
+- **Diferencia con la maqueta:** «Estudio» **se quedó arriba**, porque Progreso, Memoria, Notas y Buscar no dependen de tocar un versículo. Sacarlo dejaba esas pestañas sin entrada directa.
+- **Abajo** (`Acciones.svelte`): colores y Clave · **▶ Escuchar desde aquí** («Escuchar» en ventanas de 1100 px o menos) · Guardar · Nota · Estudiar · Lámina · Más · ✕. En celular la ✕ va arriba a la derecha de la barra.
+- **Los menús:**
+  - Cuelgan de la barra entera, no de los controles, que se deslizan de costado y los recortarían.
+  - Se cierran con Esc (`ui.menuBarra` en `App.svelte`) o tocando afuera. En celular se abren a lo ancho.
+- **CSS:** se quitaron las reglas que escondían tamaño, paralela, tema y Calma en pantallas angostas (ahora están en los menús). En columnas de 760 px o menos, «Escuchar» queda solo con su ícono.
+- **Pruebas:**
+  - Las de versión, paralela, margen, Calma y tema abren su menú (función `menu()`). La de paralela verifica que el botón diga «RV1909 ∥ KJV».
+  - El detector de choques revisa también los dos menús abiertos (12 pantallas).
+  - Resultado: 34 de 34 en Chromium y WebKit, sin choques.
+
 ## Pendientes sin verificar en el mundo real
 
 | Pendiente | Por qué falta |
