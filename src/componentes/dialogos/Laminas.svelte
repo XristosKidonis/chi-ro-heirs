@@ -30,16 +30,19 @@
 
   $effect(() => { frase = origen.texto; });
 
-  // Los acabados de letra enorme no caben el versículo entero: muestran un trozo o una palabra.
-  // Ese trozo se ve y se elige aquí; si no se toca, sale solo (la cláusula de la palabra que tocaste, o la primera).
+  // Los acabados de letra enorme lucen mejor con pocas palabras, pero por defecto va el versículo entero
+  // (la letra se achica para que quepa). Aquí se ve y se elige: el texto completo, o un trozo para que se lea grande.
+  const ENTERO_MAX = 60; // más que esto (varios versículos) ya no entra legible: se propone un trozo
   const cabe = $derived(CABEN[estilo]);
   const soloPalabra = $derived(cabe === 'palabra');
-  const nPalabras = $derived(frase.trim().split(/\s+/).filter(Boolean).length);
+  const completo = $derived(frase.trim());
+  const nPalabras = $derived(completo.split(/\s+/).filter(Boolean).length);
   const recorta = $derived(soloPalabra ? nPalabras > 3 : nPalabras > cabe);
-  const automatico = $derived(soloPalabra ? palabraClave(frase, origen.clave) : fraseCorta(frase, origen.clave, cabe));
+  const trozoAuto = $derived(fraseCorta(frase, origen.clave, cabe));
+  const automatico = $derived(soloPalabra ? palabraClave(frase, origen.clave) : nPalabras <= ENTERO_MAX ? completo : trozoAuto);
   const opciones = $derived.by(() => {
     if (!recorta) return [];
-    if (!soloPalabra) return [...new Set([automatico, ...trozos(frase, cabe)])].slice(0, 9);
+    if (!soloPalabra) return [...new Set([...(origen.clave ? [trozoAuto] : []), ...trozos(frase, cabe)])].filter((x) => x !== completo).slice(0, 9);
     // palabras con peso: sin repetir y sin las cortitas (de, que, el…)
     const ws = frase.split(/\s+/).map((w) => w.replace(/[^\p{L}]/gu, '')).filter((w) => w.length > 3);
     return [...new Set(ws)].slice(0, 12);
@@ -48,6 +51,7 @@
   let elegido = $state(false); // la persona eligió o escribió su trozo: ya no se pisa solo
   $effect(() => { origen.texto; estilo; elegido = false; });
   $effect(() => { if (!elegido) grande = automatico; });
+  const esEntero = $derived(!soloPalabra && grande.trim() === completo);
   const limpio = (x) => x.replace(/[.,;:!?¡¿«»"]+$/g, '').trim();
 
   async function dibujar() {
@@ -110,17 +114,21 @@
       <p class="nota-pie">{t('lam.fraseAyuda')}</p>
       {#if recorta}
         <div class="lam-grande">
-          <label class="etiqueta-ui" for="lam-grande">{soloPalabra ? t('lam.palabraGrande') : t('lam.textoGrande')}</label>
+          <span class="etiqueta-ui">{soloPalabra ? t('lam.palabraGrande') : t('lam.textoGrande')}</span>
           <p class="nota-pie">{soloPalabra
             ? t('lam.explicaPalabra', { e: t(`lam.e.${estilo}`) })
-            : t('lam.explicaTrozo', { e: t(`lam.e.${estilo}`), n: cabe, total: nPalabras })}</p>
-          <input id="lam-grande" class="campo" bind:value={grande} oninput={() => (elegido = true)} />
+            : t('lam.explicaTrozo', { e: t(`lam.e.${estilo}`), n: cabe })}</p>
           <div class="chips lam-trozos" role="group" aria-label={t('lam.otroTrozo')}>
+            {#if !soloPalabra}
+              <button class="lam-entero" aria-pressed={esEntero} onclick={() => { grande = completo; elegido = true; }}>{t('lam.entero', { n: nPalabras })}</button>
+            {/if}
             {#each opciones as o (o)}
               <button aria-pressed={limpio(grande).toLowerCase() === limpio(o).toLowerCase()} onclick={() => { grande = o; elegido = true; }}>{o}</button>
             {/each}
           </div>
-          {#if !soloPalabra}<p class="nota-pie">{t('lam.enteroEn')}</p>{/if}
+          {#if !esEntero}
+            <input id="lam-grande" class="campo" bind:value={grande} oninput={() => (elegido = true)} aria-label={t('lam.escribeTrozo')} />
+          {/if}
         </div>
       {/if}
       <button class="boton" onclick={guardar}>{t('lam.guardar')}</button>

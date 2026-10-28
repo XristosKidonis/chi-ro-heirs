@@ -276,6 +276,9 @@ function pintarX(ctx, texto, x, y, k) {
   ctx.restore();
 }
 
+// palabras que no deben quedar al final de un renglón o de un trozo
+const DEBIL = /^(de|del|la|las|el|los|lo|un|una|a|al|en|y|e|o|que|con|por|su|sus|mi|tu|se|no|the|a|an|of|to|in|and|his|her|my|your|with|by|for)$/i;
+
 // Para los acabados de cartel grande: si la frase es larga, se queda con la cláusula de la palabra clave.
 export function fraseCorta(texto, clave, max = 8) {
   const ws = texto.split(/\s+/).filter(Boolean);
@@ -302,10 +305,13 @@ export function fraseCorta(texto, clave, max = 8) {
     const ini = Math.max(0, Math.min(idx - Math.floor(max / 2), pw.length - max));
     p = pw.slice(ini, ini + max).join(' ');
   }
-  return p;
+  // que no termine colgando en «de», «la», «y»…
+  const ws2 = p.split(/\s+/);
+  while (ws2.length > 2 && DEBIL.test(ws2.at(-1).replace(/[^\p{L}]/gu, ''))) ws2.pop();
+  return ws2.join(' ');
 }
 
-// Cuánto cabe en grande en cada acabado: palabras de la frase, o «palabra» si destaca una sola
+// Cuántas palabras lucen en grande en cada acabado (más que eso también cabe, con letra más chica), o «palabra» si destaca una sola
 // (Aerosol escribe el versículo entero y una palabra a mano; Calor, solo una palabra).
 export const CABEN = { portadilla: 5, ultramar: 6, aura: 6, pedreria: 7, primario: 14, riso: 6, aerosol: 'palabra', calor: 'palabra' };
 
@@ -316,7 +322,6 @@ const grande = (o, max) => o.grande?.trim() || fraseCorta(o.texto, o.clave, max)
 // Se corta por la puntuación y antes de «y», «que», «el cual», «porque»…; lo que sigue largo
 // se parte en partes parejas sin dejar «de», «la» o «el» colgando al final.
 const CORTE = /^(y|e|o|u|que|porque|pues|pero|mas|sino|cuando|donde|como|para|el cual|la cual|los cuales|las cuales|and|that|which|who|for|but|so|when|where|because)$/i;
-const DEBIL = /^(de|del|la|las|el|los|lo|un|una|a|al|en|y|e|o|que|con|por|su|sus|mi|tu|se|no|the|a|an|of|to|in|and|his|her|my|your|with|by|for)$/i;
 // Parte una tira larga en renglones de hasta «max» palabras eligiendo los cortes más naturales:
 // ningún trozo termina en «de», «la», «el»…, ninguno queda de una palabra y los largos se parecen.
 function partir(ws, max) {
@@ -369,7 +374,8 @@ export function trozos(texto, max) {
 function pila(ctx, texto, { ancho, alto, max, fuente, k = 1, lh = 0.92 }) {
   const ws = texto.split(/\s+/).filter(Boolean);
   const total = ws.join(' ').length;
-  const n = Math.max(1, Math.min(6, Math.round(Math.sqrt(total / 3.2))));
+  // frases cortas: hasta seis renglones; el versículo entero puede llevar más, con letra más chica
+  const n = Math.max(1, Math.min(ws.length > 14 ? 14 : 6, Math.round(Math.sqrt(total / 3.2))));
   const meta = total / n;
   const lineas = [];
   let actual = [];
@@ -419,9 +425,10 @@ const DIBUJAR = {
     const fuente = (t) => `300 ${t}px ${F.grot}`;
     const ancho = horizontal ? W * 0.44 : W - m * 0.6;
     const x0 = horizontal ? W * 0.53 : m * 0.3;
-    const comp = ajustar(ctx, frase.split(/\s+/), { ancho, alto: horizontal ? H * 0.62 : H * 0.6, max: 320 * s, min: 40 * s, lh: 0.86, fuente, trk: -0.06 });
+    const comp = ajustar(ctx, frase.split(/\s+/), { ancho, alto: horizontal ? H * 0.62 : H * 0.6, max: 320 * s, min: 16 * s, lh: 0.86, fuente, trk: -0.06 });
     const alto = comp.lineas.length * comp.tam * 0.86;
-    const y0 = horizontal ? (H - alto) / 2 : H - alto + comp.tam * 0.16;
+    // pocas palabras: se recortan contra el borde (el efecto del cartel); muchas: entran completas
+    const y0 = horizontal ? (H - alto) / 2 : comp.lineas.length > 4 ? H - alto - m * 0.9 : H - alto + comp.tam * 0.16;
     escribir(ctx, comp, { x: x0, y: y0, ancho, lh: 0.86, fuente, trk: -0.06, color: () => 'rgba(238,235,229,0.9)' });
     firma(ctx, m, m + 10 * s, 'rgba(241,238,232,0.85)', s);
     ctx.font = `400 ${58 * s}px ${F.pinyon}`;
@@ -444,7 +451,7 @@ const DIBUJAR = {
     const altoMax = formato === 'escritorio' ? H * 0.34 : H * 0.3;
     const fuente = (t) => `400 ${t}px ${F.grot}`;
     const frase = grande(o, 6).toUpperCase().replace(/[.,;:]+$/, '');
-    const comp = ajustar(ctx, frase.split(/\s+/), { ancho, alto: altoMax, max: 150 * s, min: 26 * s, lh: 0.9, fuente, trk: -0.075 });
+    const comp = ajustar(ctx, frase.split(/\s+/), { ancho, alto: altoMax, max: 150 * s, min: 14 * s, lh: 0.9, fuente, trk: -0.075 });
     const alto = comp.lineas.length * comp.tam * 0.9;
     const cy = formato === 'celular' ? H * 0.56 : formato === 'historia' ? H * 0.47 : H * 0.5;
     escribir(ctx, comp, { x: (W - ancho) / 2, y: cy - alto / 2, ancho, lh: 0.9, alinear: 'centro', fuente, trk: -0.075, color: () => tinta });
@@ -626,9 +633,9 @@ const DIBUJAR = {
     const clave = palabraClave(o.texto, o.clave);
     const ultima = palabras.at(-1);
     const azul = !esClave(ultima, clave) && palabras.length > 2 ? ultima : null;
-    let comp = ajustar(ctx, palabras, { ancho, alto: altoMax, max: 84 * s, min: 22 * s, lh: 0.96, fuente, trk: -0.012 });
+    let comp = ajustar(ctx, palabras, { ancho, alto: altoMax, max: 84 * s, min: 14 * s, lh: 0.96, fuente, trk: -0.012 });
     for (let i = 0; i < 8 && comp.lineas.length > 1 && comp.lineas.at(-1).length === 1 && comp.lineas.at(-1)[0] !== azul; i++) {
-      comp = ajustar(ctx, palabras, { ancho, alto: altoMax, max: comp.tam * 0.95, min: 22 * s, lh: 0.96, fuente, trk: -0.012 });
+      comp = ajustar(ctx, palabras, { ancho, alto: altoMax, max: comp.tam * 0.95, min: 14 * s, lh: 0.96, fuente, trk: -0.012 });
     }
     const lh = comp.tam * 0.96;
     const fondo = formato === 'celular' ? H * 0.82 : formato === 'historia' ? H * 0.8 : H - Math.min(W, H) * 0.1;
@@ -671,7 +678,7 @@ const DIBUJAR = {
     // renglones parejos: dos o tres, todos al mismo cuerpo, el más largo llena la franja
     const frase = grande(o, 6).toUpperCase().replace(/[.,;:]+$/, '');
     const ws = frase.split(/\s+/);
-    const n = ws.length <= 2 ? ws.length : ws.length <= 5 ? 2 : 3;
+    const n = ws.length <= 2 ? ws.length : ws.length <= 5 ? 2 : ws.length <= 9 ? 3 : Math.min(12, Math.ceil(ws.length / 4));
     const meta = frase.length / n;
     const lineas = [];
     let act = [];

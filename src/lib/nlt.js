@@ -20,31 +20,40 @@ export function parsearNLT(html) {
 }
 
 // Formato documentado: <verse_export vn="16"><span class="vn">16</span>texto…</verse_export>
+// Ojo: cuando un párrafo (<p>) empieza en un versículo y termina en otro, el navegador no cierra el
+// <verse_export> y los siguientes quedan anidados dentro del primero. Por eso se recorre el documento en orden
+// y cada texto va al <verse_export> más cercano que lo contiene, nunca al de afuera.
 function porVerseExport(doc) {
+  if (!doc.body.querySelector('verse_export')) return ordenar(new Map(), {});
   const versos = new Map();
   const titulos = {};
   let pendiente = null;
-  for (const el of doc.body.querySelectorAll('verse_export, .subhead')) {
-    const esVerso = el.tagName.toLowerCase() === 'verse_export';
-    if (!esVerso) {
-      if (!el.closest('verse_export')) pendiente = limpiar(el.textContent);
-      continue;
+  const numero = (el) => parseInt(el.getAttribute('vn') || el.getAttribute('vs_num') || el.querySelector(`:scope > ${NUMERO.split(', ').join(', :scope > ')}`)?.textContent || '', 10);
+  const sumar = (n, x) => versos.set(n, `${versos.get(n) || ''}${x}`);
+  const recorrer = (nodo, n) => {
+    for (const hijo of nodo.childNodes) {
+      if (hijo.nodeType === 3) { if (n) sumar(n, hijo.textContent); continue; }
+      if (hijo.nodeType !== 1) continue;
+      if (hijo.tagName.toLowerCase() === 'verse_export') {
+        const m = numero(hijo) || n;
+        if (m && pendiente) { titulos[m] ??= pendiente; pendiente = null; }
+        recorrer(hijo, m);
+        continue;
+      }
+      if (hijo.matches('.subhead, h3, h4')) {
+        // un título al principio de un versículo es de ese versículo; si no, del que viene
+        if (n && !limpiar(versos.get(n))) titulos[n] ??= limpiar(hijo.textContent);
+        else pendiente = limpiar(hijo.textContent);
+        continue;
+      }
+      if (hijo.matches(`${QUITAR}, script, style`)) continue;
+      recorrer(hijo, n);
+      if (n && /^(P|DIV|BR|LI)$/.test(hijo.tagName)) sumar(n, ' ');
     }
-    const n = parseInt(el.getAttribute('vn') || el.getAttribute('vs_num') || el.querySelector(NUMERO)?.textContent || '', 10);
-    if (!n) continue;
-    const copia = el.cloneNode(true);
-    copia.querySelectorAll('.subhead').forEach((s) => {
-      titulos[n] ??= limpiar(s.textContent);
-      s.remove();
-    });
-    copia.querySelectorAll(QUITAR).forEach((x) => x.remove());
-    if (pendiente) {
-      titulos[n] ??= pendiente;
-      pendiente = null;
-    }
-    const texto = limpiar(copia.textContent);
-    versos.set(n, versos.has(n) ? `${versos.get(n)} ${texto}` : texto);
-  }
+  };
+  recorrer(doc.body, 0);
+  for (const [n, x] of versos) versos.set(n, limpiar(x));
+  for (const [n, x] of versos) if (!x) versos.delete(n);
   return ordenar(versos, titulos);
 }
 
