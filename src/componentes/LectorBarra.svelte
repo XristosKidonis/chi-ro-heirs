@@ -53,7 +53,7 @@
     </label>
     <button class="lb-control lb-tam" onclick={() => tamano(-1)} aria-label={t('lec.menos')} title={t('lec.menos')}>A−</button>
     <button class="lb-control lb-tam" onclick={() => tamano(1)} aria-label={t('lec.mas')} title={t('lec.mas')}>A+</button>
-    <button class="lb-control lb-icono" onclick={() => ajustar('tema', oscuro ? 'papel' : 'cuero')} aria-pressed={oscuro} aria-label={t('lec.tema')} title={t('lec.tema')}><Icono n="tema" /></button>
+    <button class="lb-control lb-icono lb-tema" onclick={() => ajustar('tema', oscuro ? 'papel' : 'cuero')} aria-pressed={oscuro} aria-label={t('lec.tema')} title={t('lec.tema')}><Icono n="tema" /></button>
     <button class="lb-control lb-icono" class:activo={voz.activa} onclick={() => (voz.activa ? detener() : leer())}
       aria-label={voz.activa ? t('barra.detener') : t('barra.leer')} title={voz.activa ? t('barra.detener') : t('barra.leer')}><Icono n={voz.activa ? 'pausa' : 'voz'} /></button>
     <button class="lb-control lb-icono lb-ambiente" class:activo={amb.sonando} onclick={() => (ui.dialogo = 'ambiente')}
@@ -62,7 +62,8 @@
       onclick={() => avisar(alternarCinta(pos.libro, pos.cap) ? t('lector.cintaPuesta') : t('lector.cintaQuitada'))}
       title={cintaPuesta ? t('lector.cintaQuitar') : t('lector.cintaPoner')} aria-label={cintaPuesta ? t('lector.cintaQuitar') : t('lector.cintaPoner')}><Icono n="guardar" /></button>
     <button class="lb-control lb-estudio" aria-pressed={ui.estudioAbierto} onclick={() => (ui.estudioAbierto = !ui.estudioAbierto)}>
-      {ui.estudioAbierto ? t('lec.cerrarEstudio') : t('lec.estudio')} <span aria-hidden="true">↗</span>
+      <!-- en el celular dice siempre «Estudio» (subrayado si está abierto): la hoja tiene su propia ✕ -->
+      {#if ui.estudioAbierto}<span class="lb-largo">{t('lec.cerrarEstudio')}</span><span class="lb-corto">{t('lec.estudio')}</span>{:else}{t('lec.estudio')}{/if} <span aria-hidden="true">↗</span>
     </button>
     <button class="lb-control lb-margen" aria-pressed={!!usuario.ajustes.margen} onclick={() => ajustar('margen', !usuario.ajustes.margen)} title={t('margen.ayuda')}>{t('margen.boton')}</button>
     <button class="lb-control lb-calma" onclick={() => ajustar('calma', true)} title={t('lec.calmaAyuda')}>{t('lec.calma')} <span aria-hidden="true">⤢</span></button>

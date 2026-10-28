@@ -292,6 +292,10 @@ img { display: block; max-width: 100%; }
 .texto .num { font: 500 10px var(--f-ui); color: var(--tenue); font-variant-numeric: lining-nums tabular-nums; user-select: none; padding-right: 0.4em; vertical-align: super; }
 .texto.modo-verso .num { vertical-align: baseline; }
 .texto.modo-lector .num { display: none; }
+/* versículo que la traducción no trae: una línea tenue en su lugar, que no se selecciona */
+.texto .v.omitido { cursor: default; }
+.texto .v.omitido .t { font: italic 0.8em/1.5 var(--f-ui); color: var(--tenue); }
+.texto.modo-lector .v.omitido { display: none; }
 .texto.modo-lector.modo-verso .v { padding-left: 3px; }
 .texto .v:hover { background: var(--seleccion); }
 .texto .subtitulo { display: block; margin: 1.8em 0 0.8em; font: 600 10px var(--f-ui); letter-spacing: 0.15em; text-transform: uppercase; color: var(--tenue); }
@@ -870,6 +874,22 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
 .arranque .marca-grande > span { font-size: clamp(60px, 12vw, 150px); }
 
 /* ---------- responsive ---------- */
+/* La barra del lector se achica según el ancho de SU columna, no el de la ventana: con el Estudio abierto la
+   columna pierde 380 px. Si aun así no entra (un WebKit viejo sin container queries), el capítulo se queda
+   entero y los controles se deslizan de costado: nunca se encima nada. */
+.lector-marco { container: columna-lector / inline-size; }
+.lb-lugar { flex: 0 0 auto; }
+.lb-controles { min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.lb-controles::-webkit-scrollbar { display: none; }
+.lb-corto { display: none; }
+@container columna-lector (max-width: 1020px) {
+  .lb-texto, .lb-etiqueta { display: none; }
+  .lb-control { padding: 11px 6px; }
+}
+@container columna-lector (max-width: 900px) { .lb-paralela { display: none; } }
+@container columna-lector (max-width: 760px) { .lb-tam, .lb-calma { display: none; } }
+/* el tema también está en Ajustes */
+@container columna-lector (max-width: 680px) { .lb-tema { display: none; } .lb-version select { max-width: 86px; } }
 @media (max-width: 1180px) {
   .lb-texto, .lb-etiqueta { display: none; }
   .lb-control { padding: 11px 6px; }
@@ -887,6 +907,8 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
 @media (max-width: 900px) {
   .marco.con-estudio { grid-template-columns: minmax(0, 1fr); }
   .estudio { position: fixed; z-index: 35; left: 0; right: 0; bottom: 0; height: 74%; border-top: 1px solid var(--linea); box-shadow: var(--sombra); }
+  /* con la hoja del Estudio abierta, la barra de selección se apoya encima de la hoja, no sobre su contenido */
+  .app:has(.marco.con-estudio) .acciones { bottom: calc(74% + 10px); }
   .lb-tam { display: none; }
   .texto.paralelo .fila { grid-template-columns: 1fr; }
   .texto.paralelo .fila > .p2 { font-size: 0.86em; margin-bottom: 0.5em; }
@@ -947,6 +969,10 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
   .obras { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 4px 13px 0; }
   .obra-nombre { font-size: 10px; } .obra-nombre span:last-child { font-size: 9px; }
   .lector-barra { height: 62px; padding: 0 12px; gap: 6px; }
+  .lb-volver { display: none; } /* «Libros» está en la barra de abajo */
+  .lb-largo { display: none; }
+  .lb-corto { display: inline; }
+  .lb-estudio[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 5px; }
   .lb-capitulo { font-size: 15px; }
   .lb-control { padding: 9px 4px; font-size: 9px; }
   .lb-version { margin-right: 0; }
@@ -956,6 +982,7 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
   .cap-titulo { font-size: clamp(56px, 18vw, 77px); }
   .cap-filete { margin-top: 30px; }
   .estudio { bottom: 63px; height: 70%; z-index: 35; }
+  .app:has(.marco.con-estudio) .acciones { bottom: calc(70% + 63px + 10px); }
   .acciones { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); width: calc(100% - 18px); padding: 10px 11px; }
   .acc-texto { display: none; }
   .acc-fila { gap: 8px; }

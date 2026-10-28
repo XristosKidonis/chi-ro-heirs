@@ -55,7 +55,7 @@ export function detener() {
 const idiomaLectura = () => (info(usuario.ajustes.version)?.idioma === 'en' ? 'en' : 'es');
 const versosDesde = () => {
   const inicio = ui.seleccion.length ? Math.min(...ui.seleccion) : 1;
-  return ui.cap.versos.filter((x) => x.v >= inicio);
+  return ui.cap.versos.filter((x) => x.v >= inicio && !x.omitido);
 };
 const mostrar = (v) => {
   ui.leyendo = v;

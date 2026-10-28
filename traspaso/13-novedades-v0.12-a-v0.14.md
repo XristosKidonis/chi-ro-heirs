@@ -146,6 +146,47 @@ Primera sesión fuera de la nube, en la computadora del dueño.
   - **Para la app de escritorio** hacen falta Rust (rustup) y Visual Studio Build Tools con C++.
   - **No correr las pruebas con `tauri dev` abierto.** Comparten el servidor de Vite y el paso del Ambiente se queda en «Cargando…»; después fallan en cadena los cuatro pasos siguientes. Con `npm run dev` solo, pasan los 32.
 
+## Después de la v0.14.1: versículos que faltaban y controles que se chocaban (28 de octubre)
+
+El dueño contó que un amigo, en **Mac**, buscaba versículos de la NTV que no aparecían y que algunos botones se chocaban.
+
+### Versículos
+
+Se barrieron con la API real 126 capítulos de la NTV (dos por libro), con el código de la app. Había tres causas:
+
+| Causa | Ejemplo | Arreglo |
+|---|---|---|
+| Texto de un versículo pegado al anterior | Apocalipsis 22 | Parser en orden (ver la v0.13.1) |
+| La traducción **une** versículos: `<span class="vn">20-21</span>` | Números 1:20-43 (faltaban 12) | `parsearNLT` entrega `{v: 20, hasta: 21}`. El lector muestra «20–21». Buscar el 21 lleva al bloque y lo deja elegido (`contiene()` en `Lector.svelte`). La paralela junta los dos de la otra versión |
+| La traducción **no trae** el versículo (no está en los manuscritos más antiguos) | Mateo 17:21, Marcos 9:44 y 46, Hechos 8:37, Hechos 15:34 | `marcarOmitidos()` en `nlt.js` (solo si faltan 3 o menos) pone una línea tenue: «La NTV no incluye este versículo…» (`lector.omitido`). No se puede elegir y la voz la salta |
+
+- **Tablas** (censos, listas): las celdas ya no se pegan («Simeón 59.300»).
+- **La prueba** simula los tres casos y tiene un paso propio: «NTV: versículos unidos y omitidos».
+
+### Controles que se chocaban
+
+- **Detector nuevo: `pruebas/solapes.mjs`.**
+  - Abre con clics 10 pantallas (inicio, biblioteca, lector, selección, estudio, ambiente, ajustes, archivo, láminas, historia) en 10 anchos, de 1360 a 380 px.
+  - Busca controles visibles cuyas cajas o textos se pisan.
+  - Se probó encimando botones a propósito, y los detecta.
+  - Se corre con Chromium y con **WebKit** (el motor de la app en Mac): `node pruebas/solapes.mjs <carpeta> webkit`.
+- **Lo que encontró**, igual en los dos motores:
+  1. Con el **Estudio abierto** (~1100 px), la barra del lector no entraba en su columna: el selector de versión tapaba «GÉNESIS 01» y «Calma» quedaba bajo el panel.
+  2. A **380 px**, el selector tapaba el nombre del libro.
+  3. Con la **hoja del Estudio** (≤900 px), la barra de selección tapaba sus resultados.
+- **Los arreglos** (`src/app.css`):
+  - La barra se achica según el ancho de **su columna** (container queries), no el de la ventana. El capítulo nunca se encoge, y si igual no entra (WebKit viejo), los controles se deslizan de costado.
+  - En celular se esconden «← Biblioteca» (está «Libros» abajo) y, en columnas angostas, el botón de tema (está en Ajustes).
+  - Con el Estudio abierto en celular el botón dice «Estudio» subrayado (la hoja tiene su ✕).
+  - La barra de selección se apoya **encima** de la hoja del Estudio.
+- **Resultado:** sin choques en las 100 combinaciones, en Chromium y en WebKit.
+
+### Pruebas en WebKit
+
+- `MOTOR=webkit node pruebas/navegador.mjs <carpeta>` corre la suite con el motor de Mac: **33 de 33**, igual que en Chromium.
+- Encontró que, sin Web Audio, el Ambiente se rompía entero. Ahora la música grabada suena igual y solo faltan los sonidos generados.
+- «voz narrada (Bible.is simulado)» falló una vez en Chromium y pasó en las dos repeticiones: es intermitente, por tiempos de la simulación.
+
 ## Pendientes sin verificar en el mundo real
 
 | Pendiente | Por qué falta |

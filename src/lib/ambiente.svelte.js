@@ -30,9 +30,12 @@ const capas = {};  // nombre -> { gain, parar() }
 let reloj = null;
 
 // ---------- utilidades de audio ----------
+// Sin Web Audio (algún WebKit) no hay sonidos generados, pero la música grabada (<audio>) igual suena
 function contexto() {
   if (ctx) return ctx;
-  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const Contexto = window.AudioContext || window.webkitAudioContext;
+  if (!Contexto) return null;
+  ctx = new Contexto();
   salida = ctx.createGain();
   salida.gain.value = 0;
   salida.connect(ctx.destination);
@@ -293,9 +296,11 @@ export async function reproducir(indice) {
   const a = elemento();
   if (!a.src) { a.src = SILENCIO; a.play().catch(() => {}); }
   amb.sonando = true;
-  await ctx.resume();
-  salida.gain.cancelScheduledValues(ctx.currentTime);
-  salida.gain.setTargetAtTime(1, ctx.currentTime, 0.8);
+  if (ctx) {
+    await ctx.resume();
+    salida.gain.cancelScheduledValues(ctx.currentTime);
+    salida.gain.setTargetAtTime(1, ctx.currentTime, 0.8);
+  }
   fundir('general', 1, 1500);
   aplicarCapas();
   programarFin();
@@ -306,11 +311,11 @@ export async function reproducir(indice) {
 
 // Se apaga con un fundido de unos segundos, no de golpe
 export function pausar() {
-  if (!ctx || !amb.sonando) return;
+  if (!amb.sonando) return;
   amb.sonando = false;
   clearInterval(reloj);
   amb.restante = 0;
-  salida.gain.setTargetAtTime(0, ctx.currentTime, 1.2);
+  if (ctx) salida.gain.setTargetAtTime(0, ctx.currentTime, 1.2);
   fundir('general', 0, 3500).then(() => { if (!amb.sonando) audio?.pause(); });
   setTimeout(() => { if (!amb.sonando) aplicarCapas(); }, 5000);
 }

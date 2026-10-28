@@ -32,7 +32,10 @@
 - **Repositorio:** `XristosKidonis/chi-ro-heirs`.
   - Hoy se trabaja en la rama **`diseno/white-industrial`**.
   - Los pushes a `main` publican la web automáticamente: **no mezclar a `main` sin la aprobación del dueño.**
-- **Antes de dar algo por terminado:** correr `node pruebas/navegador.mjs <carpeta>` con `npm run dev` en marcha. Los **32 pasos** (v0.14.1) deben pasar y no debe haber errores de consola. En Windows, usar `DIRECCION=http://localhost:1420/`.
+- **Antes de dar algo por terminado:** correr `node pruebas/navegador.mjs <carpeta>` con `npm run dev` en marcha. Los **33 pasos** deben pasar y no debe haber errores de consola. En Windows, usar `DIRECCION=http://localhost:1420/`.
+  - Si se toca la interfaz: también `node pruebas/solapes.mjs <carpeta>`. **Nada se puede chocar** (pedido del dueño).
+  - Para lo que importe en Mac: las dos con WebKit (`MOTOR=webkit` en la suite; `webkit` como segundo argumento en solapes).
+  - Si se toca la NTV: probar también con la API real (solo en memoria; no guardar su texto en disco).
 - **Instaladores:** cada compilación crea una **release pública**. Solo con la frase del dueño «dale, publica la vX.Y.Z». **No reutilizar v0.9.0**: fue revertida y nunca se publicó. El proceso:
   1. Subir la versión en `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` y `src-tauri/Cargo.lock`.
   2. Si cambia el número mayor o menor, regenerar el arte con `node herramientas/instalador.mjs`.

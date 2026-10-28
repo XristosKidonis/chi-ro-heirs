@@ -129,7 +129,7 @@ node pruebas/navegador.mjs <carpeta-capturas>
 DIRECCION=http://127.0.0.1:4173/ node pruebas/navegador.mjs <carpeta>   # contra la versión compilada
 ```
 
-> **Hoy son 32 pasos**, todos en verde en la v0.14.1, y no debe haber errores de consola. Lo nuevo:
+> **Hoy son 33 pasos** (el 33 es el de versículos unidos y omitidos de la NTV), en verde con Chromium y con WebKit (`MOTOR=webkit`). El detector de controles que se chocan es `pruebas/solapes.mjs` (documento 13). Lo nuevo desde los 21 originales:
 > - Mi archivo, clave de colores y modo margen;
 > - Ambiente con música grabada;
 > - voz narrada (simulada), Historia, Láminas por colecciones y modo Calma;

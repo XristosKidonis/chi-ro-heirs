@@ -2,30 +2,37 @@
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 // Requiere Playwright (npm i -g playwright) y «npm run dev» en marcha. PLAYWRIGHT_DIR apunta a node_modules global.
-const { chromium } = createRequire(process.env.PLAYWRIGHT_DIR || import.meta.url)('playwright');
+// MOTOR=webkit la corre con el motor de la app en Mac (npx playwright install webkit); por defecto, chromium.
+const pw = createRequire(process.env.PLAYWRIGHT_DIR || import.meta.url)('playwright');
 
 const OUT = process.argv[2];
 const DIRECCION = process.env.DIRECCION || 'http://127.0.0.1:1420/';
 
 // Respuesta simulada de api.nlt.to con el formato documentado (verse_export, .vn, .subhead, .tn)
 function falsaNLT(ref, version) {
-  const [libro, cap] = ref.split(/ (?=\d+$)/);
+  const [, libro, cap] = ref.match(/^(.*?) (\d+)(?::.*)?$/); // con la clave de prueba llegan tramos: «Numbers 1:1-50»
   const n = 20;
+  // como en la NTV real: Números 1 une versículos («18-19», con una tabla) y Marcos 9 no trae algunos (4 y 6)
+  const unidos = /^(Números|Numbers)$/.test(libro) && cap === '1';
+  const omitidos = /^(Marcos|Mark)$/.test(libro) && cap === '9' ? [4, 6] : [];
   let html = `<div id="bibletext"><section><h2 class="bk_ch_vs_header">${ref}, ${version}</h2>`;
   html += `<p class="subhead">Título de sección simulado</p>`;
   for (let v = 1; v <= n; v++) {
-    const extra = v === 16 ? ' Porque Dios amó tanto al mundo que dio a su único Hijo<a class="a-tn">*</a><span class="tn"><span class="tn-ref">3:16</span> Nota al pie.</span>' : ` texto de prueba ${version} ${libro} ${cap}:${v}.`;
+    if (omitidos.includes(v)) continue;
+    if (unidos && v === 19) { html += `<verse_export orig="x_${cap}_19" bk="x" ch="${cap}" vn="19"></verse_export>`; continue; }
+    let extra = v === 16 ? ' Porque Dios amó tanto al mundo que dio a su único Hijo<a class="a-tn">*</a><span class="tn"><span class="tn-ref">3:16</span> Nota al pie.</span>' : ` texto de prueba ${version} ${libro} ${cap}:${v}.`;
+    if (unidos && v === 18) extra += '<table><tr><td>Simeón</td><td class="table-col">59.300</td></tr></table>';
     // párrafos que cruzan versículos, como en la API real (Apocalipsis 22): el <p> abre en un versículo y sigue
     // en los siguientes, y al terminar el párrafo queda un <p> suelto sin cerrar antes del </verse_export>
     const abre = v % 5 === 1 ? '\n<p class="body">' : '';
     const cierra = v === n ? '</p>' : v % 5 === 0 ? '<p>\n' : '';
-    html += `<verse_export orig="x_${cap}_${v}" bk="x" ch="${cap}" vn="${v}">${abre}<span class="vn">${v}</span>${extra}${cierra}</verse_export>`;
+    html += `<verse_export orig="x_${cap}_${v}" bk="x" ch="${cap}" vn="${v}">${abre}<span class="vn">${unidos && v === 18 ? '18-19' : v}</span>${extra}${cierra}</verse_export>`;
   }
   return html + '</section></div>';
 }
 
 const errores = [];
-const navegador = await chromium.launch();
+const navegador = await pw[process.env.MOTOR || 'chromium'].launch();
 const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
 const pag = await ctx.newPage();
 pag.on('pageerror', (e) => errores.push('pageerror: ' + e.message));
@@ -92,6 +99,22 @@ await paso('arranca en Génesis 1 con NTV', async () => {
   if (textos.length !== 20 || mal.length) throw new Error(`${textos.length} versículos; con texto ajeno: ${mal.map(([v]) => v).join(',')}`);
 });
 await pag.screenshot({ path: `${OUT}/01-genesis-ntv.png` });
+
+await paso('NTV: versículos unidos («18–19») y omitidos se ven y la búsqueda llega a ellos', async () => {
+  // pedir el 19 lleva al bloque 18–19, que queda elegido; las celdas de la tabla no se pegan
+  await ir(pag, 'nm 1:19');
+  await pag.waitForSelector('.texto .v[data-v="18"].sel', { timeout: 20000 });
+  const num = (await pag.textContent('.texto .v[data-v="18"] .num')).trim();
+  if (num !== '18–19') throw new Error('número del bloque: ' + num);
+  if (await pag.locator('.texto .v[data-v="19"]').count()) throw new Error('el 19 aparece suelto además del bloque');
+  const t = await pag.textContent('.texto .v[data-v="18"] .t');
+  if (!/Simeón 59\.300/.test(t)) throw new Error('tabla mal leída: ' + t);
+  // los que la traducción no trae ocupan su lugar con un aviso, sin quedar elegidos
+  await ir(pag, 'mr 9:4');
+  await pag.waitForSelector('.texto .v.omitido[data-v="4"]', { timeout: 20000 });
+  if (!/no incluye este versículo/.test(await pag.textContent('.texto .v.omitido[data-v="6"]'))) throw new Error('sin aviso en el 6');
+  if (await pag.locator('.texto .v.sel').count()) throw new Error('quedó elegido un versículo omitido');
+});
 
 await paso('ir a Jn 3:16 con la búsqueda (Ctrl K)', async () => {
   await ir(pag, 'jn 3:16');
@@ -571,6 +594,7 @@ await pm.route('https://api.nlt.to/**', (route) => {
   route.fulfill({ status: 200, contentType: 'text/html', body: falsaNLT(u.searchParams.get('ref'), u.searchParams.get('version')) });
 });
 await pm.goto(DIRECCION);
+await pm.waitForSelector('.inicio-entrada'); // que termine de bajar la base antes de recargar (WebKit lo cuenta como error)
 await paso('móvil (390 y 320 px): todas las pantallas sin desbordes horizontales', async () => {
   for (const ancho of [390, 320]) {
     await pm.setViewportSize({ width: ancho, height: 844 });

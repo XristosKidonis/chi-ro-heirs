@@ -27,7 +27,7 @@
 
   function textoSeleccion() {
     const s = new Set(ui.seleccion);
-    return ui.cap.versos.filter((x) => s.has(x.v)).map((x) => x.texto).join(' ');
+    return ui.cap.versos.filter((x) => s.has(x.v) && x.texto).map((x) => x.texto).join(' ');
   }
 
   async function copiar() {

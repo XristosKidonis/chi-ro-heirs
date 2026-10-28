@@ -12,7 +12,7 @@
     const s = new Set(ui.seleccion);
     const p = usuario.ajustes.pos;
     return {
-      texto: ui.cap.versos.filter((x) => s.has(x.v)).map((x) => x.texto).join(' '),
+      texto: ui.cap.versos.filter((x) => s.has(x.v) && x.texto).map((x) => x.texto).join(' '),
       referencia: etiquetaSeleccion(),
       clave: ui.palabra?.texto || '',
       version: usuario.ajustes.version,

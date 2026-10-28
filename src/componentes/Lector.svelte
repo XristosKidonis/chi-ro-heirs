@@ -102,6 +102,15 @@
   const refNota = (n) => `${pos.cap}:${n.ref.split('.')[2]}${n.hasta ? `–${n.hasta}` : ''}`;
   let abierto = Date.now();
 
+  // En la paralela, un versículo unido («20–21») lleva al lado los dos de la otra versión
+  const textoParalelo = (x) => {
+    const partes = [];
+    for (let v = x.v; v <= (x.hasta || x.v); v++) if (ui.cap.paralelo[v]) partes.push(ui.cap.paralelo[v]);
+    return partes.join(' ');
+  };
+  // El versículo pedido puede estar dentro de uno unido (el 21 de «20–21»): se va a ese
+  const contiene = (v) => ui.cap.versos.find((x) => x.v <= v && v <= (x.hasta || x.v))?.v ?? v;
+
   // Al llegar un capítulo nuevo: volver arriba o llevar al versículo pedido.
   // Cambiar de versión dentro del mismo capítulo conserva la posición.
   let ultimaClave = '';
@@ -116,8 +125,10 @@
       if (cambio) abierto = Date.now();
       tick().then(() => {
         if (d && `${d.libro}.${d.cap}` === k) {
-          const el = lector.querySelector(`.texto [data-v="${d.v}"]`);
+          const el = lector.querySelector(`.texto [data-v="${contiene(d.v)}"]`);
           if (!el) return;
+          // queda elegido lo que se ve: el bloque «20–21» si se pidió el 21; nada si la versión no trae ese versículo
+          if (ui.seleccion.length === 1 && ui.seleccion[0] === d.v) ui.seleccion = el.classList.contains('omitido') ? [] : [contiene(d.v)];
           el.scrollIntoView({ block: 'center' });
           el.classList.add('destello');
           setTimeout(() => el.classList.remove('destello'), 1900);
@@ -208,7 +219,7 @@
   function tocar(e) {
     const marca = e.target.closest('.marca-nota, .marca-retro');
     const el = e.target.closest('[data-v]');
-    if (!el) return;
+    if (!el || el.classList.contains('omitido')) return;
     const v = Number(el.dataset.v);
     if (e.target.closest('.marca-historia')) {
       verHistoria(v);
@@ -314,12 +325,16 @@
             {@const k = clave(pos.libro, pos.cap, x.v)}
             {#if ui.cap.titulos[x.v]}<span class="subtitulo">{ui.cap.titulos[x.v]}</span>{/if}
             {#snippet verso()}
-              <span class="v" class:sel={ui.seleccion.includes(x.v)} class:leyendo={ui.leyendo === x.v} data-v={x.v}><span class="num">{x.v}</span><span class="t" data-ver={ver?.id} data-m={usuario.subrayados[k]}>{x.texto}</span>{#if notasPorClave[k]}<span class="marca-nota" title={t('lector.notasAqui')}>{notasPorClave[k]}</span>{/if}{#if retro[k]}<span class="marca-retro" title={t('lector.mencionado')}>↩{retro[k].length}</span>{/if}{#if conHistoria && INDICE[k]}<span class="marca-historia" role="button" tabindex="-1" title={t('his.marca')}>{t('his.marcaCorta')}</span>{/if}</span>
+              {#if x.omitido}
+                <span class="v omitido" data-v={x.v}><span class="num">{x.v}</span><span class="t">{t('lector.omitido', { v: ver?.id })}</span></span>
+              {:else}
+              <span class="v" class:sel={ui.seleccion.includes(x.v)} class:leyendo={ui.leyendo === x.v} data-v={x.v}><span class="num">{x.hasta ? `${x.v}–${x.hasta}` : x.v}</span><span class="t" data-ver={ver?.id} data-m={usuario.subrayados[k]}>{x.texto}</span>{#if notasPorClave[k]}<span class="marca-nota" title={t('lector.notasAqui')}>{notasPorClave[k]}</span>{/if}{#if retro[k]}<span class="marca-retro" title={t('lector.mencionado')}>↩{retro[k].length}</span>{/if}{#if conHistoria && INDICE[k]}<span class="marca-historia" role="button" tabindex="-1" title={t('his.marca')}>{t('his.marcaCorta')}</span>{/if}</span>
+              {/if}
             {/snippet}
             {#if par}
               <div class="fila">
                 {@render verso()}
-                <span class="p2" data-v={x.v}><span class="num">{x.v}</span><span class="t" data-ver={par.id} data-m={usuario.subrayados[k]}>{ui.cap.paralelo[x.v] || '—'}</span></span>
+                <span class="p2" data-v={x.v}><span class="num">{x.hasta ? `${x.v}–${x.hasta}` : x.v}</span><span class="t" data-ver={par.id} data-m={usuario.subrayados[k]}>{textoParalelo(x) || '—'}</span></span>
               </div>
             {:else}
               {@render verso()}{' '}
