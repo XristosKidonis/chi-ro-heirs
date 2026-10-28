@@ -287,7 +287,22 @@
             </div>
           {/if}
         </div>
+        {#if ui.cap.paralelo && usuario.ajustes.paralela}
+          <!-- la principal no cargó, pero la paralela sí: se puede leer igual -->
+          <div class="solo-paralela">
+            <span class="etiqueta-ui">{t('lector.mientrasTanto', { v: info(usuario.ajustes.paralela)?.id })}</span>
+            <div class="texto">
+              {#each Object.entries(ui.cap.paralelo) as [v, texto] (v)}<span class="v"><span class="num">{v}</span><span class="t">{texto}</span></span>{' '}{/each}
+            </div>
+          </div>
+        {/if}
       {:else}
+        {#if usuario.ajustes.paralela && ui.cap.errorParalelo && !ui.cap.cargando}
+          <div class="aviso-paralela">
+            <p>{t('lector.paralelaNo', { v: usuario.ajustes.paralela, e: ui.cap.errorParalelo })}</p>
+            <button class="boton secundario" onclick={recargarCapitulo}>{t('lector.reintentar')}</button>
+          </div>
+        {/if}
         {#if par}
           <div class="cabeza-paralelo">
             <span class="etiqueta-ui">{ver?.id} · {ver?.nombre}</span><span class="etiqueta-ui">{par.id} · {par.nombre}</span>
@@ -342,7 +357,6 @@
             {#if !itemsMargen.length}<p class="m-vacio">{t('margen.vacio')}</p>{/if}
           </aside>
         {/if}
-        {#if ui.cap.errorParalelo}<p class="nota-pie">{t('lector.paralelaNo', { e: ui.cap.errorParalelo })}</p>{/if}
         <p class="pista-lectura">{t('lec.pista')}</p>
         <p class="licencia">{ver?.licencia}{par ? ` · ${par.licencia}` : ''}</p>
       {/if}

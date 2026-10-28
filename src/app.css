@@ -986,3 +986,9 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
 /* Palabra bajo el mouse y palabra elegida para estudiar (CSS Custom Highlight API) */
 ::highlight(palabra-encima) { background-color: rgba(24, 24, 24, 0.07); text-decoration: underline; text-decoration-color: rgba(24, 24, 24, 0.35); text-underline-offset: 3px; }
 ::highlight(palabra-elegida) { background-color: rgba(24, 24, 24, 0.1); text-decoration: underline 1.5px; text-decoration-color: var(--tinta); text-underline-offset: 3px; }
+
+/* Paralela que no cargó: aviso arriba, a la vista, con reintento */
+.aviso-paralela { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin: 0 0 22px; padding: 12px 14px; border: 1px solid var(--linea); font: 400 13px/1.5 var(--f-ui); color: var(--tinta-2); }
+.aviso-paralela p { margin: 0; flex: 1 1 280px; }
+.solo-paralela { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--linea); }
+.solo-paralela .texto { margin-top: 14px; }
