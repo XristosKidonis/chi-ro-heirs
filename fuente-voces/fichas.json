@@ -1,0 +1,237 @@
+{
+ "en_GB-alan-low": {
+  "ficha": "# Model card for alan (low)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: https://github.com/MycroftAI/mimic3-voices/blob/master/voices/en_UK/apope_low\n* License: See URL\n\n## Training\n\nFinetuned from U.S. English Ryan voice (low quality).\n",
+  "bytes": 63104526,
+  "ruta": "en/en_GB/alan/low/en_GB-alan-low.onnx"
+ },
+ "en_GB-alan-medium": {
+  "ficha": "# Model card for alan (medium)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/MycroftAI/mimic3-voices/blob/master/voices/en_UK/apope_low\n* License: See URL\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_GB/alan/medium/en_GB-alan-medium.onnx"
+ },
+ "en_GB-alba-medium": {
+  "ficha": "# Model card for alba (medium)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://datashare.ed.ac.uk/handle/10283/3270\n* License: https://creativecommons.org/licenses/by/4.0/\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_GB/alba/medium/en_GB-alba-medium.onnx"
+ },
+ "en_GB-aru-medium": {
+  "ficha": "# Model card for aru (medium)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 12\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://www.liverpool.ac.uk/architecture/research/acoustics-research-unit/speech-corpus/\n* License: https://creativecommons.org/licenses/by/4.0/\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 76754097,
+  "ruta": "en/en_GB/aru/medium/en_GB-aru-medium.onnx"
+ },
+ "en_GB-cori-high": {
+  "ficha": "# Model card for cori (high)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 1\n* Quality: high\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://librivox.org\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUK English female voice. Single Speaker. Trained from scratch on high quality settings for 500 epochs. I put together the dataset, which ended up with about 24 hours of recordings. All recordings came from LibriVox.org.\n",
+  "bytes": 114219352,
+  "ruta": "en/en_GB/cori/high/en_GB-cori-high.onnx"
+ },
+ "en_GB-cori-medium": {
+  "ficha": "# Model card for cori (medium)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://librivox.org\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUK English female voice. Single Speaker. Trained from scratch on medium quality settings for 640 epochs. I put together the dataset, which ended up with about 24 hours of recordings. All recordings came from LibriVox.org.\n",
+  "bytes": 63531379,
+  "ruta": "en/en_GB/cori/medium/en_GB-cori-medium.onnx"
+ },
+ "en_GB-jenny_dioco-medium": {
+  "ficha": "# Model card for jenny_dioco (medium)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/dioco-group/jenny-tts-dataset\n* License: See URL\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_GB/jenny_dioco/medium/en_GB-jenny_dioco-medium.onnx"
+ },
+ "en_GB-northern_english_male-medium": {
+  "ficha": "# Model card for northern_english_male (medium)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: http://www.openslr.org/83/\n* License: CC-BY-SA 4.0 International\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_GB/northern_english_male/medium/en_GB-northern_english_male-medium.onnx"
+ },
+ "en_GB-semaine-medium": {
+  "ficha": "# Model card for semaine (medium)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 4\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/marytts/dfki-semaine-data\n* License: http://creativecommons.org/licenses/by-nc-sa/4.0/\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 76737711,
+  "ruta": "en/en_GB/semaine/medium/en_GB-semaine-medium.onnx"
+ },
+ "en_GB-southern_english_female-low": {
+  "ficha": "# Model card for southern_english_female (low)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: http://www.openslr.org/83/\n* License: CC-BY-SA 4.0 International\n\n## Training\n\nFinetuned from U.S. English Ryan voice (low quality).\n",
+  "bytes": 63104526,
+  "ruta": "en/en_GB/southern_english_female/low/en_GB-southern_english_female-low.onnx"
+ },
+ "en_GB-vctk-medium": {
+  "ficha": "# Model card for vctk (medium)\n\n* Language: en_GB (English, Great Britain)\n* Speakers: 109\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://datashare.ed.ac.uk/handle/10283/3443\n* License: https://creativecommons.org/licenses/by/4.0/\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 76952753,
+  "ruta": "en/en_GB/vctk/medium/en_GB-vctk-medium.onnx"
+ },
+ "en_US-amy-low": {
+  "ficha": "# Model card for amy (low)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: https://github.com/MycroftAI/mimic3-voices\n* License: See URL\n\n## Training\n\nFinetuned from U.S. English Ryan voice (low quality).\n",
+  "bytes": 63104526,
+  "ruta": "en/en_US/amy/low/en_US-amy-low.onnx"
+ },
+ "en_US-amy-medium": {
+  "ficha": "# Model card for amy (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/MycroftAI/mimic3-voices\n* License: See URL\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_US/amy/medium/en_US-amy-medium.onnx"
+ },
+ "en_US-arctic-medium": {
+  "ficha": "# Model card for arctic (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 18\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: http://www.festvox.org/cmu_arctic/\n* License: See LICENSE file\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 76766385,
+  "ruta": "en/en_US/arctic/medium/en_US-arctic-medium.onnx"
+ },
+ "en_US-bryce-medium": {
+  "ficha": "# Model card for bryce (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUS English male voice. Single Speaker. Finetuned for an additional 1000 epochs from an unreleased voice which had 2500 epochs. This is my voice, I only recorded about 750 samples.\n",
+  "bytes": 63531379,
+  "ruta": "en/en_US/bryce/medium/en_US-bryce-medium.onnx"
+ },
+ "en_US-danny-low": {
+  "ficha": "# Model card for danny (low)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: https://github.com/MycroftAI/mimic3-voices\n* License: See URL\n\n## Training\n\nFinetuned from U.S. English Ryan voice (low quality).\n",
+  "bytes": 63104526,
+  "ruta": "en/en_US/danny/low/en_US-danny-low.onnx"
+ },
+ "en_US-hfc_female-medium": {
+  "ficha": "# Model card for hfc_female (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://ast-astrec.nict.go.jp/en/release/hi-fi-captain/\n* License: https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_US/hfc_female/medium/en_US-hfc_female-medium.onnx"
+ },
+ "en_US-hfc_male-medium": {
+  "ficha": "# Model card for hfc_male (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://ast-astrec.nict.go.jp/en/release/hi-fi-captain/\n* License: https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx"
+ },
+ "en_US-joe-medium": {
+  "ficha": "# Model card for joe (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/OHF-Voice/voice-datasets\n* License: CC0\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_US/joe/medium/en_US-joe-medium.onnx"
+ },
+ "en_US-john-medium": {
+  "ficha": "# Model card for john (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://librivox.org\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUS English male voice. Single Speaker. Finetuned from Kristin (above) on medium quality settings for an additional 600 epochs. I put together the dataset, which ended up with about 12.5 hours of recordings. All recordings came from LibriVox.org.\n",
+  "bytes": 63531379,
+  "ruta": "en/en_US/john/medium/en_US-john-medium.onnx"
+ },
+ "en_US-kathleen-low": {
+  "ficha": "# Model card for kathleen (low)\n\n* Language: en_US (English, United Staets)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: https://github.com/rhasspy/dataset-voice-kathleen\n* License: CC0\n\n## Training\n\nFinetuned from U.S. English Ryan voice (low quality).\n",
+  "bytes": 63104526,
+  "ruta": "en/en_US/kathleen/low/en_US-kathleen-low.onnx"
+ },
+ "en_US-kristin-medium": {
+  "ficha": "# Model card for kristin (medium)\n\n* Language: en_US(English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://librivox.org\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUS English female voice. Single Speaker. Trained from scratch on medium quality settings for 2000 epochs. I put together the dataset, which ended up with about 11.5 hours of recordings. All recordings came from LibriVox.org.\n",
+  "bytes": 63531379,
+  "ruta": "en/en_US/kristin/medium/en_US-kristin-medium.onnx"
+ },
+ "en_US-kusal-medium": {
+  "ficha": "# Model card for kusal (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/MycroftAI/mimic2\n* License: See URL\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_US/kusal/medium/en_US-kusal-medium.onnx"
+ },
+ "en_US-l2arctic-medium": {
+  "ficha": "# Model card for l2arctic (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 24\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://www.isca-speech.org/archive/interspeech_2018/zhao18b_interspeech.html\n* License: https://creativecommons.org/licenses/by-nc/4.0/\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 76778673,
+  "ruta": "en/en_US/l2arctic/medium/en_US-l2arctic-medium.onnx"
+ },
+ "en_US-lessac-high": {
+  "ficha": "# Model card for lessac (high)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: high\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://www.cstr.ed.ac.uk/projects/blizzard/2013/lessac_blizzard2013/\n* License: https://www.cstr.ed.ac.uk/projects/blizzard/2013/lessac_blizzard2013/license.html\n\n## Training\n\nTrained from scratch.\n",
+  "bytes": 113895201,
+  "ruta": "en/en_US/lessac/high/en_US-lessac-high.onnx"
+ },
+ "en_US-lessac-low": {
+  "ficha": "# Model card for lessac (low)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: https://www.cstr.ed.ac.uk/projects/blizzard/2013/lessac_blizzard2013/\n* License: https://www.cstr.ed.ac.uk/projects/blizzard/2013/lessac_blizzard2013/license.html\n\n## Training\n\nTrained from scratch.\n",
+  "bytes": 63201294,
+  "ruta": "en/en_US/lessac/low/en_US-lessac-low.onnx"
+ },
+ "en_US-lessac-medium": {
+  "ficha": "# Model card for lessac (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://www.cstr.ed.ac.uk/projects/blizzard/2013/lessac_blizzard2013/\n* License: https://www.cstr.ed.ac.uk/projects/blizzard/2013/lessac_blizzard2013/license.html\n\n## Training\n\nTrained from scratch.\n",
+  "bytes": 63201294,
+  "ruta": "en/en_US/lessac/medium/en_US-lessac-medium.onnx"
+ },
+ "en_US-libritts-high": {
+  "ficha": "# Model card for libritts (high)\n\n* Language: en_US (English, United States)\n* Speakers: 904\n* Quality: high\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: http://www.openslr.org/60/\n* License: CC BY 4.0\n\n## Training\n\nTrained from scratch on train-clean-360.\n",
+  "bytes": 136673811,
+  "ruta": "en/en_US/libritts/high/en_US-libritts-high.onnx"
+ },
+ "en_US-libritts_r-medium": {
+  "ficha": "# Model card for libritts_r (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 904\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: http://www.openslr.org/141/\n* License: CC BY 4.0\n\n## Training\n\nFine-tuned from English lessac medium on train-clean-360.\n",
+  "bytes": 81472438,
+  "ruta": "en/en_US/libritts_r/medium/en_US-libritts_r-medium.onnx"
+ },
+ "en_US-ljspeech-high": {
+  "ficha": "# Model card for ljspeech (high)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: high\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://keithito.com/LJ-Speech-Dataset/\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUS English female voice. Single speaker. Trained from scratch for 1000 epochs on medium quality settings using the LJ Speech dataset. I reencoded the recordings to a bit rate of 22500 Hz so it would match other voices released for Piper TTS.\n",
+  "bytes": 114199011,
+  "ruta": "en/en_US/ljspeech/high/en_US-ljspeech-high.onnx"
+ },
+ "en_US-ljspeech-medium": {
+  "ficha": "# Model card for ljspeech (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://keithito.com/LJ-Speech-Dataset/\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUS English female voice. Single speaker. Trained from scratch for 1000 epochs on medium quality settings using the LJ Speech dataset. I reencoded the recordings to a bit rate of 22500 Hz so it would match other voices released for Piper TTS.\n",
+  "bytes": 63531379,
+  "ruta": "en/en_US/ljspeech/medium/en_US-ljspeech-medium.onnx"
+ },
+ "en_US-mike-medium": {
+  "ficha": "# Model card for mike (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/OHF-Voice/voice-datasets\n* License: CC0\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63221984,
+  "ruta": "en/en_US/mike/medium/en_US-mike-medium.onnx"
+ },
+ "en_US-norman-medium": {
+  "ficha": "# Model card for norman (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://librivox.org\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUS English male voice. Single Speaker. Trained from scratch on medium quality settings for 1200 epochs. I put together the dataset, which ended up with about 15.5 hours of recordings. All recordings came from LibriVox.org. I forgot to save the ckpt file on this one, sorry.\n",
+  "bytes": 63531379,
+  "ruta": "en/en_US/norman/medium/en_US-norman-medium.onnx"
+ },
+ "en_US-reza_ibrahim-medium": {
+  "ficha": "# Model card for reza_ibrahim\n\n* Language: fa_IR/en_US (Persian, Iran)/(English, US)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://huggingface.co/datasets/mah92/Hedayatfar-Persian-Quran-Audio-Dataset\n* URL2: https://huggingface.co/datasets/mah92/Ibrahim-Walk-English-Quran-Audio-Dataset\n\n* License: CC0\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n\n## Credits\n\nDataset by RezaHedayatfar and IbrahimWalk.\nTrained by Ali Mahmoudi (@mah92)\nSpecial thanks to Masoud Azizi (@Mablue ), Amirreza Ramezani (@brightening-eyes ), and Dr. Hamid Jafari (Khaneh Noor Iranian Basir).\n",
+  "bytes": 63511038,
+  "ruta": "en/en_US/reza_ibrahim/medium/en_US-reza_ibrahim-medium.onnx"
+ },
+ "en_US-ryan-high": {
+  "ficha": "# Model card for ryan (high)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: high\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://www.kaggle.com/datasets/roholazandie/ryanspeech\n* License: CC BY-NC-SA 4.0\n\n## Training\n\nTrained from scratch.\n",
+  "bytes": 120786792,
+  "ruta": "en/en_US/ryan/high/en_US-ryan-high.onnx"
+ },
+ "en_US-ryan-low": {
+  "ficha": "# Model card for ryan (low)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: https://www.kaggle.com/datasets/roholazandie/ryanspeech\n* License: CC BY-NC-SA 4.0\n\n## Training\n\nTrained from scratch.\n",
+  "bytes": 63104526,
+  "ruta": "en/en_US/ryan/low/en_US-ryan-low.onnx"
+ },
+ "en_US-ryan-medium": {
+  "ficha": "# Model card for ryan (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://www.kaggle.com/datasets/roholazandie/ryanspeech\n* License: CC BY-NC-SA 4.0\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "en/en_US/ryan/medium/en_US-ryan-medium.onnx"
+ },
+ "en_US-sam-medium": {
+  "ficha": "# Model card for sam (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/Sam-Accenture-Non-Binary-Voice/non-binary-voice-files\n* License: https://www.apache.org/licenses/LICENSE-2.0.txt\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 62950044,
+  "ruta": "en/en_US/sam/medium/en_US-sam-medium.onnx"
+ },
+ "es_AR-daniela-high": {
+  "ficha": "# Model card for daniela (high)\n\n* Language: es_AR (Spanish, Argentina)\n* Speakers: 1\n* Quality: high\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://www.openslr.org/61/\n* License: Attribution-ShareAlike 4.0 International\n\n## Training\n\nTrained by: https://huggingface.co/larcanio/piper-voices\nFinetuned from U.S. English lessac voice (high quality).\n",
+  "bytes": 114199011,
+  "ruta": "es/es_AR/daniela/high/es_AR-daniela-high.onnx"
+ },
+ "es_ES-carlfm-x_low": {
+  "ficha": "# Model card for carlfm (x_low)\n\n* Language: es_ES (Spanish, Spain)\n* Speakers: 1\n* Quality: x_low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: https://github.com/carlfm01/my-speech-datasets\n* License: Public domain\n\n## Training\n\nTrained from scratch.\n",
+  "bytes": 28130791,
+  "ruta": "es/es_ES/carlfm/x_low/es_ES-carlfm-x_low.onnx"
+ },
+ "es_ES-davefx-medium": {
+  "ficha": "# Model card for davefx (medium)\n\n* Language: es_ES (Spanish, Spain)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://github.com/OHF-Voice/voice-datasets\n* License: CC0\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "es/es_ES/davefx/medium/es_ES-davefx-medium.onnx"
+ },
+ "es_ES-mls_10246-low": {
+  "ficha": "# Model card for mls_10246 (low)\n\n* Language: es_ES (Spanish, Spain)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: http://www.openslr.org/94/\n* License: CC BY 4.0\n\n## Training\n\nFinetuned from U.S. English Ryan voice (low quality).\n",
+  "bytes": 63104526,
+  "ruta": "es/es_ES/mls_10246/low/es_ES-mls_10246-low.onnx"
+ },
+ "es_ES-mls_9972-low": {
+  "ficha": "# Model card for mls_9972 (low)\n\n* Language: es_ES (Spanish, Spain)\n* Speakers: 1\n* Quality: low\n* Samplerate: 16,000Hz\n\n## Dataset\n\n* URL: http://www.openslr.org/94/\n* License: CC BY 4.0\n\n## Training\n\nFinetuned from U.S. English Ryan voice (low quality).\n",
+  "bytes": 63104526,
+  "ruta": "es/es_ES/mls_9972/low/es_ES-mls_9972-low.onnx"
+ },
+ "es_ES-sharvard-medium": {
+  "ficha": "# Model card for sharvard (medium)\n\n* Language: es_ES (Spanish, Spain)\n* Speakers: 2\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://datashare.ed.ac.uk/handle/10283/574\n* License: http://creativecommons.org/licenses/by/3.0/\n* Paper: https://www.tandfonline.com/doi/abs/10.3109/14992027.2014.907507\n\n## Training\n\nFinetuned from U.S. English lessac voice (medium quality).\n",
+  "bytes": 76733615,
+  "ruta": "es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx"
+ },
+ "es_MX-ald-medium": {
+  "ficha": "# Model card for ald (medium)\n\n* Language: es_MX (Spanish, Mexico)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://huggingface.co/datasets/rmcpantoja/Ald_Mexican_Spanish_speech_dataset\n* License: http://unlicense.org\n\n## Training\n\nFinetuned from Spanish davefx voice (medium quality).\n",
+  "bytes": 63201294,
+  "ruta": "es/es_MX/ald/medium/es_MX-ald-medium.onnx"
+ },
+ "es_MX-ald-x_low": {
+  "ficha": "# Model card for ald (x-low)\n\n* Language: es_MX (Spanish, Mexico)\n* Speakers: 1\n* Quality: x-low\n* Samplerate: 22,050Hz\n\n## Dataset\n\nSynthetic speech dataset generated using the original es_MX-ald-medium Piper TTS model.\n\nThe dataset contains approximately 8 hours of audio generated from Spanish sentences obtained from the Tatoeba Project:\nhttps://tatoeba.org/en/downloads\n\n## Training\n\nThis model was trained from scratch using the synthetic dataset generated with the es_MX-ald-medium voice.\n\nThe goal of this model is to provide a smaller and faster alternative with fewer parameters.",
+  "bytes": 20986952,
+  "ruta": "es/es_MX/ald/x_low/es_MX-ald-x_low.onnx"
+ },
+ "es_MX-claude-high": {
+  "ficha": "# Model card for claude (high)\n\n* Language: es_MX (Spanish, Mexico)\n* Speakers: 1\n* Quality: high\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://huggingface.co/spaces/HirCoir/Piper-TTS-Spanish\n* License: apache-2.0\n\n## Training\n\nSee URL above\n",
+  "bytes": 63122309,
+  "ruta": "es/es_MX/claude/high/es_MX-claude-high.onnx"
+ }
+}
