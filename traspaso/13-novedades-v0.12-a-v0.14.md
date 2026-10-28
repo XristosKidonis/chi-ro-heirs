@@ -231,6 +231,16 @@ El dueño pidió pensar «qué botones deberían estar realmente abajo y cuáles
   - El detector de choques revisa también los dos menús abiertos (12 pantallas).
   - Resultado: 34 de 34 en Chromium y WebKit, sin choques.
 
+## Versión web con el diseño nuevo (28 de octubre)
+
+- **El pedido:** el dueño preguntó si la app funciona en iOS. No hay app para iPhone: hace falta una cuenta de Apple Developer (99 USD al año) y pasar por TestFlight o la App Store. La alternativa es la versión web en Safari → «Agregar a pantalla de inicio».
+- **El cambio:** con su aprobación se pasó `diseno/white-industrial` a **`main`** como avance directo (36 commits, sin conflictos). Desde entonces `web.yml` publica la web con todo lo nuevo; antes, la web mostraba el diseño viejo.
+- **Antes de publicar:** se compiló la web en local (`WEB=1 npx vite build`, 241 MB, de los cuales `biblias.db` son 167 MB). Se probó servida en `/chi-ro-heirs/` (`vite preview` **con** `WEB=1`; sin esa variable sirve en `/` y nada carga): 34 de 34 en Chromium y WebKit.
+- **Pendiente en iPhone:**
+  - La web no guarda la base de forma explícita: depende de la caché del navegador, y Safari podría volver a bajar los 167 MB.
+  - Al abrirla, la base ocupa unos 330 MB de memoria por un momento (el archivo más su copia en WebAssembly). En un iPhone viejo podría cerrarse.
+  - **Mejora posible:** guardarla con la Cache API o en OPFS, y no copiarla dos veces.
+
 ## Pendientes sin verificar en el mundo real
 
 | Pendiente | Por qué falta |

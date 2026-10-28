@@ -11,7 +11,9 @@ La carpeta [`traspaso/`](traspaso/00-LEEME-PRIMERO.md) explica cómo se construy
 ## Probar en el navegador
 
 Versión web de prueba, sin instalar nada: **https://xristoskidonis.github.io/chi-ro-heirs/**
-Se actualiza sola cada vez que cambia `main` (tarda 2 o 3 minutos). La primera visita descarga unos 88 MB de Biblias; después quedan guardadas en el navegador. Tus notas y subrayados de la web viven solo en ese navegador, separados de los de la app de escritorio.
+Se actualiza sola cada vez que cambia `main` (tarda 2 o 3 minutos). La primera visita descarga unos 170 MB de Biblias; después el navegador las guarda en su caché (puede volver a bajarlas si la limpia).
+
+**En iPhone o iPad** (todavía no hay app para iOS): abre el enlace en Safari → Compartir → **Agregar a pantalla de inicio**. Queda con su icono, como una app. Tus notas y subrayados de la web viven solo en ese navegador, separados de los de la app de escritorio.
 
 ## Instalar (Mac y Windows)
 
@@ -77,7 +79,7 @@ Por la licencia, el texto de la NTV y la NLT no se guarda en disco: se pide al l
 
 ## Marca
 
-Logotipo (estilo Aura, en modo claro y oscuro), monogramas y recursos en [`marca/`](marca/). Guía de marca completa: https://claude.ai/artifact/V2rWgxXXhJef5VdWbXjq3w
+Logotipo tipográfico `CHI—RO` (estética *white industrial*), icono y recursos en [`marca/`](marca/). Guía de marca completa: https://claude.ai/artifact/V2rWgxXXhJef5VdWbXjq3w
 
 ## Desarrollo
 
