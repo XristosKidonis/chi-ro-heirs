@@ -32,6 +32,6 @@ export default defineConfig({
   clearScreen: false,
   server: { port: 1420, strictPort: true },
   envPrefix: ['VITE_', 'TAURI_ENV_'],
-  optimizeDeps: { exclude: ['@sqlite.org/sqlite-wasm'] },
+  optimizeDeps: { exclude: ['@sqlite.org/sqlite-wasm', 'onnxruntime-web'] },
   build: { target: 'es2022', sourcemap: false },
 });

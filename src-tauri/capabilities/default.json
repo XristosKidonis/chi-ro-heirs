@@ -9,7 +9,14 @@
     "sql:allow-execute",
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://api.nlt.to/*" }]
+      "allow": [
+        { "url": "https://api.nlt.to/*" },
+        { "url": "https://4.dbp4.org/*" },
+        { "url": "https://huggingface.co/*" },
+        { "url": "https://*.huggingface.co/*" },
+        { "url": "https://*.hf.co/*" },
+        { "url": "https://cdn.jsdelivr.net/*" }
+      ]
     },
     "dialog:allow-save",
     "fs:allow-write-file",

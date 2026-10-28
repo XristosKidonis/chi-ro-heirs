@@ -345,6 +345,37 @@ await paso('ambiente: música grabada dentro de la app, sonidos, apagado al Amé
   await pag.waitForFunction(() => /^Juan\s*3/.test(document.querySelector('.cap-titulo')?.textContent || ''));
 });
 
+await paso('voz narrada (Bible.is simulado): clave, Biblias en audio y lectura que sigue el texto', async () => {
+  const pedidos = [];
+  await pag.route('https://4.dbp4.org/**', (r) => {
+    const u = new URL(r.request().url());
+    pedidos.push(u.pathname);
+    const j = (d) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(d) });
+    if (u.searchParams.get('key') !== 'CLAVE-PRUEBA') return r.fulfill({ status: 401 });
+    if (u.pathname.endsWith('/bibles')) return j({ data: u.searchParams.get('language_code') === 'spa' ? [{ abbr: 'SPNRVR', name: 'Reina Valera 1960', filesets: { 'dbp-prod': [{ id: 'SPNRVRO2DA', type: 'audio', size: 'OT' }, { id: 'SPNRVRN2DA', type: 'audio', size: 'NT' }] } }] : [], meta: { pagination: { last_page: 1 } } });
+    if (u.pathname.includes('/bibles/filesets/')) return j({ data: [{ path: `${DIRECCION}musica/castillo-fuerte.mp3` }] });
+    if (u.pathname.includes('/timestamps/')) return j({ data: Array.from({ length: 40 }, (_, i) => ({ verse_start: String(i + 1), timestamp: i * 1.5 })) });
+    return r.fulfill({ status: 404 });
+  });
+  await ir(pag, 'juan 3');
+  await pag.waitForFunction(() => /^Juan\s*3/.test(document.querySelector('.cap-titulo')?.textContent || ''));
+  await pag.click('.cab-accion[title="Ajustes"]');
+  await pag.click('.voz-motores .amb-musica:has-text("Narrada")');
+  await pag.fill('input[placeholder*="Bible Brain"]', 'CLAVE-PRUEBA');
+  await pag.click('button:has-text("Buscar Biblias en audio")');
+  await pag.waitForSelector('#aj-audio-es option:has-text("Reina Valera 1960")', { state: 'attached' });
+  await pag.keyboard.press('Escape');
+  await pag.locator('.texto [data-v="16"] .num').click();
+  await pag.click('.lb-control[title="Leer en voz alta"]');
+  await pag.waitForFunction(() => Number(document.querySelector('.v.leyendo')?.dataset.v) >= 16, null, { timeout: 15000 });
+  if (!pedidos.some((x) => x.endsWith('/SPNRVRN2DA/JHN/3'))) throw new Error('no pidió Juan 3 del Nuevo Testamento: ' + pedidos.join(' '));
+  await pag.click('.lb-control[title="Detener lectura"]');
+  // vuelve a la voz del equipo para el resto de las pruebas
+  await pag.click('.cab-accion[title="Ajustes"]');
+  await pag.click('.voz-motores .amb-musica:has-text("Voz del equipo")');
+  await pag.keyboard.press('Escape');
+});
+
 await paso('Historia: expediente, ¿facto o fake?, línea del tiempo y lado a lado desde el lector', async () => {
   await pag.click('.cab-link:has-text("Historia")');
   await pag.waitForSelector('.his-prueba');

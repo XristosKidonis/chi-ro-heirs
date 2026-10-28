@@ -46,7 +46,7 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 | Hábito | «Amén» al terminar un capítulo, cuadrícula de cobertura de los 1189 capítulos (sin rachas ni porcentajes), cintas por capítulo y versículos guardados |
 | Memoria | Versículos que se desvanecen palabra a palabra, con repaso espaciado |
 | Láminas | Cualquier versículo como fondo de pantalla (celular o computadora) o para compartir (post 4:5, historia 9:16). La galería abre con tres colecciones neutras, Tipografía (Aura, Primario, Pedrería), Color (Ultramar, Riso amarillo y verde, Calor) e Imagen (Aerosol, Grabado), y el color aparece solo al entrar |
-| Voz | Lectura en voz alta con las voces del sistema |
+| Voz | Lectura en voz alta, versículo a versículo y marcando el que suena, con tres motores: las voces del equipo (eligiendo voz, las naturales primero); una voz natural con IA (Piper) que se descarga una vez y lee sin internet; o la Biblia narrada por personas de Bible.is (API Bible Brain, con clave gratuita del usuario) |
 | Respaldo | Exportar e importar todo en un JSON legible |
 
 **Atajos de teclado:**
@@ -118,6 +118,8 @@ Cada fila guarda la fecha de cambio y una marca de borrado, ya preparada para la
 - **Referencias cruzadas:** [OpenBible.info](https://www.openbible.info/labs/cross-references/), CC BY.
 - **Léxico Strong:** [Open Scriptures](https://github.com/openscriptures/strongs), CC BY-SA.
 - **Interlineal hebreo y griego, léxicos:** [STEP Bible](https://www.stepbible.org) (Tyndale House, Cambridge), datos TAHOT, TAGNT, TBESH y TBESG, CC BY 4.0.
+- **Voz natural:** voces Piper de `rhasspy/piper-voices` (Hugging Face), solo las de licencia libre (Apache 2.0, Unlicense, CC0, CC BY-SA 4.0, dominio público); se descargan desde la app y se guardan en IndexedDB. La pronunciación usa piper-phonemize con eSpeak NG (GPL-3.0), que se descarga aparte desde jsDelivr y no forma parte de la app; la inferencia, ONNX Runtime Web (MIT), sí va incluida.
+- **Biblia narrada:** audio de Faith Comes By Hearing (Bible.is) mediante su API Bible Brain v4; cada usuario pone su propia clave gratuita.
 - **Música del ambiente:** 19 grabaciones de Wikimedia Commons, de dominio público o con licencia libre (CC0, CC BY 3.0, CC BY-SA 4.0), recortadas, niveladas y pasadas a MP3. Los sonidos (lluvia, chimenea, viento, olas) se generan en la app. Crédito de cada pista en `public/musica/LICENCIAS.txt`; se buscan con `herramientas/traer_musica.py`.
 - **Imágenes de Historia:** pinturas, grabados, manuscritos y fotografías antiguas de dominio público (Caravaggio, Giotto, Tiziano, Tissot, Doré, el Códice Mediceo de Tácito, P52, P46, el Sinaítico, el rollo de Isaías, American Colony, Bonfils…) y fotos con licencia Creative Commons de algunos objetos, todas de Wikimedia Commons. Cada imagen muestra su crédito en la app; la lista completa está en `public/historia/LICENCIAS.txt`.
 - **Grabados:** Gustave Doré, *La Grande Bible de Tours* (1866), dominio público, vía [Project Gutenberg](https://www.gutenberg.org/ebooks/8710) («The Doré Bible Gallery»). Se obtienen con el flujo «Traer grabados» y `herramientas/preparar_grabados.py`.
