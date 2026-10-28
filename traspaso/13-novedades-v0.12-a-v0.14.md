@@ -255,6 +255,11 @@ El dueño pidió pensar «qué botones deberían estar realmente abajo y cuáles
   - Una copia dañada a propósito se recupera.
   - La suite (34 pasos) lo verifica en Chromium y, en WebKit efímero, el comportamiento del modo privado.
 - **«Más» en el iPhone:** en celular, «Estudiar» ya no muestra la palabra entre comillas (sigue marcada en el texto), así «Más» no se cae a una tercera línea.
+- ⚠️ **Incidente (web caída unos 30 minutos):**
+  - **El error:** la primera publicación de esto (`780b281`) reservaba la memoria según `Content-Length`. GitHub Pages manda `biblias.db` comprimida con gzip, así que esa cabecera dice 75 MB mientras llegan 175. La web mostraba «No se pudo abrir. La base de datos bíblica llegó más larga de lo esperado».
+  - **Por qué no se detectó antes:** las pruebas locales (`vite dev` y `vite preview`) no comprimen, y `curl -I` no pide compresión.
+  - **El arreglo** (`9d81cc1`): `biblias.version` es «huella tamaño», y la app reserva el tamaño real. Nunca usa `Content-Length`.
+  - **Regla desde ahora:** antes de pasar a `main`, probar la web compilada con un servidor que comprima como Pages (en esta sesión se usó un servidor Node con gzip que sirve `dist/` en `/chi-ro-heirs/`) y revisar la web publicada después del despliegue.
 
 ## Pendientes sin verificar en el mundo real
 

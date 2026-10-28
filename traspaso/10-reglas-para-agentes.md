@@ -36,6 +36,8 @@
   - Si se toca la interfaz: también `node pruebas/solapes.mjs <carpeta>`. **Nada se puede chocar** (pedido del dueño).
   - Para lo que importe en Mac: las dos con WebKit (`MOTOR=webkit` en la suite; `webkit` como segundo argumento en solapes).
   - Si se toca la NTV: probar también con la API real (solo en memoria; no guardar su texto en disco).
+  - Si se toca cómo la web baja o guarda archivos: probar la compilación web (`WEB=1 npx vite build`) servida en `/chi-ro-heirs/` **con compresión gzip**, como GitHub Pages. `vite preview` no comprime, y así se escapó un error que dejó la web caída (documento 13). Después de publicar, abrir la web real.
+  - Las pruebas se juntan: varios cambios y una sola tanda al final, siempre antes de publicar (pedido del dueño).
 - **Instaladores:** cada compilación crea una **release pública**. Solo con la frase del dueño «dale, publica la vX.Y.Z». **No reutilizar v0.9.0**: fue revertida y nunca se publicó. El proceso:
   1. Subir la versión en `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` y `src-tauri/Cargo.lock`.
   2. Si cambia el número mayor o menor, regenerar el arte con `node herramientas/instalador.mjs`.
