@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       que:
-        description: 'Qué traer: grabados (Doré), historia (imágenes para Historia) o musica (grabaciones para el Ambiente)'
+        description: 'Qué traer: grabados (Doré), historia (imágenes para Historia), musica (grabaciones para el Ambiente) o voces (voces Piper)'
         default: grabados
 
 permissions:
@@ -33,6 +33,25 @@ jobs:
           git commit -qm "Candidatos de imágenes para Historia (Wikimedia Commons)"
           git push -f origin historia-fuente
 
+  voces:
+    if: inputs.que == 'voces'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Hugging Face (fichas y modelos de voces Piper)
+        run: python3 herramientas/traer_voces.py
+
+      - name: Publicar en la rama voces-fuente
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout --orphan voces-fuente
+          git rm -rfq --cached .
+          git add fuente-voces
+          git commit -qm "Voces Piper: fichas y modelos para probar"
+          git push -f origin voces-fuente
+
   musica:
     if: inputs.que == 'musica'
     runs-on: ubuntu-latest
@@ -53,7 +72,7 @@ jobs:
           git push -f origin musica-fuente
 
   traer:
-    if: inputs.que != 'historia' && inputs.que != 'musica'
+    if: inputs.que != 'historia' && inputs.que != 'musica' && inputs.que != 'voces'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
