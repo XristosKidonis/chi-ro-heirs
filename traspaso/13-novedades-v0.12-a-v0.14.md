@@ -67,6 +67,12 @@ No todas las versiones se compilaron. Las que no tienen release quedaron incluid
 - **El error:** en la NTV/NLT, cuando un párrafo (`<p>`) empezaba en un versículo y terminaba en otro, el navegador no cerraba el `<verse_export>`. Los siguientes quedaban anidados dentro del primero, y ese primero se quedaba con el texto de todos. Por ejemplo, Apocalipsis 22:1 traía del 1 al 5.
 - **El arreglo** (`src/lib/nlt.js`, función `porVerseExport`): se recorre el documento en orden y cada texto va al `<verse_export>` más cercano que lo contiene, nunca al de afuera.
 - **La prueba** simula párrafos que cruzan versículos, como la API real (`pruebas/navegador.mjs`, función `falsaNLT`).
+- ⚠️ **Ese arreglo no alcanzó con la API real.**
+  - **Qué pasaba:** el 28 de octubre, con api.nlt.to real, Apocalipsis 22 salía con 14 versículos de 21. El texto del 3, 6, 10, 12, 14, 16 y 20 se pegaba al anterior.
+  - **La causa:** el HTML real deja un `<p>` suelto al final de cada párrafo, y el siguiente `<p class="body">` abre dentro del `<verse_export>` del versículo nuevo. Al corregirlo, el navegador saca ese texto fuera de su `<verse_export>`.
+  - **El arreglo (después de la v0.14.1):** `parsearNLT` ya no mira quién contiene a quién. Recorre el documento en orden y cada texto va al último versículo que empezó, por su `<verse_export>` o por su `<span class="vn">`. Quedó una sola función en vez de dos.
+  - **Verificado con la API real (NTV y NLT, en memoria):** Génesis 1, Salmos 23, Mateo 5, Juan 3, Romanos 8, Hechos 2 y Apocalipsis 22, todos con sus versículos completos.
+  - **La prueba simulada** ahora copia esa estructura y revisa que **cada** versículo traiga solo su texto. Con el parser anterior falla (17 versículos de 20).
 - **Láminas:** por defecto llevan el **versículo entero**, con la letra del tamaño que quepa. Los trozos para letra enorme quedan como opción y nunca terminan en «de», «la» o «y».
   - Si el texto supera las 60 palabras (`ENTERO_MAX`, varios versículos), se propone un trozo.
 
@@ -135,13 +141,14 @@ Primera sesión fuera de la nube, en la computadora del dueño.
   - **Playwright global:** `PLAYWRIGHT_DIR` debe apuntar a la carpeta de `npm root -g`, terminada en `\`.
   - **Disco sin dueño de archivos:** si el repositorio está en un disco que no registra dueños (por ejemplo, F:), git da «dubious ownership». Se resuelve con `safe.directory`.
   - **Para la app de escritorio** hacen falta Rust (rustup) y Visual Studio Build Tools con C++.
+  - **No correr las pruebas con `tauri dev` abierto.** Comparten el servidor de Vite y el paso del Ambiente se queda en «Cargando…»; después fallan en cadena los cuatro pasos siguientes. Con `npm run dev` solo, pasan los 32.
 
 ## Pendientes sin verificar en el mundo real
 
 | Pendiente | Por qué falta |
 |---|---|
 | Actualizador de punta a punta | Hace falta publicar una v0.14.2 para actualizar desde la v0.14.1 |
-| Apocalipsis 22 en la NTV real, sin versículos pegados | La sesión anterior no tenía acceso a api.nlt.to; el arreglo se probó con respuestas simuladas |
+| ~~Apocalipsis 22 en la NTV real, sin versículos pegados~~ | Verificado el 28 de octubre con la API real: el arreglo de la v0.13.1 no alcanzaba y se corrigió de nuevo (ver la v0.13.1). Falta que llegue a una versión publicada |
 | Bible Brain con una clave real | Solo se probó simulado. Puede que la URL base (`https://4.dbp4.org/api`) o el formato de respuesta necesiten ajustes |
 | Descarga real de las voces (Hugging Face y jsDelivr) en la app de escritorio, y que el audio arranque bien en Mac (WebKit) | No se probó fuera del navegador de pruebas |
 | «error sending request» al pedir la NTV en Windows | Pasó una vez; vigilar si se repite |

@@ -13,80 +13,44 @@ const QUITAR = '.vn, .tn, .a-tn, .tn-ref, .chapter-number, h2, h3, h4, .subhead'
 const NUMERO = '.vn, .vs_num, .verse-num, .versenum';
 
 // Convierte la respuesta HTML de la API en {versos: [{v, texto}], titulos: {v: título}}
+// Formato documentado: <verse_export vn="16"><span class="vn">16</span>texto…</verse_export>; también acepta
+// texto corrido con números sueltos (<span class="vn">16</span>texto…).
+// Ojo: el HTML real no está bien anidado. Un párrafo (<p>) abre en un versículo y sigue en los siguientes, y al
+// corregirlo el navegador deja <verse_export> anidados o saca el texto fuera del suyo (en Apocalipsis 22 el texto
+// del 3 quedaba dentro del <verse_export> del 1). Por eso no se mira quién contiene a quién: se recorre el
+// documento en orden y cada texto va al último versículo que empezó, por su <verse_export> o por su número.
 export function parsearNLT(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
-  const r = porVerseExport(doc);
-  return r.versos.length ? r : porNumeros(doc);
-}
-
-// Formato documentado: <verse_export vn="16"><span class="vn">16</span>texto…</verse_export>
-// Ojo: cuando un párrafo (<p>) empieza en un versículo y termina en otro, el navegador no cierra el
-// <verse_export> y los siguientes quedan anidados dentro del primero. Por eso se recorre el documento en orden
-// y cada texto va al <verse_export> más cercano que lo contiene, nunca al de afuera.
-function porVerseExport(doc) {
-  if (!doc.body.querySelector('verse_export')) return ordenar(new Map(), {});
-  const versos = new Map();
-  const titulos = {};
-  let pendiente = null;
-  const numero = (el) => parseInt(el.getAttribute('vn') || el.getAttribute('vs_num') || el.querySelector(`:scope > ${NUMERO.split(', ').join(', :scope > ')}`)?.textContent || '', 10);
-  const sumar = (n, x) => versos.set(n, `${versos.get(n) || ''}${x}`);
-  const recorrer = (nodo, n) => {
-    for (const hijo of nodo.childNodes) {
-      if (hijo.nodeType === 3) { if (n) sumar(n, hijo.textContent); continue; }
-      if (hijo.nodeType !== 1) continue;
-      if (hijo.tagName.toLowerCase() === 'verse_export') {
-        const m = numero(hijo) || n;
-        if (m && pendiente) { titulos[m] ??= pendiente; pendiente = null; }
-        recorrer(hijo, m);
-        continue;
-      }
-      if (hijo.matches('.subhead, h3, h4')) {
-        // un título al principio de un versículo es de ese versículo; si no, del que viene
-        if (n && !limpiar(versos.get(n))) titulos[n] ??= limpiar(hijo.textContent);
-        else pendiente = limpiar(hijo.textContent);
-        continue;
-      }
-      if (hijo.matches(`${QUITAR}, script, style`)) continue;
-      recorrer(hijo, n);
-      if (n && /^(P|DIV|BR|LI)$/.test(hijo.tagName)) sumar(n, ' ');
-    }
-  };
-  recorrer(doc.body, 0);
-  for (const [n, x] of versos) versos.set(n, limpiar(x));
-  for (const [n, x] of versos) if (!x) versos.delete(n);
-  return ordenar(versos, titulos);
-}
-
-// Respaldo: texto corrido con números de versículo sueltos (<span class="vn">16</span>texto…)
-function porNumeros(doc) {
   const versos = new Map();
   const titulos = {};
   let actual = 0;
   let pendiente = null;
+  const sumar = (x) => versos.set(actual, `${versos.get(actual) || ''}${x}`);
+  const empieza = (n) => {
+    if (!n) return;
+    actual = n;
+    if (pendiente) { titulos[n] ??= pendiente; pendiente = null; }
+  };
   const recorrer = (nodo) => {
     for (const hijo of nodo.childNodes) {
-      if (hijo.nodeType === 3) {
-        if (actual) versos.set(actual, `${versos.get(actual) || ''}${hijo.textContent}`);
-        continue;
-      }
+      if (hijo.nodeType === 3) { if (actual) sumar(hijo.textContent); continue; }
       if (hijo.nodeType !== 1) continue;
-      if (hijo.matches(NUMERO)) {
-        const n = parseInt(hijo.textContent, 10);
-        if (n) {
-          actual = n;
-          if (pendiente) { titulos[n] ??= pendiente; pendiente = null; }
-        }
+      if (hijo.matches(NUMERO)) { empieza(parseInt(hijo.textContent, 10)); continue; }
+      if (hijo.matches('.subhead, h3, h4')) {
+        // un título al principio de un versículo es de ese versículo; si no, del que viene
+        if (actual && !limpiar(versos.get(actual))) titulos[actual] ??= limpiar(hijo.textContent);
+        else pendiente = limpiar(hijo.textContent);
         continue;
       }
-      if (hijo.matches('.subhead, h3, h4')) { pendiente = limpiar(hijo.textContent); continue; }
-      if (hijo.matches('.tn, .a-tn, .tn-ref, .chapter-number, h2, script, style')) continue;
+      if (hijo.matches(`${QUITAR}, script, style`)) continue;
+      if (hijo.tagName.toLowerCase() === 'verse_export') empieza(parseInt(hijo.getAttribute('vn') || hijo.getAttribute('vs_num') || '', 10));
       recorrer(hijo);
-      if (/^(P|DIV|BR|LI)$/.test(hijo.tagName) && actual) versos.set(actual, `${versos.get(actual) || ''} `);
+      if (actual && /^(P|DIV|BR|LI)$/.test(hijo.tagName)) sumar(' ');
     }
   };
   recorrer(doc.body);
-  for (const [n, s] of versos) versos.set(n, limpiar(s));
-  for (const [n, s] of versos) if (!s) versos.delete(n);
+  for (const [n, x] of versos) versos.set(n, limpiar(x));
+  for (const [n, x] of versos) if (!x) versos.delete(n);
   return ordenar(versos, titulos);
 }
 

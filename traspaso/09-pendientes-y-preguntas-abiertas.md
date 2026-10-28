@@ -58,7 +58,7 @@
 | Pendiente | Cómo cerrarlo |
 |---|---|
 | Actualizador de punta a punta | Publicar una v0.14.2 (con la aprobación del dueño) y actualizar desde una v0.14.1 instalada |
-| Apocalipsis 22 en la NTV real, sin versículos pegados | Abrirlo con la NTV real; el arreglo de la v0.13.1 solo se probó simulado |
+| ~~Apocalipsis 22 en la NTV real, sin versículos pegados~~ | Probado con la API real el 28 de octubre: seguía fallando y se corrigió en `src/lib/nlt.js` (documento 13). Sale en la próxima versión que se publique |
 | Bible Brain con una clave real | Probar con una clave gratuita. Puede que la URL base (`https://4.dbp4.org/api`) o el formato de respuesta necesiten ajustes |
 | Descarga de las voces Piper (Hugging Face y jsDelivr) dentro de la app de escritorio, y que el audio arranque bien en Mac (WebKit) | Probar en la app instalada, en Windows y en Mac |
 | «error sending request» al pedir la NTV en Windows (pasó una vez) | Vigilar si se repite; si pasa, anotar cuándo y con qué red |

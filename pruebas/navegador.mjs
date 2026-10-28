@@ -15,9 +15,10 @@ function falsaNLT(ref, version) {
   html += `<p class="subhead">Título de sección simulado</p>`;
   for (let v = 1; v <= n; v++) {
     const extra = v === 16 ? ' Porque Dios amó tanto al mundo que dio a su único Hijo<a class="a-tn">*</a><span class="tn"><span class="tn-ref">3:16</span> Nota al pie.</span>' : ` texto de prueba ${version} ${libro} ${cap}:${v}.`;
-    // párrafos que cruzan versículos, como en la API real: el <p> abre en un versículo y cierra en otro
-    const abre = v % 5 === 1 ? '<p class="body">' : '';
-    const cierra = v % 5 === 0 || v === n ? '</p>' : '';
+    // párrafos que cruzan versículos, como en la API real (Apocalipsis 22): el <p> abre en un versículo y sigue
+    // en los siguientes, y al terminar el párrafo queda un <p> suelto sin cerrar antes del </verse_export>
+    const abre = v % 5 === 1 ? '\n<p class="body">' : '';
+    const cierra = v === n ? '</p>' : v % 5 === 0 ? '<p>\n' : '';
     html += `<verse_export orig="x_${cap}_${v}" bk="x" ch="${cap}" vn="${v}">${abre}<span class="vn">${v}</span>${extra}${cierra}</verse_export>`;
   }
   return html + '</section></div>';
@@ -84,9 +85,11 @@ await paso('arranca en Génesis 1 con NTV', async () => {
   if (!/Génesis\s*1/.test(h1)) throw new Error(h1);
   const sub = await pag.textContent('.texto .subtitulo');
   if (!/Título/.test(sub)) throw new Error('sin subtítulo NTV');
-  // cada versículo trae solo su texto aunque el párrafo siga en los siguientes
-  const v1 = await pag.textContent('.texto [data-v="1"] .t');
-  if (/:2\./.test(v1) || !/:1\.$/.test(v1.trim())) throw new Error('el versículo 1 trae texto de otros: ' + v1);
+  // cada versículo trae solo su texto aunque el párrafo siga en los siguientes, y no falta ninguno
+  const textos = await pag.$$eval('.texto [data-v] .t', (els) => els.map((e) => [e.closest('[data-v]').dataset.v, e.textContent.trim()]));
+  const propio = (v, x) => (v === '16' ? /^Porque Dios amó.*Hijo$/.test(x) && !/texto de prueba/.test(x) : x.endsWith(`:${v}.`) && x.match(/texto de prueba/g).length === 1);
+  const mal = textos.filter(([v, x]) => !propio(v, x));
+  if (textos.length !== 20 || mal.length) throw new Error(`${textos.length} versículos; con texto ajeno: ${mal.map(([v]) => v).join(',')}`);
 });
 await pag.screenshot({ path: `${OUT}/01-genesis-ntv.png` });
 
