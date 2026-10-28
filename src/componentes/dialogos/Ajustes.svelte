@@ -4,6 +4,8 @@
   import { ui } from '../../lib/ui.svelte.js';
   import { t } from '../../lib/i18n.svelte.js';
   import VozAjustes from './VozAjustes.svelte';
+  import { act, buscarActualizacion, instalarActualizacion } from '../../lib/actualizar.svelte.js';
+  import { esTauri } from '../../lib/bd.js';
   const a = $derived(usuario.ajustes);
 </script>
 
@@ -71,6 +73,23 @@
   <button class="boton secundario" onclick={() => (ui.dialogo = 'respaldo')}>{t('aj.abrirRespaldo')}</button>
 </div>
 <VozAjustes />
+{#if esTauri}
+  <h3>{t('act.titulo')} <small class="cuenta">{act.actual ? t('act.tienes', { v: act.actual }) : ''}</small></h3>
+  <div class="ajuste">
+    <label for="aj-actualizar">{t('act.solo')} <small>{t('act.soloD')}</small></label>
+    <input id="aj-actualizar" type="checkbox" checked={a.actualizarSolo !== false} onchange={(e) => ajustar('actualizarSolo', e.currentTarget.checked)} />
+  </div>
+  <div class="fila-botones">
+    {#if act.estado === 'hay'}
+      <button class="boton" onclick={instalarActualizacion}>{t('act.instalarV', { v: act.version })}</button>
+    {:else}
+      <button class="boton secundario" onclick={() => buscarActualizacion()} disabled={act.estado === 'buscando' || act.estado === 'bajando'}>{act.estado === 'buscando' ? t('act.buscando') : t('act.buscar')}</button>
+    {/if}
+    {#if act.estado === 'al-dia'}<span class="nota-pie">{t('act.alDia')}</span>{/if}
+    {#if act.estado === 'error'}<span class="nota-pie">{t('act.error', { e: act.error })}</span>{/if}
+    {#if act.estado === 'bajando'}<span class="nota-pie">{t('act.bajando', { p: Math.round(act.progreso * 100) })}</span>{/if}
+  </div>
+{/if}
 <h3>{t('aj.atajos')}</h3>
 <p class="ayuda">
   <span class="tecla">Ctrl K</span> · <span class="tecla">/</span>

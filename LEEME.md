@@ -55,6 +55,17 @@ Para generar una versión nueva: pestaña **Actions** → **Compilar instaladore
 - `←` `→`: capítulo anterior o siguiente.
 - `Mayús` + clic: seleccionar un rango de versículos.
 
+## Actualizaciones automáticas
+
+Desde la v0.14.1, la app de escritorio busca al abrirse si hay una versión nueva en GitHub Releases (`latest.json`). Si la hay, avisa abajo a la izquierda; con «Actualizar y reiniciar» descarga, verifica la firma, instala y se reinicia. Nunca instala sin un toque. En Ajustes → Actualizaciones se puede buscar a mano o desactivar la búsqueda al abrir.
+
+Las actualizaciones van firmadas. La clave pública está en `src-tauri/tauri.conf.json` (`plugins.updater.pubkey`). La privada y su contraseña **no** están en el repositorio: el workflow «Compilar instaladores» las lee de dos secretos del repositorio (Settings → Secrets and variables → Actions → New repository secret):
+
+- `TAURI_SIGNING_PRIVATE_KEY`: el contenido del archivo de la clave privada.
+- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: su contraseña.
+
+Sin esos secretos la compilación se detiene con un aviso. Guarda una copia de la clave privada en un lugar seguro: si se pierde, las apps ya instaladas no aceptarán actualizaciones firmadas con otra clave y habrá que reinstalar a mano.
+
 ## NTV: clave gratuita
 
 La app funciona desde el principio con la clave de prueba de Tyndale (hasta 500 consultas al día). Para subir el límite a 5000:

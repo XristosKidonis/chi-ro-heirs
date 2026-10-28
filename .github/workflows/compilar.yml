@@ -56,11 +56,26 @@ jobs:
       - name: Dependencias
         run: npm ci
 
+      # Las actualizaciones automáticas van firmadas: sin la clave privada no se compila
+      - name: Revisar la clave de firma de actualizaciones
+        shell: bash
+        env:
+          CLAVE: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          if [ -z "$CLAVE" ]; then
+            echo "::error::Falta el secreto TAURI_SIGNING_PRIVATE_KEY (y TAURI_SIGNING_PRIVATE_KEY_PASSWORD). Agrégalos en Settings → Secrets and variables → Actions; las instrucciones están en el LEEME."
+            exit 1
+          fi
+
       - name: Compilar y publicar
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
+          includeUpdaterJson: true
+          updaterJsonPreferNsis: true
           tagName: v__VERSION__
           releaseName: Chi-Ro Heirs v__VERSION__
           releaseBody: |
@@ -68,6 +83,7 @@ jobs:
             - **Mac**: el archivo `.dmg` (funciona en Mac con Apple Silicon e Intel).
             - **Windows**: el archivo `-setup.exe`.
             La primera vez, tu sistema avisará de que la app no está firmada; las instrucciones están en el LEEME.
+            Si ya tienes la v0.14.1 o posterior, la app se actualiza sola: avisa al abrirla y se instala con un toque.
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}

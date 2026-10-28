@@ -15,6 +15,8 @@
   import Acciones from './componentes/Acciones.svelte';
   import Dialogo from './componentes/Dialogo.svelte';
   import Inicio from './componentes/Inicio.svelte';
+  import Actualizacion from './componentes/Actualizacion.svelte';
+  import { buscarAlAbrir } from './lib/actualizar.svelte.js';
   import { ui, irA, recargarCapitulo } from './lib/ui.svelte.js';
   import { usuario, iniciarUsuario, ajustar } from './lib/usuario.svelte.js';
   import { cargarVersiones, info } from './lib/biblia.js';
@@ -32,6 +34,7 @@
       if (!info(usuario.ajustes.version)) usuario.ajustes.version = 'NTV';
       ui.vista = usuario.ajustes.mostrarInicio ? 'inicio' : 'lector';
       listo = true;
+      buscarAlAbrir();
     } catch (e) {
       fallo = e.message || String(e);
     }
@@ -139,6 +142,7 @@
   {/if}
   <Buscador />
   <Dialogo />
+  <Actualizacion />
   <Visor />
   {#if ui.aviso}<div class="aviso" class:error={ui.aviso.error} role="status">{ui.aviso.texto}</div>{/if}
   {#if usuario.error}<div class="aviso error" role="alert">{t('app.noGuardar', { e: usuario.error })}</div>{/if}
