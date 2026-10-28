@@ -992,3 +992,5 @@ button.tl-item:hover .tl-que { text-decoration: underline; text-underline-offset
 .aviso-paralela p { margin: 0; flex: 1 1 280px; }
 .solo-paralela { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--linea); }
 .solo-paralela .texto { margin-top: 14px; }
+.aj-voz { display: grid; gap: 6px; }
+.aj-voz select { flex: 1 1 220px; min-width: 0; }

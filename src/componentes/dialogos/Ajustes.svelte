@@ -3,6 +3,7 @@
   import { lista } from '../../lib/biblia.js';
   import { ui } from '../../lib/ui.svelte.js';
   import { t } from '../../lib/i18n.svelte.js';
+  import { voces, vozPara, probarVoz, esNatural } from '../../lib/voz.svelte.js';
   const a = $derived(usuario.ajustes);
 </script>
 
@@ -70,6 +71,19 @@
   <button class="boton secundario" onclick={() => (ui.dialogo = 'respaldo')}>{t('aj.abrirRespaldo')}</button>
 </div>
 <h3>{t('aj.voz')}</h3>
+{#each [['es', 'vozEs'], ['en', 'vozEn']] as [lang, campo] (lang)}
+  <div class="ajuste aj-voz">
+    <label for="aj-voz-{lang}">{t(`aj.voz.${lang}`)}</label>
+    <div class="fila-botones">
+      <select id="aj-voz-{lang}" class="campo" value={vozPara(lang)?.voiceURI || ''} onchange={(e) => ajustar(campo, e.currentTarget.value)}>
+        {#each voces[lang] as v (v.voiceURI)}<option value={v.voiceURI}>{esNatural(v) ? '★ ' : ''}{v.name}</option>{/each}
+        {#if !voces[lang].length}<option value="">{t('aj.voz.ninguna')}</option>{/if}
+      </select>
+      <button class="boton secundario" onclick={() => probarVoz(lang)}>{t('aj.voz.probar')}</button>
+    </div>
+  </div>
+{/each}
+<p class="nota-pie">{t('aj.voz.ayuda')}</p>
 <div class="ajuste">
   <label for="aj-voz">{t('aj.velocidad')} <small>{a.velocidadVoz}×</small></label>
   <input id="aj-voz" type="range" min="0.6" max="1.6" step="0.1" value={a.velocidadVoz} oninput={(e) => ajustar('velocidadVoz', Number(e.currentTarget.value))} />
